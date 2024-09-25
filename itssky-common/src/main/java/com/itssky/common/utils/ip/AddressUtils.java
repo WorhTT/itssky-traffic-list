@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.itssky.common.config.RuoYiConfig;
+import com.itssky.common.config.ItsskyConfig;
 import com.itssky.common.constant.Constants;
 import com.itssky.common.utils.StringUtils;
 import com.itssky.common.utils.http.HttpUtils;
@@ -31,7 +31,7 @@ public class AddressUtils
         {
             return "内网IP";
         }
-        if (RuoYiConfig.isAddressEnabled())
+        if (ItsskyConfig.isAddressEnabled())
         {
             try
             {

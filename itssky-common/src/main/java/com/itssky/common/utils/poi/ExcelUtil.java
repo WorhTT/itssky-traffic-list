@@ -74,7 +74,7 @@ import com.itssky.common.annotation.Excel;
 import com.itssky.common.annotation.Excel.ColumnType;
 import com.itssky.common.annotation.Excel.Type;
 import com.itssky.common.annotation.Excels;
-import com.itssky.common.config.RuoYiConfig;
+import com.itssky.common.config.ItsskyConfig;
 import com.itssky.common.core.domain.AjaxResult;
 import com.itssky.common.core.text.Convert;
 import com.itssky.common.exception.UtilException;
@@ -1409,7 +1409,7 @@ public class ExcelUtil<T>
      */
     public String getAbsoluteFile(String filename)
     {
-        String downloadPath = RuoYiConfig.getDownloadPath() + filename;
+        String downloadPath = ItsskyConfig.getDownloadPath() + filename;
         File desc = new File(downloadPath);
         if (!desc.getParentFile().exists())
         {
