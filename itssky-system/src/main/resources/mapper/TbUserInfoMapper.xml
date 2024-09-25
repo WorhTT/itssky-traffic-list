@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itssky.system.mapper.TbUserInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.itssky.system.domain.TbUserInfo">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="corpno" column="corpno" jdbcType="VARCHAR"/>
+            <result property="userid" column="userid" jdbcType="INTEGER"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="groupid" column="groupid" jdbcType="INTEGER"/>
+            <result property="imagid" column="imagid" jdbcType="VARCHAR"/>
+            <result property="level" column="level" jdbcType="INTEGER"/>
+            <result property="stationid" column="stationid" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,corpno,userid,
+        username,password,groupid,
+        imagid,level,stationid
+    </sql>
+</mapper>

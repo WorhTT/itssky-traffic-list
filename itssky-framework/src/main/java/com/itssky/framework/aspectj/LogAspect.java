@@ -1,9 +1,18 @@
 package com.itssky.framework.aspectj;
 
-import java.util.Collection;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.alibaba.fastjson2.JSON;
+import com.itssky.common.annotation.Log;
+import com.itssky.common.core.domain.model.LoginUser;
+import com.itssky.common.enums.BusinessStatus;
+import com.itssky.common.enums.HttpMethod;
+import com.itssky.common.filter.PropertyPreExcludeFilter;
+import com.itssky.common.utils.SecurityUtils;
+import com.itssky.common.utils.ServletUtils;
+import com.itssky.common.utils.StringUtils;
+import com.itssky.common.utils.ip.IpUtils;
+import com.itssky.framework.manager.AsyncManager;
+import com.itssky.framework.manager.factory.AsyncFactory;
+import com.itssky.system.domain.SysOperLog;
 import org.apache.commons.lang3.ArrayUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -16,20 +25,11 @@ import org.springframework.core.NamedThreadLocal;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
-import com.alibaba.fastjson2.JSON;
-import com.itssky.common.annotation.Log;
-import com.itssky.common.core.domain.entity.SysUser;
-import com.itssky.common.core.domain.model.LoginUser;
-import com.itssky.common.enums.BusinessStatus;
-import com.itssky.common.enums.HttpMethod;
-import com.itssky.common.filter.PropertyPreExcludeFilter;
-import com.itssky.common.utils.SecurityUtils;
-import com.itssky.common.utils.ServletUtils;
-import com.itssky.common.utils.StringUtils;
-import com.itssky.common.utils.ip.IpUtils;
-import com.itssky.framework.manager.AsyncManager;
-import com.itssky.framework.manager.factory.AsyncFactory;
-import com.itssky.system.domain.SysOperLog;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * 操作日志记录处理
@@ -97,11 +97,6 @@ public class LogAspect
             if (loginUser != null)
             {
                 operLog.setOperName(loginUser.getUsername());
-                SysUser currentUser = loginUser.getUser();
-                if (StringUtils.isNotNull(currentUser) && StringUtils.isNotNull(currentUser.getDept()))
-                {
-                    operLog.setDeptName(currentUser.getDept().getDeptName());
-                }
             }
 
             if (e != null)

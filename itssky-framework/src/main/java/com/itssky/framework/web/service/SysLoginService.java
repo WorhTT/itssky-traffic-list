@@ -1,25 +1,12 @@
 package com.itssky.framework.web.service;
 
-import javax.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import com.itssky.common.constant.CacheConstants;
 import com.itssky.common.constant.Constants;
 import com.itssky.common.constant.UserConstants;
-import com.itssky.common.core.domain.entity.SysUser;
 import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.core.redis.RedisCache;
 import com.itssky.common.exception.ServiceException;
-import com.itssky.common.exception.user.BlackListException;
-import com.itssky.common.exception.user.CaptchaException;
-import com.itssky.common.exception.user.CaptchaExpireException;
-import com.itssky.common.exception.user.UserNotExistsException;
-import com.itssky.common.exception.user.UserPasswordNotMatchException;
-import com.itssky.common.utils.DateUtils;
+import com.itssky.common.exception.user.*;
 import com.itssky.common.utils.MessageUtils;
 import com.itssky.common.utils.StringUtils;
 import com.itssky.common.utils.ip.IpUtils;
@@ -27,7 +14,14 @@ import com.itssky.framework.manager.AsyncManager;
 import com.itssky.framework.manager.factory.AsyncFactory;
 import com.itssky.framework.security.context.AuthenticationContextHolder;
 import com.itssky.system.service.ISysConfigService;
-import com.itssky.system.service.ISysUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * 登录校验方法
@@ -45,26 +39,26 @@ public class SysLoginService
 
     @Autowired
     private RedisCache redisCache;
-    
-    @Autowired
-    private ISysUserService userService;
 
     @Autowired
     private ISysConfigService configService;
 
     /**
      * 登录验证
-     * 
-     * @param username 用户名
-     * @param password 密码
-     * @param code 验证码
-     * @param uuid 唯一标识
+     *
+     * @param username  用户名
+     * @param password  密码
+     * @param code      验证码
+     * @param uuid      唯一标识
+     * @param capEnable
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid)
+    public String login(String username, String password, String code, String uuid, Boolean capEnable)
     {
-        // 验证码校验
-        validateCaptcha(username, code, uuid);
+        if(capEnable){
+            // 验证码校验
+            validateCaptcha(username, code, uuid);
+        }
         // 登录前置校验
         loginPreCheck(username, password);
         // 用户验证
@@ -95,7 +89,6 @@ public class SysLoginService
         }
         AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        recordLoginInfo(loginUser.getUserId());
         // 生成token
         return tokenService.createToken(loginUser);
     }
@@ -165,17 +158,5 @@ public class SysLoginService
         }
     }
 
-    /**
-     * 记录登录信息
-     *
-     * @param userId 用户ID
-     */
-    public void recordLoginInfo(Long userId)
-    {
-        SysUser sysUser = new SysUser();
-        sysUser.setUserId(userId);
-        sysUser.setLoginIp(IpUtils.getIpAddr());
-        sysUser.setLoginDate(DateUtils.getNowDate());
-        userService.updateUserProfile(sysUser);
-    }
+
 }
