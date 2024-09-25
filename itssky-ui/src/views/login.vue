@@ -1,5 +1,6 @@
 <template>
   <div class="login">
+    <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">itssky 快速开发平台</h3>
       <el-form-item prop="username">
@@ -58,6 +59,8 @@
     <div class="el-login-footer">
       <span>Copyright © 2018-2024 itssky All Rights Reserved.</span>
     </div>
+  </div>
+    <div class="background-container"></div>
   </div>
 </template>
 
@@ -160,14 +163,43 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
-  background-size: cover;
+  width: 100%;
+  background-color: white;
 }
+
+.login-container {
+  margin-right: 2vw;
+  margin-left: 1.5vw;
+}
+
+.show-pwd {
+  position: absolute;
+  right: 10px;
+  top: 2px;
+  font-size: 16px;
+  color: #889aa4;
+  cursor: pointer;
+  user-select: none;
+}
+
 .title {
-  margin: 0px auto 30px auto;
   text-align: center;
-  color: #707070;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+  "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  margin: 10px 0 30px 0;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.background-container {
+  background: url(../assets/login/login_background.svg);
+  background-repeat: no-repeat;
+  background-position: right;
+  /* 图片居中 */
+  -webkit-user-drag: none;
+  background-size: cover;
+  width: 75.5vw;
+  height: 100vh;
 }
 
 .login-form {
@@ -175,32 +207,39 @@ export default {
   background: #ffffff;
   width: 400px;
   padding: 25px 25px 5px 25px;
+
   .el-input {
     height: 38px;
+
     input {
       height: 38px;
     }
   }
+
   .input-icon {
     height: 39px;
     width: 14px;
     margin-left: 2px;
   }
 }
+
 .login-tip {
   font-size: 13px;
   text-align: center;
   color: #bfbfbf;
 }
+
 .login-code {
   width: 33%;
   height: 38px;
   float: right;
+
   img {
     cursor: pointer;
     vertical-align: middle;
   }
 }
+
 .el-login-footer {
   height: 40px;
   line-height: 40px;
@@ -213,6 +252,11 @@ export default {
   font-size: 12px;
   letter-spacing: 1px;
 }
+
+.user-drag {
+  -webkit-user-drag: none;
+}
+
 .login-code-img {
   height: 38px;
 }
