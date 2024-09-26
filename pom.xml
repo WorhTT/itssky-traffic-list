@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.itssky</groupId>
-    <artifactId>specialcheckin</artifactId>
+    <artifactId>scaffold</artifactId>
     <version>3.8.8</version>
 
     <name>itssky</name>
