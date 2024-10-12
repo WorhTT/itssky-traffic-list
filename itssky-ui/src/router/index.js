@@ -62,6 +62,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/pageJump',
+    component: () => import('@/views/PageJump.vue'),
+    hidden: true
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',

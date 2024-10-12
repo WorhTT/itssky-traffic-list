@@ -37,3 +37,18 @@ itssky:
       remote-sso-url: ${itssky-sso-base-ip}:${itssky-sso-base-port}
       remote-sso-ping-url: ${itssky-sso-base-ip}:${itssky-sso-base-port}/check/status
       corp-no:
+
+
+secure:
+  ignored:
+    urls: #安全路径白名单
+      - /favicon.ico
+      - /actuator/**
+      - /druid/**
+      - /api/auth/login
+      - /admin/logout
+      - /api/websocket/**
+      - /api/bigscreen/index/subDeviceStatus/**
+      - /api/device/upload/**
+      - /captchaImage
+      - /sso/client/token/handle

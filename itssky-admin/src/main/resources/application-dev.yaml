@@ -32,8 +32,27 @@ itssky:
   sso:
     client:
       enabled: true
+      #即本服务部署的ip地址，要求前端也跟后端在同一台服务器上，不然就要配置前端ip
+      base-ip: http://192.168.200.193
+      base-front-port: 80
+      base-back-port: 8089
     schedule:
       enabled: true
       remote-sso-url: ${itssky-sso-base-ip}:${itssky-sso-base-port}
       remote-sso-ping-url: ${itssky-sso-base-ip}:${itssky-sso-base-port}/check/status
       corp-no:
+
+
+secure:
+  ignored:
+    urls: #安全路径白名单
+      - /favicon.ico
+      - /actuator/**
+      - /druid/**
+      - /api/auth/login
+      - /admin/logout
+      - /api/websocket/**
+      - /api/bigscreen/index/subDeviceStatus/**
+      - /api/device/upload/**
+      - /captchaImage
+      - /sso/client/token/handle

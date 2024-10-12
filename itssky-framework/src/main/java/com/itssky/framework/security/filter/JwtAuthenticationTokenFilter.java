@@ -1,12 +1,19 @@
 package com.itssky.framework.security.filter;
 
+import cn.hutool.extra.servlet.ServletUtil;
 import com.itssky.client.ItsskySsoClientAbstract;
 import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.SecurityUtils;
 import com.itssky.common.utils.StringUtils;
 import com.itssky.constant.Constants;
+import com.itssky.exception.SsoUncheckedException;
+import com.itssky.framework.config.IgnoreUrlsConfig;
 import com.itssky.framework.web.service.TokenService;
 import com.itssky.properties.ScheduleProperties;
+import com.itssky.system.domain.TbUserInfo;
+import com.itssky.system.service.TbUserInfoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +35,9 @@ import java.io.IOException;
  */
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
+
     @Autowired
     private TokenService tokenService;
 
@@ -40,34 +50,59 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private ScheduleProperties scheduleProperties;
 
+    @Autowired
+    private IgnoreUrlsConfig ignoreUrlsConfig;
+
+    @Autowired
+    private TbUserInfoService tbUserInfoService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws ServletException, IOException {
 
         //添加白名单，不需要进行token验证
+        if (itsskySsoClientAbstract.permitPass(request, ignoreUrlsConfig.getUrls())) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         //校验是走自己的登陆系统还是使用sso服务器验证。
         Boolean useBoolean = (Boolean)Constants.cacheMap.get(Constants.REMOTE_SSO_SERVER_STATUS_FLAG);
-        //        itsskySsoClientAbstract.
         if (useBoolean) {
-            //代表远程sso服务器可用
-            boolean over = itsskySsoClientAbstract.preHandle(request, response, redisTemplate,
-                scheduleProperties.getRemoteSsoUrl() + "/sso/login", "Authorization", "itssky");
-            if (over) {
+            try {
+                //代表远程sso服务器可用
+                //并校验自己本地是否有该用户token，没有代表该用户未在本地登陆过，需要走sso登陆流程
+                itsskySsoClientAbstract.preHandle(request, response, redisTemplate,
+                    scheduleProperties.getRemoteSsoUrl() + "/sso/login", "Authorization", Constants.rsaPublicKey);
+                //到此处没有抛出异常，即表示验证通过了
+
+                LoginUser loginUser = tokenService.getLoginUser(request);
+                if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication())) {
+                    tokenService.verifyToken(loginUser);
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
                 chain.doFilter(request, response);
-                return;
+
+            } catch (SsoUncheckedException e) {
+                ServletUtil.write(response, e.getMessage(), "application/json;charset=UTF-8");
+            } catch (Exception e) {
+                log.error("处理sso登陆流程异常!", e);
             }
+        } else {
+            //否则走自己的登陆系统
+            LoginUser loginUser = tokenService.getLoginUser(request);
+            if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication())) {
+                tokenService.verifyToken(loginUser);
+                UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+            chain.doFilter(request, response);
         }
 
-        LoginUser loginUser = tokenService.getLoginUser(request);
-        if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication())) {
-            tokenService.verifyToken(loginUser);
-            UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        }
-
-        chain.doFilter(request, response);
     }
 }
