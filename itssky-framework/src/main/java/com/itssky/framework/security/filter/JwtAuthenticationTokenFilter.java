@@ -3,6 +3,7 @@ package com.itssky.framework.security.filter;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.itssky.client.ItsskySsoClientAbstract;
 import com.itssky.common.core.domain.model.LoginUser;
+import com.itssky.common.core.redis.RedisCache;
 import com.itssky.common.utils.SecurityUtils;
 import com.itssky.common.utils.StringUtils;
 import com.itssky.constant.Constants;
@@ -10,8 +11,6 @@ import com.itssky.exception.SsoUncheckedException;
 import com.itssky.framework.config.IgnoreUrlsConfig;
 import com.itssky.framework.web.service.TokenService;
 import com.itssky.properties.ScheduleProperties;
-import com.itssky.system.domain.TbUserInfo;
-import com.itssky.system.service.TbUserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +53,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private IgnoreUrlsConfig ignoreUrlsConfig;
 
     @Autowired
-    private TbUserInfoService tbUserInfoService;
+    private RedisCache redisCache;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -75,9 +74,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 itsskySsoClientAbstract.preHandle(request, response, redisTemplate,
                     scheduleProperties.getRemoteSsoUrl() + "/sso/login", "Authorization", Constants.rsaPublicKey);
                 //到此处没有抛出异常，即表示验证通过了
-
-                LoginUser loginUser = tokenService.getLoginUser(request);
+                String token = tokenService.getToken(request);
+                String totalTokenKey = com.itssky.utils.SecurityUtils.getTotalTokenKey(token);
+                LoginUser loginUser = (LoginUser)redisCache.getCacheObject(totalTokenKey);
                 if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication())) {
+                    //TODO 若干问题，token过期校验等。待排查
                     tokenService.verifyToken(loginUser);
                     UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
