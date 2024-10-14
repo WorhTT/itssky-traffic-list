@@ -13,9 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -61,13 +58,12 @@ public class CustomItsskySsoClientControllerImpl extends ItsskySsoClientControll
                 new LoginUser((long)tbUserInfo.getUserid(), tbUserInfo.getCorpno(), tbUserInfo.getUsername(),
                     tbUserInfo.getPassword(), tbUserInfo.getLevel(), tbUserInfo.getStationid(), Collections.emptySet());
             loginUser.setLoginTime(System.currentTimeMillis());
-//            LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(exp), ZoneId.systemDefault());
+            //            LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(exp), ZoneId.systemDefault());
             loginUser.setExpireTime((long)exp);
             redisCache.setCacheObject(CacheConstants.LOGIN_TOKEN_KEY + userId + ":" + uuid, loginUser, expiresIn,
                 TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("处理token-----存放redis异常!", e);
-            throw new RuntimeException("存放redis异常!");
         }
     }
 }
