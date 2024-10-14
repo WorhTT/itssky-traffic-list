@@ -8,6 +8,7 @@ import com.itssky.common.utils.SecurityUtils;
 import com.itssky.common.utils.StringUtils;
 import com.itssky.constant.Constants;
 import com.itssky.exception.SsoUncheckedException;
+import com.itssky.exception.TokenExpiredException;
 import com.itssky.framework.config.IgnoreUrlsConfig;
 import com.itssky.framework.web.service.TokenService;
 import com.itssky.properties.ScheduleProperties;
@@ -26,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * token过滤器 验证token有效性
@@ -78,8 +80,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 String totalTokenKey = com.itssky.utils.SecurityUtils.getTotalTokenKey(token);
                 LoginUser loginUser = (LoginUser)redisCache.getCacheObject(totalTokenKey);
                 if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication())) {
-                    //TODO 若干问题，token过期校验等。待排查
-                    tokenService.verifyToken(loginUser);
+                    //校验时间，如果过期，直接抛出异常
                     UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -87,7 +88,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 }
                 chain.doFilter(request, response);
 
-            } catch (SsoUncheckedException e) {
+            } catch (SsoUncheckedException | TokenExpiredException e) {
                 ServletUtil.write(response, e.getMessage(), "application/json;charset=UTF-8");
             } catch (Exception e) {
                 log.error("处理sso登陆流程异常!", e);
