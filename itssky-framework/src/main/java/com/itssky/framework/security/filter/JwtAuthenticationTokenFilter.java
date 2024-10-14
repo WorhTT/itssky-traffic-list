@@ -27,7 +27,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * token过滤器 验证token有效性
@@ -37,6 +36,9 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
+    /**
+     * 日志
+     */
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
 
     @Autowired
@@ -68,17 +70,18 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
 
         //校验是走自己的登陆系统还是使用sso服务器验证。
-        Boolean useBoolean = (Boolean)Constants.cacheMap.get(Constants.REMOTE_SSO_SERVER_STATUS_FLAG);
-        if (useBoolean) {
+        if ((Boolean)Constants.cacheMap.get(Constants.REMOTE_SSO_SERVER_STATUS_FLAG)) {
             try {
                 //代表远程sso服务器可用
                 //并校验自己本地是否有该用户token，没有代表该用户未在本地登陆过，需要走sso登陆流程
+
+                //此方法会校验请求头中是否有规定格式的token，并通过公钥验证token有效性，并校验token是否过期
+                //如果token有效，会将用户信息放入SecurityContextHolder中
+                //否则会抛出对应的异常
                 itsskySsoClientAbstract.preHandle(request, response, redisTemplate,
                     scheduleProperties.getRemoteSsoUrl() + "/sso/login", "Authorization", Constants.rsaPublicKey);
                 //到此处没有抛出异常，即表示验证通过了
-                String token = tokenService.getToken(request);
-                String totalTokenKey = com.itssky.utils.SecurityUtils.getTotalTokenKey(token);
-                LoginUser loginUser = (LoginUser)redisCache.getCacheObject(totalTokenKey);
+                LoginUser loginUser = getLoginUser(request);
                 if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication())) {
                     //校验时间，如果过期，直接抛出异常
                     UsernamePasswordAuthenticationToken authenticationToken =
@@ -106,5 +109,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
         }
 
+    }
+
+    /**
+     * 获取登录用户信息(兼容若依原先登陆系统)
+     *
+     * @param request 请求
+     * @return {@link LoginUser }
+     */
+    private LoginUser getLoginUser(HttpServletRequest request) {
+        String token = tokenService.getToken(request);
+        String totalTokenKey = com.itssky.utils.SecurityUtils.getTotalTokenKey(token);
+        return (LoginUser)redisCache.getCacheObject(totalTokenKey);
     }
 }
