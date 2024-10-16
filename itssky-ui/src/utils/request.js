@@ -82,7 +82,6 @@ service.interceptors.response.use(res => {
     if (res.request.responseType === 'blob' || res.request.responseType === 'arraybuffer') {
       return res.data
     }
-    console.log(code)
     if (code === 307) {
       Message({
         message: res.data?.message,
