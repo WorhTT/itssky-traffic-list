@@ -1,5 +1,23 @@
 # 数据源配置
 spring:
+  rabbitmq:
+    host: 192.168.43.129
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        acknowledge-mode: manual
+        retry:
+          enabled: true
+          #最大重试次数
+          max-attempts: 5
+          #最大重试时间间隔
+          max-interval: 10000
+          #投递消息的间隔时间ms
+          initial-interval: 2000
+          #距离上次重试间隔乘数因子
+          multiplier: 2
   datasource:
     dynamic:
       # 设置默认的数据源或者数据源组,默认值即为master
