@@ -82,15 +82,6 @@ service.interceptors.response.use(res => {
     if (res.request.responseType === 'blob' || res.request.responseType === 'arraybuffer') {
       return res.data
     }
-    if (code === 307) {
-      Message({
-        message: res.data?.message,
-        type: 'warning'
-      });
-      setTimeout(() => {
-        window.location.href = res.data?.redirectUrl
-      }, 2000)
-    }
     if (code === 401) {
       if (!isRelogin.show) {
         isRelogin.show = true;

@@ -110,7 +110,7 @@ export default {
   created() {
     this.getCode();
     this.getCookie();
-    this.checkSsoServer()
+    // this.checkSsoServer()
   },
   methods: {
     getCode() {
@@ -172,7 +172,6 @@ export default {
         })
       } catch (e) {
       }
-
     }
   }
 };

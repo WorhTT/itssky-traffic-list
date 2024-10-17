@@ -38,7 +38,7 @@ public class CustomItsskySsoClientLogoutImpl extends ItsskySsoClientLogoutAbstra
         String logoutToken =
             StringUtils.isNotBlank(getLogoutToken(httpServletRequest)) ? getLogoutToken(httpServletRequest)
                 : getToken(httpServletRequest);
-        ;
+
         if (StringUtils.isNotBlank(logoutToken)) {
             JWT jwt = SecurityUtils.parseTokenAndVerify(logoutToken, (RSAPublicKey)Constants.rsaPublicKey);
             //获取token中的用户名
