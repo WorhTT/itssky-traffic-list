@@ -7,6 +7,8 @@ import {getToken} from '@/utils/auth'
 import {isRelogin} from '@/utils/request'
 import {checkSsoServer} from "@/api/login";
 
+import { Loading } from 'element-ui';
+
 NProgress.configure({showSpinner: false})
 
 const whiteList = ['/login', '/register', '/pageJump']
@@ -57,7 +59,6 @@ router.beforeEach((to, from, next) => {
           setTimeout(()=>{
             window.location.href = res?.redirectUrl
           },2000)
-
         } else {
           next(`/login?redirect=${encodeURIComponent(to.fullPath)}`) // 否则全部重定向到登录页
         }
