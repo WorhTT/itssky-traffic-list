@@ -157,18 +157,22 @@ export default {
         }
       });
     },
-    checkSsoServer() {
-      checkSsoServer().then(res => {
-        if (res?.status) {
-          Message({
-            message: "即将跳转统一身份认证平台",
-            type: 'warning'
-          });
-          setTimeout(() => {
-            window.location.href = res?.redirectUrl
-          }, 2000)
-        }
-      })
+    async checkSsoServer() {
+      try {
+        await checkSsoServer().then(res => {
+          if (res?.status) {
+            Message({
+              message: "即将跳转统一身份认证平台",
+              type: 'warning'
+            });
+            setTimeout(() => {
+              window.location.href = res?.redirectUrl
+            }, 2000)
+          }
+        })
+      } catch (e) {
+      }
+
     }
   }
 };
