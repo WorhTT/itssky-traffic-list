@@ -7,7 +7,6 @@ import com.itssky.framework.security.handle.LogoutSuccessHandlerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -66,6 +65,9 @@ public class SecurityConfig {
     @Autowired
     private PermitAllUrlProperties permitAllUrl;
 
+    @Autowired
+    private IgnoreUrlsConfig ignoreUrlsConfig;
+
     /**
      * 身份验证实现
      */
@@ -102,12 +104,8 @@ public class SecurityConfig {
             .authorizeHttpRequests((requests) -> {
                 permitAllUrl.getUrls().forEach(url -> requests.antMatchers(url).permitAll());
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                requests.antMatchers("/login", "/register", "/captchaImage").permitAll()
-                    // 静态资源，可匿名访问
-                    .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**",
-                        "/sso/client/token/handle").permitAll()
-                    .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**")
-                    .permitAll()
+                requests.antMatchers("/login").permitAll()
+                    .antMatchers(ignoreUrlsConfig.getUrls().toArray(new String[0])).permitAll()
                     // 除上面外的所有请求全部需要鉴权认证
                     .anyRequest().authenticated();
             })

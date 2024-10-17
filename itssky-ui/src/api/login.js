@@ -58,3 +58,10 @@ export function getCodeImg() {
     timeout: 20000
   })
 }
+
+export function checkSsoServer() {
+  return request({
+    url: '/sso/client/ssoserver/status',
+    method: 'get'
+  })
+}

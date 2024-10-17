@@ -90,7 +90,6 @@ service.interceptors.response.use(res => {
       setTimeout(() => {
         window.location.href = res.data?.redirectUrl
       }, 2000)
-
     }
     if (code === 401) {
       if (!isRelogin.show) {

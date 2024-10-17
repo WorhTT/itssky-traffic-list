@@ -65,6 +65,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         //添加白名单，不需要进行token验证
         if (itsskySsoClientAbstract.permitPass(request, ignoreUrlsConfig.getUrls())) {
+            log.info("当前路径:{}放行",request.getRequestURI());
             chain.doFilter(request, response);
             return;
         }

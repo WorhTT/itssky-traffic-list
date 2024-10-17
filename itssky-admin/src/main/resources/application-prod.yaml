@@ -42,13 +42,16 @@ itssky:
 secure:
   ignored:
     urls: #安全路径白名单
-      - /favicon.ico
-      - /actuator/**
-      - /druid/**
-      - /api/auth/login
-      - /admin/logout
-      - /api/websocket/**
-      - /api/bigscreen/index/subDeviceStatus/**
-      - /api/device/upload/**
       - /captchaImage
-      - /sso/client/token/handle
+      - /
+      - /*.html
+      - /**/*.html
+      - /**/*.css
+      - /**/*.js
+      - /profile/**
+      - /sso/client/**
+      - /swagger-ui.html
+      - /swagger-resources/**
+      - /webjars/**
+      - /*/api-docs
+      - /druid/**
