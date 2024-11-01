@@ -10,7 +10,6 @@ import com.itssky.common.utils.StringUtils;
 import com.itssky.framework.manager.AsyncManager;
 import com.itssky.framework.manager.factory.AsyncFactory;
 import com.itssky.framework.web.service.TokenService;
-import com.itssky.logout.ItsskySsoClientLogoutAbstract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +32,6 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
     @Autowired
     private TokenService tokenService;
 
-    @Autowired
-    private ItsskySsoClientLogoutAbstract itsskySsoClientLogoutAbstract;
 
 
     private static final Logger log = LoggerFactory.getLogger(LogoutSuccessHandlerImpl.class);
@@ -47,13 +44,6 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
         throws IOException, ServletException {
-
-        //接收单点登陆平台的退出请求
-        try {
-            itsskySsoClientLogoutAbstract.handleLogout(request);
-        } catch (Exception e) {
-            ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.error("退出登陆异常!")));
-        }
 
         LoginUser loginUser = tokenService.getLoginUser(request);
         if (StringUtils.isNotNull(loginUser)) {
