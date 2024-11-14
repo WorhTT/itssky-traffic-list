@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itssky.report.mapper.ReportFlowMapper">
+    <resultMap type="com.itssky.report.domain.ReportFlowInfo" id="tbStateEntryResult">
+        <id property="ID" column="ID"/>
+        <result property="StationID" column="StationID"/>
+        <result property="StaDate" column="StaDate"/>
+        <result property="ShiftID" column="ShiftID"/>
+        <result property="OperatorID" column="OperatorID"/>
+        <result property="TeamID" column="TeamID"/>
+        <result property="LaneID" column="LaneID"/>
+        <result property="termMode" column="termMode"/>
+        <result property="VehicleClass" column="VehicleClass"/>
+        <result property="VehicleStatus" column="VehicleStatus"/>
+        <result property="DealStatus" column="DealStatus"/>
+        <result property="RecordType" column="RecordType"/>
+        <result property="CardType" column="CardType"/>
+        <result property="CardNum" column="CardNum"/>
+        <result property="CarNum" column="CarNum"/>
+        <result property="CancelFlag" column="CancelFlag"/>
+        <result property="Transfermark" column="Transfermark"/>
+        <result property="BalanceTime" column="BalanceTime"/>
+        <result property="BalanceOP" column="BalanceOP"/>
+        <result property="Spare" column="Spare"/>
+    </resultMap>
+
+    <select id="getTbStateEntryList" resultMap="tbStateEntryResult">
+        select * from dbstats.tbstatentry202411
+        <where>
+            <choose>
+                <!--当日-->
+                <when test="timeType != null and timeType != '' and timeType = 0">
+                    and StaDate = DATE_FORMAT(CURRENT_DATE(), '%Y%m%d')
+                </when>
+            </choose>
+        </where>
+    </select>
+
+    <select id="getStationCodeByIds" parameterType="collection" resultType="map">
+        select * from dbtoms.stationcode
+        <where>
+            stationid in
+            <foreach collection="collection" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+</mapper>

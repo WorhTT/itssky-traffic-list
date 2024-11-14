@@ -178,6 +178,13 @@
                 <version>${itssky.version}</version>
             </dependency>
 
+            <!-- 报表模块 -->
+            <dependency>
+                <groupId>com.itssky</groupId>
+                <artifactId>isssky-report</artifactId>
+                <version>${itssky.version}</version>
+            </dependency>
+
             <!-- 通用工具-->
             <dependency>
                 <groupId>com.itssky</groupId>
@@ -196,6 +203,7 @@
         <module>itssky-admin</module>
         <module>itssky-framework</module>
         <module>itssky-system</module>
+        <module>itssky-report</module>
 <!--        <module>itssky-quartz</module>-->
 <!--        <module>itssky-generator</module>-->
         <module>itssky-common</module>

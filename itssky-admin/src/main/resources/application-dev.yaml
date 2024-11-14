@@ -26,7 +26,7 @@ token:
   # 令牌有效期（默认30分钟）
   expireTime: 30
 
-current-service-ip: 192.168.200.193
+current-service-ip: 192.168.200.127
 itssky:
   sso:
     # 本应用服务相关配置

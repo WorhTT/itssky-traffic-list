@@ -67,6 +67,10 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/entryFlow',
+    component: () => import('@/views/report/entryFlow/index')
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',
