@@ -48,8 +48,14 @@
             <groupId>com.itssky</groupId>
             <artifactId>itssky-framework</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.itssky</groupId>
+            <artifactId>itssky-report</artifactId>
+            <version>3.8.8</version>
+            <scope>compile</scope>
+        </dependency>
 
-<!--        &lt;!&ndash; 定时任务&ndash;&gt;-->
+        <!--        &lt;!&ndash; 定时任务&ndash;&gt;-->
 <!--        <dependency>-->
 <!--            <groupId>com.itssky</groupId>-->
 <!--            <artifactId>itssky-quartz</artifactId>-->

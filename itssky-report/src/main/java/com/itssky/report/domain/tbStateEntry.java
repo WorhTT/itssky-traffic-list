@@ -3,6 +3,7 @@ package com.itssky.report.domain;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -111,4 +112,24 @@ public class tbStateEntry {
      * 备注
      */
     private int Spare;
+
+    /**
+     * 支付方式
+     */
+    private int PayType;
+
+    /**
+     * 欠费总金额
+     */
+    private Double TotalArrearage;
+
+    /**
+     * 应收通行费总金额
+     */
+    private Double TotalFee;
+
+    /**
+     * 通行费总金额
+     */
+    private Double TotalToll;
 }

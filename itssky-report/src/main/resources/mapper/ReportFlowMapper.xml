@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.itssky.report.mapper.ReportFlowMapper">
-    <resultMap type="com.itssky.report.domain.ReportFlowInfo" id="tbStateEntryResult">
+    <resultMap type="com.itssky.report.domain.tbStateEntry" id="tbStateEntryResult">
         <id property="ID" column="ID"/>
         <result property="StationID" column="StationID"/>
         <result property="StaDate" column="StaDate"/>
@@ -38,13 +38,313 @@
         </where>
     </select>
 
-    <select id="getStationCodeByIds" parameterType="collection" resultType="map">
-        select * from dbtoms.stationcode
+
+    <select id="getTbStateExitList" resultMap="tbStateEntryResult">
+        select * from dbstats.tbstatexit202411
+        <where>
+            <choose>
+                <!--当日-->
+                <when test="timeType != null and timeType != '' and timeType = 0">
+                    and StaDate = DATE_FORMAT(CURRENT_DATE(), '%Y%m%d')
+                </when>
+            </choose>
+        </where>
+    </select>
+
+    <insert id="insertTbStateEntry" parameterType="com.itssky.report.domain.tbStateEntry">
+        insert into dbstats.tbstatentry202411
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="StationID != null">
+                StationID,
+            </if>
+            <if test="StaDate != null">
+                StaDate,
+            </if>
+            <if test="ShiftID != null">
+                ShiftID,
+            </if>
+            <if test="OperatorID != null">
+                OperatorID,
+            </if>
+            <if test="TeamID != null">
+                TeamID,
+            </if>
+            <if test="LaneID != null">
+                LaneID,
+            </if>
+            <if test="termMode != null">
+                termMode,
+            </if>
+            <if test="VehicleClass != null">
+                VehicleClass,
+            </if>
+            <if test="VehicleStatus != null">
+                VehicleStatus,
+            </if>
+            <if test="DealStatus != null">
+                DealStatus,
+            </if>
+            <if test="RecordType != null">
+                RecordType,
+            </if>
+            <if test="CardType != null">
+                CardType,
+            </if>
+            <if test="CardNum != null">
+                CardNum,
+            </if>
+            <if test="CarNum != null">
+                CarNum,
+            </if>
+            <if test="CancelFlag != null">
+                CancelFlag,
+            </if>
+            <if test="Transfermark != null">
+                Transfermark,
+            </if>
+            <if test="BalanceTime != null">
+                BalanceTime,
+            </if>
+            <if test="BalanceOP != null">
+                BalanceOP,
+            </if>
+            <if test="Spare != null">
+                Spare,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="StationID != null">
+                #{StationID},
+            </if>
+            <if test="StaDate != null">
+                #{StaDate},
+            </if>
+            <if test="ShiftID != null">
+                #{ShiftID},
+            </if>
+            <if test="OperatorID != null">
+                #{OperatorID},
+            </if>
+            <if test="TeamID != null">
+                #{TeamID},
+            </if>
+            <if test="LaneID != null">
+                #{LaneID},
+            </if>
+            <if test="termMode != null">
+                #{termMode},
+            </if>
+            <if test="VehicleClass != null">
+                #{VehicleClass},
+            </if>
+            <if test="VehicleStatus != null">
+                #{VehicleStatus},
+            </if>
+            <if test="DealStatus != null">
+                #{DealStatus},
+            </if>
+            <if test="RecordType != null">
+                #{RecordType},
+            </if>
+            <if test="CardType != null">
+                #{CardType},
+            </if>
+            <if test="CardNum != null">
+                #{CardNum},
+            </if>
+            <if test="CarNum != null">
+                #{CarNum},
+            </if>
+            <if test="CancelFlag != null">
+                #{CancelFlag},
+            </if>
+            <if test="Transfermark != null">
+                #{Transfermark},
+            </if>
+            <if test="BalanceTime != null">
+                #{BalanceTime},
+            </if>
+            <if test="BalanceOP != null">
+                #{BalanceOP},
+            </if>
+            <if test="Spare != null">
+                #{Spare},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertTbStateExit" parameterType="com.itssky.report.domain.tbStateEntry">
+        insert into dbstats.tbstatexit202411
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="StationID != null">
+                StationID,
+            </if>
+            <if test="StaDate != null">
+                StaDate,
+            </if>
+            <if test="ShiftID != null">
+                ShiftID,
+            </if>
+            <if test="OperatorID != null">
+                OperatorID,
+            </if>
+            <if test="TeamID != null">
+                TeamID,
+            </if>
+            <if test="LaneID != null">
+                LaneID,
+            </if>
+            <if test="termMode != null">
+                termMode,
+            </if>
+            <if test="VehicleClass != null">
+                VehicleClass,
+            </if>
+            <if test="VehicleStatus != null">
+                VehicleStatus,
+            </if>
+            <if test="DealStatus != null">
+                DealStatus,
+            </if>
+            <if test="RecordType != null">
+                RecordType,
+            </if>
+            <if test="CardType != null">
+                CardType,
+            </if>
+            <if test="CardNum != null">
+                CardNum,
+            </if>
+            <if test="CarNum != null">
+                CarNum,
+            </if>
+            <if test="CancelFlag != null">
+                CancelFlag,
+            </if>
+            <if test="Transfermark != null">
+                Transfermark,
+            </if>
+            <if test="BalanceTime != null">
+                BalanceTime,
+            </if>
+            <if test="BalanceOP != null">
+                BalanceOP,
+            </if>
+            <if test="Spare != null">
+                Spare,
+            </if>
+            <if test="PayType != null">
+                PayType,
+            </if>
+            <if test="TotalToll != null">
+                TotalToll,
+            </if>
+            <if test="TotalArrearage != null">
+                TotalArrearage,
+            </if>
+            <if test="TotalFee != null">
+                TotalFee,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="StationID != null">
+                #{StationID},
+            </if>
+            <if test="StaDate != null">
+                #{StaDate},
+            </if>
+            <if test="ShiftID != null">
+                #{ShiftID},
+            </if>
+            <if test="OperatorID != null">
+                #{OperatorID},
+            </if>
+            <if test="TeamID != null">
+                #{TeamID},
+            </if>
+            <if test="LaneID != null">
+                #{LaneID},
+            </if>
+            <if test="termMode != null">
+                #{termMode},
+            </if>
+            <if test="VehicleClass != null">
+                #{VehicleClass},
+            </if>
+            <if test="VehicleStatus != null">
+                #{VehicleStatus},
+            </if>
+            <if test="DealStatus != null">
+                #{DealStatus},
+            </if>
+            <if test="RecordType != null">
+                #{RecordType},
+            </if>
+            <if test="CardType != null">
+                #{CardType},
+            </if>
+            <if test="CardNum != null">
+                #{CardNum},
+            </if>
+            <if test="CarNum != null">
+                #{CarNum},
+            </if>
+            <if test="CancelFlag != null">
+                #{CancelFlag},
+            </if>
+            <if test="Transfermark != null">
+                #{Transfermark},
+            </if>
+            <if test="BalanceTime != null">
+                #{BalanceTime},
+            </if>
+            <if test="BalanceOP != null">
+                #{BalanceOP},
+            </if>
+            <if test="Spare != null">
+                #{Spare},
+            </if>
+            <if test="PayType != null">
+                #{PayType},
+            </if>
+            <if test="TotalToll != null">
+                #{TotalToll},
+            </if>
+            <if test="TotalArrearage != null">
+                #{TotalArrearage},
+            </if>
+            <if test="TotalFee != null">
+                #{TotalFee},
+            </if>
+        </trim>
+    </insert>
+
+
+    <select id="getStationCodeByIds" parameterType="collection" resultType="com.itssky.report.domain.StationCode">
+        select DISTINCT stationname,stationid from dbtoms.StationCode
         <where>
             stationid in
             <foreach collection="collection" item="id" separator="," open="(" close=")">
                 #{id}
             </foreach>
         </where>
+    </select>
+
+    <select id="getAllStationCode" resultType="com.itssky.report.domain.StationCode">
+        select DISTINCT stationname,stationid from dbtoms.StationCode
+    </select>
+
+    <select id="getVehicleClassByIds" parameterType="collection" resultType="com.itssky.report.domain.VehicleClass">
+        select vehicleclass,vehiclename from dbtoms.tbvehicleclass
+        <where>
+            vehicleclass in
+            <foreach collection="collection" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="getAllVehicleClass" resultType="com.itssky.report.domain.VehicleClass">
+        select vehicleclass,vehiclename from dbtoms.tbvehicleclass
     </select>
 </mapper>

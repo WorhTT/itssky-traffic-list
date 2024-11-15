@@ -71,6 +71,14 @@ export const constantRoutes = [
     component: () => import('@/views/report/entryFlow/index')
   },
   {
+    path: '/exitFlow',
+    component: () => import('@/views/report/exitFlow/index')
+  },
+  {
+    path: '/charge',
+    component: () => import('@/views/report/charge/index')
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',

@@ -7,7 +7,7 @@
     font-size: 30px;
     justify-content: center;
     align-content: center;
-    align-items: center;">高速入口交通流量统计表</div>
+    align-items: center;">高速出口交通流量统计表</div>
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
 <!--      <el-form-item label="公告标题" prop="noticeTitle">-->
 <!--        <el-input-->
@@ -88,7 +88,7 @@
 
     <el-table v-loading="loading" :data="dataList" @selection-change="handleSelectionChange" border
               :header-cell-style="tableHeaderColor" :cell-style="tableCellColor">
-      <el-table-column label="统计方式" align="center" prop="stationName" width="120"/>
+      <el-table-column label="统计方式" align="center" prop="stationName" width="200"/>
       <el-table-column label="客一" align="center" prop="k1"/>
       <el-table-column label="客二" align="center" prop="k2"/>
       <el-table-column label="客三" align="center" prop="k3"/>
@@ -174,7 +174,7 @@
 
 <script>
 
-import {getEntryFlow} from "@/api/report/entryFlow"
+import {getExitFlow} from "@/api/report/exitFlow"
 
 export default {
   name: "EntryFlow",
@@ -233,7 +233,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      getEntryFlow().then(response => {
+      getExitFlow().then(response => {
         this.dataList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -319,15 +319,4 @@ export default {
     }
   }
 };
-
 </script>
-
-
-<style lang="scss" scoped>
-//添加表头表格颜色
-::v-deep .header_cell_style {
-  background-color: rgb(4, 62, 114) !important;
-  color: #4cd0ee;
-  font-size: 20px;
-}
-</style>

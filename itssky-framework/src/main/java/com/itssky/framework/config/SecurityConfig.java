@@ -104,7 +104,7 @@ public class SecurityConfig {
             .authorizeHttpRequests((requests) -> {
                 permitAllUrl.getUrls().forEach(url -> requests.antMatchers(url).permitAll());
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                requests.antMatchers("/login").permitAll()
+                requests.antMatchers("/login").permitAll().antMatchers("/entry/flow").permitAll()
                     .antMatchers(ignoreUrlsConfig.getUrls().toArray(new String[0])).permitAll()
                     // 除上面外的所有请求全部需要鉴权认证
                     .anyRequest().authenticated();

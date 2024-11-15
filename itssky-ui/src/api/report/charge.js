@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function getEntryFlow() {
+export function getCharge() {
   return request({
-    url: '/report/entry/flow',
+    url: '/report/charge',
     method: 'get',
   })
 }

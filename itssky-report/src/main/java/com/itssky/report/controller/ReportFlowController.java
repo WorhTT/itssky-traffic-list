@@ -3,14 +3,11 @@ package com.itssky.report.controller;
 import com.itssky.common.core.controller.BaseController;
 import com.itssky.common.core.domain.AjaxResult;
 import com.itssky.common.core.page.TableDataInfo;
+import com.itssky.report.domain.ReportChargeInfo;
 import com.itssky.report.domain.ReportFlowInfo;
 import com.itssky.report.service.ReportFlowService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,12 +15,12 @@ import java.util.List;
 /**
  * @author ITSSKY
  */
-@Slf4j
 @RestController
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequestMapping("/report")
 public class ReportFlowController extends BaseController {
 
-    private final ReportFlowService reportFlowService;
+    @Autowired
+    private ReportFlowService reportFlowService;
 
 
     /**
@@ -33,5 +30,32 @@ public class ReportFlowController extends BaseController {
     public TableDataInfo getEntryFlow() {
         List<ReportFlowInfo> entryFlow = reportFlowService.getEntryFlow();
         return getDataTable(entryFlow);
+    }
+
+    /**
+     * 获取高速出口流量报表
+     */
+    @GetMapping("/exit/flow")
+    public TableDataInfo getExitFlow() {
+        List<ReportFlowInfo> exitFlow = reportFlowService.getExitFlow();
+        return getDataTable(exitFlow);
+    }
+
+    /**
+     * 获取高速收费报表
+     */
+    @GetMapping("/charge")
+    public TableDataInfo getCharge() {
+        List<ReportChargeInfo> charge = reportFlowService.getCharge();
+        return getDataTable(charge);
+    }
+
+    /**
+     * 随机生成测试数据
+     */
+    @PostMapping(value = "/mock/data")
+    public AjaxResult mockData() {
+        reportFlowService.mockData();
+        return AjaxResult.success("OK");
     }
 }
