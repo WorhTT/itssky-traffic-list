@@ -1,12 +1,15 @@
 package com.itssky.report.domain;
 
+import com.itssky.common.annotation.Excel;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * @author ITSSKY
  * 高速收费报表信息
  */
 @Data
+@Accessors(chain = true)
 public class ReportChargeInfo {
 
     /**

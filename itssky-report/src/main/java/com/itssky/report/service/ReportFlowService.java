@@ -199,15 +199,20 @@ public class ReportFlowService {
                 .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
         reportFlowInfo.setZAmount(zAmountDecimal.intValue());
         //公务
-        reportFlowInfo.setOfficial(0);
+        reportFlowInfo.setOfficial((int)tbStateEntryList.stream()
+                .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("011")).count());
         //军车
-        reportFlowInfo.setMilitary(0);
+        reportFlowInfo.setMilitary((int)tbStateEntryList.stream()
+                .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("100")).count());
         //优惠
-        reportFlowInfo.setDiscount(0);
+        reportFlowInfo.setDiscount((int)tbStateEntryList.stream()
+                .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("101")).count());
         //免费
-        reportFlowInfo.setFree(0);
+        reportFlowInfo.setFree((int)tbStateEntryList.stream()
+                .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("110")).count());
         //车队
-        reportFlowInfo.setFleet(0);
+        reportFlowInfo.setFleet((int)tbStateEntryList.stream()
+                .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("111")).count());
         //总计
         BigDecimal allAmount = tbStateEntryList.stream()
                 .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
