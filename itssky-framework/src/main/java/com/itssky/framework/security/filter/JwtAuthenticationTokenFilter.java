@@ -8,6 +8,7 @@ import com.itssky.common.utils.StringUtils;
 import com.itssky.constant.LoginStatusConstants;
 import com.itssky.framework.config.IgnoreUrlsConfig;
 import com.itssky.framework.web.service.TokenService;
+import com.itssky.properties.ClientPorperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    private ClientPorperties clientPorperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -109,7 +113,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
      */
     private LoginUser getLoginUser(HttpServletRequest request) {
         String token = tokenService.getToken(request);
-        String totalTokenKey = com.itssky.utils.SecurityUtils.getTotalTokenKey(token);
+        String totalTokenKey = com.itssky.utils.SecurityUtils.getTotalTokenKey(clientPorperties.getCacheKeyPrefix() + ":", token);
         return (LoginUser)redisCache.getCacheObject(totalTokenKey);
     }
 

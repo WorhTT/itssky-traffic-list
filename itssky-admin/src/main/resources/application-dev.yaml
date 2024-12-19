@@ -52,6 +52,7 @@ itssky:
       # 后端端口
       base-back-port: ${server.port}
       corp-no:
+      cache-key-prefix: login_tokens_stat
     # 单点登陆服务端ip+port
     server:
       base-ip: 172.20.10.10
