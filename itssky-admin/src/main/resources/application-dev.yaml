@@ -17,6 +17,16 @@ spring:
           username: root
           password: 123456
           driver-class-name: com.mysql.jdbc.Driver
+        dbtoms:
+          url: jdbc:mysql://localhost:3306/dbtoms?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+        dbstats:
+          url: jdbc:mysql://localhost:3306/dbstats?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
 # token配置
 token:
   # 令牌自定义标识
@@ -26,14 +36,15 @@ token:
   # 令牌有效期（默认30分钟）
   expireTime: 30
 
+current-service-ip: 172.20.10.3
 #current-service-ip: 192.168.200.127
-current-service-ip: 172.20.10.4
+#current-service-ip: 172.20.10.4
 itssky:
   sso:
     # 本应用服务相关配置
     client:
       #是否启用单点
-      enabled: false
+      enabled: true
       #即本服务部署的ip地址，要求前端也跟后端在同一台服务器上，不然就要配置前端ip[初版默认同一台服务器，后期增加前端配置]
       base-ip: http://${current-service-ip}
       # 前端端口，nginx代理端口
@@ -43,7 +54,7 @@ itssky:
       corp-no:
     # 单点登陆服务端ip+port
     server:
-      base-ip: 192.168.200.193
+      base-ip: 172.20.10.10
       base-port: 8080
     # 下列不需要配置修改
     schedule:
@@ -67,3 +78,5 @@ secure:
       - /webjars/**
       - /*/api-docs
       - /druid/**
+      - /common/**
+      - /logout

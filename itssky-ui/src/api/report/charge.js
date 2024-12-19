@@ -7,3 +7,11 @@ export function getCharge() {
   })
 }
 
+export function exportCharge(query) {
+  return request({
+    url: '/report/export',
+    method: 'get',
+    params: query
+  })
+}
+

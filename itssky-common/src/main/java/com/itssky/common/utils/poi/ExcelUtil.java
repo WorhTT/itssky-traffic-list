@@ -1,10 +1,6 @@
 package com.itssky.common.utils.poi;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -12,16 +8,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ArrayUtils;
@@ -60,13 +47,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
-import org.apache.poi.xssf.usermodel.XSSFDataValidation;
-import org.apache.poi.xssf.usermodel.XSSFDrawing;
-import org.apache.poi.xssf.usermodel.XSSFPicture;
-import org.apache.poi.xssf.usermodel.XSSFShape;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.openxmlformats.schemas.drawingml.x2006.spreadsheetDrawing.CTMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +66,7 @@ import com.itssky.common.utils.file.FileTypeUtils;
 import com.itssky.common.utils.file.FileUtils;
 import com.itssky.common.utils.file.ImageUtils;
 import com.itssky.common.utils.reflect.ReflectUtils;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Excel相关处理
@@ -1808,5 +1790,571 @@ public class ExcelUtil<T>
             log.error("获取对象异常{}", e.getMessage());
         }
         return method;
+    }
+
+//    public AjaxResult exportDynamicTitle(List<T> list, String sheetName,
+//                                         int columnMax, int conditionNum, List<String> conditionList) throws FileNotFoundException {
+//        List<Map<String, Object>> convertListMap = new ArrayList<>();
+//        list.forEach(i -> {
+//            Map<String, Object> map = new HashMap<>();
+//            Field[] fields = i.getClass().getDeclaredFields();
+//            for (int j = 0; j < fields.length; j++) {
+//                try {
+//                    Field field = fields[j];
+//                    if (!field.isAnnotationPresent(Excel.class)) {
+//                        continue;
+//                    }
+//                    field.setAccessible(true);
+//                    if (field.getName().equals("subList")) {
+//                        Object o = field.get(i);
+//                        Class<?> aClass = o.getClass();
+//                        Field[] subFields = aClass.getDeclaredFields();
+//                        for (Field subField: subFields) {
+//                            subField.setAccessible(true);
+//                            map.put(subField.getName(), subField.get(o));
+//                        }
+//                    } else {
+//                        map.put(field.getName(), field.get(i));
+//                    }
+//                } catch (IllegalAccessException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            convertListMap.add(map);
+//        });
+//        LinkedList<String> tableTitleList = new LinkedList<>();
+//        Field[] fields = list.get(0).getClass().getDeclaredFields();
+//        for (int j = 0; j < fields.length; j++) {
+//            Field field = fields[j];
+//            if (!field.isAnnotationPresent(Excel.class)) {
+//                continue;
+//            }
+//            if (field.getName().equals("subList")) {
+//                //获取字段类型的Class对象
+//                Class<?> fieldType = field.getType();
+//                if (!fieldType.isPrimitive() && !fieldType.isInterface()) {
+//                    Field[] subFields = fieldType.getDeclaredFields();
+//                    for (Field subField: subFields) {
+//                        if (!subField.isAnnotationPresent(Excel.class)) {
+//                            continue;
+//                        }
+//                        tableTitleList.add(subField.getName());
+//                    }
+//                }
+//            } else {
+//                tableTitleList.add(field.getName());
+//            }
+//        }
+//        // 第一步，创建一个Workbook，对应一个Excel文件
+//        XSSFWorkbook wb = new XSSFWorkbook();
+//        // 第二步，在Workbook中添加一个sheet,对应Excel文件中的sheet
+//        XSSFSheet sheet = wb.createSheet("sheet");
+//        // 行号
+//        int rowNum = 0;
+//        // 创建第一页的第一行，索引从0开始
+//        XSSFRow row1 = sheet.createRow(rowNum++);
+//        //第二行
+//        XSSFRow row2 = sheet.createRow(rowNum++);
+////        for (Field field: fields) {
+////            //构建表头行
+////            if (field.isAnnotationPresent(Excel.class)) {
+////                Excel attr = field.getAnnotation(Excel.class);
+////                attr.headerRow();
+////                if (attr.headerRow();
+////            }
+////        }
+//        String[] headerRowOneArray = new String[]{};
+//        //表头行数
+//        XSSFRow headerRow =  sheet.createRow(rowNum++);
+//        //合并单元格
+//        Field[] declaredFields = list.get(0).getClass().getDeclaredFields();
+//        mergeCells(sheet, columnMax, conditionNum, declaredFields);
+//        //创建标题单元格
+//        XSSFCellStyle titleStyle = createTitleCellStyle(wb);
+//        XSSFCell titleCell = row1.createCell(0);
+//        titleCell.setCellValue(sheetName);
+//        titleCell.setCellStyle(titleStyle);
+//        //创建第二行统计条件单元格
+//        int i = 0;
+//        XSSFCellStyle titleTwoStyle = createTitleTwoCellStyle(wb);
+//        for (String str: conditionList) {
+//            XSSFCell conditionCell = row2.createCell(i);
+//            conditionCell.setCellValue(str);
+//            conditionCell.setCellStyle(titleTwoStyle);
+//            i++;
+//        }
+//        //创建表头
+//        XSSFCellStyle headerStyle = createHeadCellStyle(wb);
+//        int currentCellIndex = 0;
+//        for (Field field: fields) {
+//            if (field.isAnnotationPresent(Excel.class)) {
+//                Excel excelAnnotation = field.getAnnotation(Excel.class);
+//                //设置表头单元格的值
+//                XSSFCell cell = headerRow.createCell(currentCellIndex);
+//                cell.setCellValue(excelAnnotation.name());
+//                cell.setCellStyle(headerStyle);
+//                currentCellIndex++;
+//                if (field.getName().equals("subList")) {
+//                    XSSFRow subHeaderRow =  sheet.createRow(rowNum++);
+//                    //获取字段类型的Class对象
+//                    Class<?> fieldType = field.getType();
+//                    if (!fieldType.isPrimitive() && !fieldType.isInterface()) {
+//                        Field[] subFields = fieldType.getDeclaredFields();
+//                        for (Field subField: subFields) {
+//                            if (subField.isAnnotationPresent(Excel.class)) {
+//                                Excel subAttr = subField.getAnnotation(Excel.class);
+//                                XSSFCell subCell = subHeaderRow.createCell(currentCellIndex++);
+//                                subCell.setCellValue(subAttr.name());
+//                                subCell.setCellStyle(headerStyle);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        //填充数据
+//        XSSFCellStyle contentStyle = createContentCellStyle(wb);
+//        approvalMethodFillInData(convertListMap, sheet, contentStyle, rowNum, tableTitleList);
+//        OutputStream out = null;
+//        String filename = encodingFilename(sheetName);
+//        out = new FileOutputStream(getAbsoluteFile(filename));
+//        try {
+//            wb.write(out);
+//        } catch (IOException e) {
+//            log.error("导出Excel异常{}", e.getMessage());
+//        } finally {
+//            if (wb != null) {
+//                try {
+//                    wb.close();
+//                } catch (IOException e1) {
+//                    e1.printStackTrace();
+//                }
+//            }
+//            if (out != null) {
+//                try {
+//                    out.close();
+//                } catch (IOException e1) {
+//                    e1.printStackTrace();
+//                }
+//            }
+//        }
+//        return AjaxResult.success(filename);
+//    }
+
+    // 代表表头单元格信息的内部类
+    static class HeaderCell {
+        private final String value;
+        private final int rowSpan;
+        private final int colSpan;
+        private int startColumn = 0;
+
+        public HeaderCell(String value, int rowSpan, int colSpan) {
+            this.value = value;
+            this.rowSpan = rowSpan;
+            this.colSpan = colSpan;
+        }
+
+        public HeaderCell(String value, int rowSpan, int colSpan, int startColumn) {
+            this.value = value;
+            this.rowSpan = rowSpan;
+            this.colSpan = colSpan;
+            this.startColumn = startColumn;
+        }
+
+
+        public String getValue() {
+            return value;
+        }
+
+        public int getRowSpan() {
+            return rowSpan;
+        }
+
+        public int getColSpan() {
+            return colSpan;
+        }
+
+        public int getStartColumn() {
+            return startColumn;
+        }
+    }
+
+    public AjaxResult exportDynamic(List<T> list, String sheetName, List<String> conditionList, int columnMax) throws IOException {
+        List<List<HeaderCell>> headerData = new ArrayList<>();
+        List<HeaderCell> firstHeader = new ArrayList<>();
+        List<HeaderCell> secondHeader = new ArrayList<>();
+        List<HeaderCell> thirdHeader = new ArrayList<>();
+        //获取表头
+        Class<?> clazz = list.get(0).getClass();
+        Field[] declaredFields = clazz.getDeclaredFields();
+        for (Field field: declaredFields) {
+            if (field.isAnnotationPresent(Excel.class)) {
+                Excel attr = field.getAnnotation(Excel.class);
+                if (attr.headerRow() == 2) {
+                    firstHeader.add(new HeaderCell(attr.name(), attr.mergeRow(), attr.mergeColumn()));
+                } else if (attr.headerRow() == 3) {
+                    secondHeader.add(new HeaderCell(attr.name(), attr.mergeRow(), attr.mergeColumn(), attr.startColumn()));
+                } else if (attr.headerRow() == 4) {
+                    thirdHeader.add(new HeaderCell(attr.name(), attr.mergeRow(), attr.mergeColumn(), attr.startColumn()));
+                }
+            }
+        }
+        //获取数据
+        List<List<String>> bodyData = new ArrayList<>();
+        list.forEach(i -> {
+            List<String> dataList = new ArrayList<>();
+            Class<?> aClass = i.getClass();
+            Field[] fields = aClass.getDeclaredFields();
+            for (Field field: fields) {
+                if (field.isAnnotationPresent(Excel.class)) {
+                    Excel attr = field.getAnnotation(Excel.class);
+                    field.setAccessible(true);
+                    try {
+                        if (!attr.onlyHeader()) {
+                            dataList.add(field.get(i).toString());
+                        }
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            bodyData.add(dataList);
+        });
+
+        if (!CollectionUtils.isEmpty(firstHeader)) {
+            headerData.add(firstHeader);
+        }
+        if (!CollectionUtils.isEmpty(secondHeader)) {
+            headerData.add(secondHeader);
+        }
+        if (!CollectionUtils.isEmpty(thirdHeader)) {
+            headerData.add(thirdHeader);
+        }
+        // 创建工作簿
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        // 创建工作表
+        XSSFSheet sheet = workbook.createSheet("Sheet1");
+
+        int currentRowIndex = 0;
+        // 创建第一页的第一行，索引从0开始
+        XSSFRow row1 = sheet.createRow(currentRowIndex++);
+        //第二行
+        XSSFRow row2 = sheet.createRow(currentRowIndex++);
+        //创建标题单元格
+        XSSFCellStyle titleStyle = createTitleCellStyle(workbook);
+        XSSFCell titleCell = row1.createCell(0);
+        titleCell.setCellValue(sheetName);
+        titleCell.setCellStyle(titleStyle);
+        //创建第二行统计条件单元格
+        int i = 0;
+        XSSFCellStyle titleTwoStyle = createTitleTwoCellStyle(workbook);
+        for (String str: conditionList) {
+            XSSFCell conditionCell = row2.createCell(i);
+            conditionCell.setCellValue(str);
+            conditionCell.setCellStyle(titleTwoStyle);
+            i+=5;
+        }
+        // 创建表头样式（可根据实际需求自定义样式，这里简单设置为加粗）
+        XSSFCellStyle headerStyle = createHeadCellStyle(workbook);
+        //第一行标题行合并单元格
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, columnMax - 1));
+        //获取第二行需要分割的值
+        int[] conditionRowSplit = getConditionRowSplit(columnMax, conditionList.size());
+        int startColumn = 0;
+        int endColumn = conditionRowSplit[0] - 1;
+        for (int z = 0; z <= conditionRowSplit.length - 1; z++) {
+            sheet.addMergedRegion(new CellRangeAddress(1, 1, startColumn, endColumn));
+            if (z == conditionRowSplit.length - 1) {
+                break;
+            }
+            startColumn += conditionRowSplit[z];
+            endColumn += conditionRowSplit[z + 1];
+        }
+        // 填充复杂表头
+        for (List<HeaderCell> rowHeaderData : headerData) {
+            XSSFRow row = null;
+            XSSFRow nowRow = sheet.getRow(currentRowIndex);
+            if (nowRow == null) {
+                row = sheet.createRow(currentRowIndex);
+            } else {
+                row = nowRow;
+            }
+            int currentColIndex = 0;
+            for (HeaderCell headerCell : rowHeaderData) {
+                XSSFCell cell = null;
+                if (headerCell.getStartColumn() != 0 ) {
+                    cell = Objects.requireNonNull(row).createCell(headerCell.getStartColumn() - 1);
+                } else {
+                    cell = Objects.requireNonNull(row).createCell(currentColIndex);
+                }
+                cell.setCellValue(headerCell.getValue());
+                cell.setCellStyle(headerStyle);
+                if (headerCell.getRowSpan() > 1 || headerCell.getColSpan() > 1) {
+                    if (headerCell.getStartColumn() == 0) {
+                        CellRangeAddress region = new CellRangeAddress(currentRowIndex, currentRowIndex + headerCell.getRowSpan() - 1,
+                                currentColIndex, currentColIndex + headerCell.getColSpan() - 1);
+                        for (int rowIndex = region.getFirstRow(); rowIndex <= region.getLastRow(); rowIndex++) {
+                            XSSFRow regionRow = sheet.getRow(rowIndex);
+                            if (regionRow == null) {
+                                regionRow = sheet.createRow(rowIndex);
+                            }
+                            for (int colIndex = region.getFirstColumn(); colIndex <= region.getLastColumn(); colIndex++) {
+                                XSSFCell regionCell = regionRow.getCell(colIndex);
+                                if (regionCell == null) {
+                                    regionCell = regionRow.createCell(colIndex);
+                                }
+                                regionCell.setCellStyle(headerStyle);
+                            }
+                        }
+                        sheet.addMergedRegion(region);
+                    } else {
+//                        int rowStart = currentRowIndex;
+//                        int rowEnd = currentRowIndex + headerCell.getRowSpan() - 1;
+//                        int columnStart = headerCell.getStartColumn() - 1;
+//                        int columnEnd = headerCell.getStartColumn() - 1 + headerCell.getColSpan() - 1;
+//                        System.out.println(rowStart + "," + rowEnd + "," + columnStart + "," + columnEnd);
+                        CellRangeAddress region = new CellRangeAddress(currentRowIndex, currentRowIndex + headerCell.getRowSpan() - 1,
+                                headerCell.getStartColumn() - 1, headerCell.getStartColumn() - 1 + headerCell.getColSpan() - 1);
+                        for (int rowIndex = region.getFirstRow(); rowIndex <= region.getLastRow(); rowIndex++) {
+                            XSSFRow regionRow = sheet.getRow(rowIndex);
+                            if (regionRow == null) {
+                                regionRow = sheet.createRow(rowIndex);
+                            }
+                            for (int colIndex = region.getFirstColumn(); colIndex <= region.getLastColumn(); colIndex++) {
+                                XSSFCell regionCell = regionRow.getCell(colIndex);
+                                if (regionCell == null) {
+                                    regionCell = regionRow.createCell(colIndex);
+                                }
+                                regionCell.setCellStyle(headerStyle);
+                            }
+                        }
+                        sheet.addMergedRegion(region);
+                    }
+                }
+                currentColIndex += headerCell.getColSpan();
+            }
+            currentRowIndex++;
+        }
+
+        XSSFCellStyle contentCellStyle = createContentCellStyle(workbook);
+        // 填充表格主体数据
+        int bodyRowIndex = currentRowIndex;
+        for (List<String> rowBodyData : bodyData) {
+            Row row = sheet.createRow(bodyRowIndex);
+            int bodyColIndex = 0;
+            for (String cellValue : rowBodyData) {
+                Cell cell = row.createCell(bodyColIndex);
+                cell.setCellValue(cellValue);
+                cell.setCellStyle(contentCellStyle);
+                bodyColIndex++;
+            }
+            bodyRowIndex++;
+        }
+
+        // 自动调整列宽
+//        for (int j = 0; j < sheet.getRow(0).getLastCellNum(); j++) {
+//            sheet.autoSizeColumn(j);
+//        }
+
+        OutputStream out = null;
+        String filename = encodingFilename(sheetName);
+        out = new FileOutputStream(getAbsoluteFile(filename));
+        try {
+            workbook.write(out);
+        } catch (IOException e) {
+            log.error("导出Excel异常{}", e.getMessage());
+        } finally {
+            if (workbook != null) {
+                try {
+                    workbook.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        return AjaxResult.success(filename);
+    }
+
+//    private static void mergeCells(XSSFSheet sheet, int columnMax, int conditionNum, Field[] fields) {
+//        //第一行标题行合并单元格
+//        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, columnMax - 1));
+//        //获取第二行需要分割的值
+//        int[] conditionRowSplit = getConditionRowSplit(columnMax, conditionNum);
+//        int startColumn = 0;
+//        int endColumn = conditionRowSplit[0] - 1;
+//        for (int i = 0; i < conditionRowSplit.length - 1; i++) {
+//            sheet.addMergedRegion(new CellRangeAddress(1, 1, startColumn, endColumn));
+//            startColumn += conditionRowSplit[i];
+//            endColumn += conditionRowSplit[i + 1];
+//        }
+//        for (Field field: fields) {
+//            if (field.isAnnotationPresent(Excel.class)) {
+//                Excel attr = field.getAnnotation(Excel.class);
+//                field.setAccessible(true);
+//                if (attr.startRow() != 0 || attr.endRow() != 0 || attr.startColumn() != 0 || attr.endColumn() != 0) {
+//                    sheet.addMergedRegion(new CellRangeAddress(attr.startRow(), attr.endRow(), attr.startColumn(), attr.endColumn()));
+//                }
+//                if (field.getName().equals("subList")) {
+//                    //获取字段类型的Class对象
+//                    Class<?> fieldType = field.getType();
+//                    if (!fieldType.isPrimitive() && !fieldType.isInterface()) {
+//                        Field[] subFields = fieldType.getDeclaredFields();
+//                        for (Field subField: subFields) {
+//                            if (subField.isAnnotationPresent(Excel.class)) {
+//                                Excel subAttr = subField.getAnnotation(Excel.class);
+//                                subField.setAccessible(true);
+//                                if (subAttr.startRow() != 0 || subAttr.endRow() != 0 || subAttr.startColumn() != 0 || subAttr.endColumn() != 0) {
+//                                    sheet.addMergedRegion(new CellRangeAddress(subAttr.startRow(), subAttr.endRow(), subAttr.startColumn(), subAttr.endColumn()));
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
+
+    private static int[] getConditionRowSplit(int columnMax, int conditionNum) {
+        int part = columnMax / conditionNum;
+        int remainder = columnMax % conditionNum;
+        int[] result = new int[conditionNum];
+        for (int i = 0; i < conditionNum - 1; i++) {
+            result[i] = part;
+        }
+        result[conditionNum - 1] = part + remainder;
+        return result;
+    }
+
+    private static void approvalMethodFillInData(List<Map<String, Object>> convertListMap, XSSFSheet sheet,
+                                                 XSSFCellStyle contentStyle, int rowNum,
+                                                 LinkedList<String> headerNameList) {
+        for (Map<String, Object> map : convertListMap) {
+            XSSFRow tempRow = sheet.createRow(rowNum++);
+            tempRow.setHeight((short) 500);
+            // 循环单元格填入数据
+            for (int i = 0; i < headerNameList.size(); i++) {
+                String name = headerNameList.get(i);
+                //列宽自适应，j为自适应的列，true就是自适应，false就是不自适应，默认不自适应
+                sheet.autoSizeColumn(i, true);
+                XSSFCell tempCell = tempRow.createCell(i);
+                tempCell.setCellStyle(contentStyle);
+                String tempValue = map.get(name).toString();
+                tempCell.setCellValue(tempValue);
+            }
+        }
+    }
+
+    /**
+     * 创建标题样式
+     *
+     * @param wb
+     * @return
+     */
+    private static XSSFCellStyle createTitleCellStyle(XSSFWorkbook wb) {
+        XSSFCellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setAlignment(HorizontalAlignment.CENTER);//水平居中
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);//垂直对齐
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+//        cellStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.getIndex());//背景颜色
+
+        XSSFFont headerFont1 = (XSSFFont) wb.createFont(); // 创建字体样式
+        headerFont1.setBold(true); //字体加粗
+        headerFont1.setFontName("黑体"); // 设置字体类型
+        headerFont1.setFontHeightInPoints((short) 20); // 设置字体大小
+        cellStyle.setFont(headerFont1); // 为标题样式设置字体样式
+        cellStyle.setBorderBottom(BorderStyle.NONE); //下边框
+        cellStyle.setBorderLeft(BorderStyle.NONE); //左边框
+        cellStyle.setBorderRight(BorderStyle.NONE); //右边框
+        cellStyle.setBorderTop(BorderStyle.NONE); //上边框
+        return cellStyle;
+    }
+
+    /**
+     * 创建二标题样式
+     *
+     * @param wb
+     * @return
+     */
+    private static XSSFCellStyle createTitleTwoCellStyle(XSSFWorkbook wb) {
+        XSSFCellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setAlignment(HorizontalAlignment.CENTER);//水平居中
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);//垂直对齐
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+//        cellStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.getIndex());//背景颜色
+
+        XSSFFont headerFont1 = (XSSFFont) wb.createFont(); // 创建字体样式
+//        headerFont1.setBold(true); //字体加粗
+        headerFont1.setFontName("黑体"); // 设置字体类型
+        headerFont1.setFontHeightInPoints((short) 15); // 设置字体大小
+        cellStyle.setFont(headerFont1); // 为标题样式设置字体样式
+        cellStyle.setBorderBottom(BorderStyle.NONE); //下边框
+        cellStyle.setBorderLeft(BorderStyle.NONE); //左边框
+        cellStyle.setBorderRight(BorderStyle.NONE); //右边框
+        cellStyle.setBorderTop(BorderStyle.NONE); //上边框
+
+        return cellStyle;
+    }
+
+    private static XSSFCellStyle createHeadCellStyle(XSSFWorkbook wb) {
+        XSSFCellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setWrapText(true);// 设置自动换行
+        cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());//背景颜色
+        cellStyle.setAlignment(HorizontalAlignment.CENTER); //水平居中
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER); //垂直对齐
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+//        cellStyle.setBottomBorderColor(IndexedColors.BLACK.index);
+        cellStyle.setBorderBottom(BorderStyle.THIN); //下边框
+        cellStyle.setBorderLeft(BorderStyle.THIN); //左边框
+        cellStyle.setBorderRight(BorderStyle.THIN); //右边框
+        cellStyle.setBorderTop(BorderStyle.THIN); //上边框
+
+        cellStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+        cellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+        cellStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+        cellStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+
+        XSSFFont headerFont = (XSSFFont) wb.createFont(); // 创建字体样式
+        headerFont.setBold(true); //字体加粗
+        headerFont.setFontName("黑体"); // 设置字体类型
+        headerFont.setFontHeightInPoints((short) 12); // 设置字体大小
+        cellStyle.setFont(headerFont); // 为标题样式设置字体样式
+
+        return cellStyle;
+    }
+
+    /**
+     * 创建内容样式
+     *
+     * @param wb
+     * @return
+     */
+    private static XSSFCellStyle createContentCellStyle(XSSFWorkbook wb) {
+        XSSFCellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 垂直居中
+        cellStyle.setAlignment(HorizontalAlignment.CENTER);// 水平居中
+        cellStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());//背景颜色
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+//        cellStyle.setFillBackgroundColor(IndexedColors.GREEN.getIndex());
+        cellStyle.setWrapText(true);// 设置自动换行
+        cellStyle.setBorderBottom(BorderStyle.THIN); //下边框
+        cellStyle.setBorderLeft(BorderStyle.THIN); //左边框
+        cellStyle.setBorderRight(BorderStyle.THIN); //右边框
+        cellStyle.setBorderTop(BorderStyle.THIN); //上边框
+
+        // 生成12号字体
+        XSSFFont font = wb.createFont();
+        font.setColor((short) 8);
+        font.setFontHeightInPoints((short) 12);
+        cellStyle.setFont(font);
+
+        return cellStyle;
     }
 }

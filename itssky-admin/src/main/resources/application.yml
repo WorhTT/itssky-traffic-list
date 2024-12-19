@@ -155,6 +155,8 @@ mybatis-plus:
   configuration:
     auto-mapping-behavior: partial
     map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 
 # PageHelper分页插件
 pagehelper:

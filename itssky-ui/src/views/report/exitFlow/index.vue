@@ -2,78 +2,31 @@
   <div class="app-container">
     <div style="width: 100%;
     height: 50px;
+    margin-bottom: 25px;
     line-height: 30px;
     display:flex;
     font-size: 30px;
     justify-content: center;
     align-content: center;
     align-items: center;">高速出口交通流量统计表</div>
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-<!--      <el-form-item label="公告标题" prop="noticeTitle">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.noticeTitle"-->
-<!--          placeholder="请输入公告标题"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="操作人员" prop="createBy">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.createBy"-->
-<!--          placeholder="请输入操作人员"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="类型" prop="noticeType">-->
-<!--        <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable>-->
-<!--          <el-option-->
-<!--            v-for="dict in dict.type.sys_notice_type"-->
-<!--            :key="dict.value"-->
-<!--            :label="dict.label"-->
-<!--            :value="dict.value"-->
-<!--          />-->
-<!--        </el-select>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item>-->
-<!--        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>-->
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
-<!--      </el-form-item>-->
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
+      <el-form-item label="选择时间：" prop="time">
+        <el-date-picker
+          v-model="queryParams.dateRange"
+          type="daterange"
+          range-separator="至"
+          value-format="yyyy-MM-dd"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="primary"-->
-<!--          plain-->
-<!--          icon="el-icon-plus"-->
-<!--          size="mini"-->
-<!--          @click="handleAdd"-->
-<!--          v-hasPermi="['system:notice:add']"-->
-<!--        >新增</el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          icon="el-icon-edit"-->
-<!--          size="mini"-->
-<!--          :disabled="single"-->
-<!--          @click="handleUpdate"-->
-<!--          v-hasPermi="['system:notice:edit']"-->
-<!--        >修改</el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="danger"-->
-<!--          plain-->
-<!--          icon="el-icon-delete"-->
-<!--          size="mini"-->
-<!--          :disabled="multiple"-->
-<!--          @click="handleDelete"-->
-<!--          v-hasPermi="['system:notice:remove']"-->
-<!--        >删除</el-button>-->
-<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -175,6 +128,7 @@
 <script>
 
 import {getExitFlow} from "@/api/report/exitFlow"
+import {exportFlow} from "@/api/report/entryFlow";
 
 export default {
   name: "EntryFlow",
@@ -202,7 +156,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        timeType: 0
+        timeType: 0,
+        dateRange: null,
+        type: 1
         // noticeTitle: undefined,
         // createBy: undefined,
         // status: undefined
@@ -238,6 +194,19 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      const queryParams = this.queryParams;
+      this.$confirm('是否确认导出高速RSJ出口交通流量统计表?', "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(function () {
+        return exportFlow(queryParams);
+      }).then(response => {
+        this.downloadFile(response.msg);
+      })
     },
     // 取消按钮
     cancel() {

@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itssky.system.mapper.CardMapper">
+    <!-- S1收费站通行卡发放班统计表 -->
+    <select id="s1StationShift" resultType="com.itssky.system.domain.vo.CardStatisticsVo"
+            parameterType="com.itssky.system.domain.dto.CardStatisticsDto">
+        SELECT
+        a.ShiftID AS shiftId,
+        a.OperatorID AS operatorId,
+        a.StaDate AS staDate,
+        SUM( CASE WHEN a.VehicleClass = 1 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust1,
+        SUM( CASE WHEN a.VehicleClass = 2 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust2,
+        SUM( CASE WHEN a.VehicleClass = 3 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust3,
+        SUM( CASE WHEN a.VehicleClass = 4 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust4,
+        SUM(
+        CASE
+
+        WHEN a.VehicleClass <![CDATA[<]]> 10
+        AND a.CardType != 22
+        AND a.CardType != 23 THEN
+        a.CarNum ELSE 0
+        END
+        ) AS custSubTotal,
+        SUM( CASE WHEN a.VehicleClass = 11 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck1,
+        SUM( CASE WHEN a.VehicleClass = 12 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck2,
+        SUM( CASE WHEN a.VehicleClass = 13 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck3,
+        SUM( CASE WHEN a.VehicleClass = 14 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck4,
+        SUM( CASE WHEN a.VehicleClass = 15 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck5,
+        SUM( CASE WHEN a.VehicleClass = 16 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck6,
+        SUM(
+        CASE
+
+        WHEN a.VehicleClass > 10
+        AND a.VehicleClass <![CDATA[<]]> 20
+        AND a.CardType != 22
+        AND a.CardType != 23 THEN
+        a.CarNum ELSE 0
+        END
+        ) AS truckSubTotal,
+        SUM( CASE WHEN a.VehicleClass = 21 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec1,
+        SUM( CASE WHEN a.VehicleClass = 22 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec2,
+        SUM( CASE WHEN a.VehicleClass = 23 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec3,
+        SUM( CASE WHEN a.VehicleClass = 24 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec4,
+        SUM( CASE WHEN a.VehicleClass = 25 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec5,
+        SUM( CASE WHEN a.VehicleClass = 26 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec6,
+        SUM(
+        CASE
+
+        WHEN a.VehicleClass > 20
+        AND a.VehicleClass <![CDATA[<]]> 30
+        AND a.CardType != 22
+        AND a.CardType != 23 THEN
+        a.CarNum ELSE 0
+        END
+        ) AS specSubTotal,
+        SUM( CASE WHEN a.CardType = 22 OR a.CardType = 23 THEN a.CarNum ELSE 0 END ) AS etcNum,
+        SUM( CASE WHEN a.CardType = 254 THEN a.CarNum ELSE 0 END) AS paperNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END) AS militaryNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END) AS officialNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=14 THEN a.CarNum ELSE 0 END) AS fleetNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END) AS preferNum
+        FROM
+        tbstatentry a
+        <where>
+            AND StationID in
+            <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                #{stationId}
+            </foreach>
+            <if test="intTime != null and intTime != ''">
+                AND StaDate = #{intTime}
+            </if>
+            <if test="shiftId != null and shiftId != ''">
+                AND ShiftID = #{shiftId}
+            </if>
+        </where>
+        GROUP BY OperatorID
+        ORDER BY ShiftID ASC, OperatorID ASC
+    </select>
+
+    <!-- C1收费站通行卡发放班统计表 -->
+    <select id="c1StationShift" resultType="com.itssky.system.domain.vo.CardStatisticsVo"
+            parameterType="com.itssky.system.domain.dto.CardStatisticsDto">
+        SELECT
+        a.ShiftID AS shiftId,
+        a.OperatorID AS operatorId,
+        a.StaDate AS staDate,
+        a.TeamID AS teamId,
+        SUM( CASE WHEN a.VehicleClass = 1 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust1,
+        SUM( CASE WHEN a.VehicleClass = 2 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust2,
+        SUM( CASE WHEN a.VehicleClass = 3 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust3,
+        SUM( CASE WHEN a.VehicleClass = 4 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust4,
+        SUM(
+        CASE
+        WHEN a.VehicleClass <![CDATA[<]]> 10
+        AND a.CardType != 22
+        AND a.CardType != 23 THEN
+        a.CarNum ELSE 0
+        END
+        ) AS custSubTotal,
+        SUM( CASE WHEN a.VehicleClass = 11 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck1,
+        SUM( CASE WHEN a.VehicleClass = 12 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck2,
+        SUM( CASE WHEN a.VehicleClass = 13 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck3,
+        SUM( CASE WHEN a.VehicleClass = 14 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck4,
+        SUM( CASE WHEN a.VehicleClass = 15 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck5,
+        SUM( CASE WHEN a.VehicleClass = 16 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck6,
+        SUM(
+        CASE
+
+        WHEN a.VehicleClass > 10
+        AND a.VehicleClass <![CDATA[<]]> 20
+        AND a.CardType != 22
+        AND a.CardType != 23 THEN
+        a.CarNum ELSE 0
+        END
+        ) AS truckSubTotal,
+        SUM( CASE WHEN a.VehicleClass = 21 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec1,
+        SUM( CASE WHEN a.VehicleClass = 22 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec2,
+        SUM( CASE WHEN a.VehicleClass = 23 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec3,
+        SUM( CASE WHEN a.VehicleClass = 24 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec4,
+        SUM( CASE WHEN a.VehicleClass = 25 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec5,
+        SUM( CASE WHEN a.VehicleClass = 26 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        spec6,
+        SUM(
+        CASE
+
+        WHEN a.VehicleClass > 20
+        AND a.VehicleClass <![CDATA[<]]> 30
+        AND a.CardType != 22
+        AND a.CardType != 23 THEN
+        a.CarNum ELSE 0
+        END
+        ) AS specSubTotal,
+        SUM( CASE WHEN a.CardType = 22 OR a.CardType = 23 THEN a.CarNum ELSE 0 END ) AS etcNum,
+        SUM( CASE WHEN a.CardType = 254 THEN a.CarNum ELSE 0 END) AS paperNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END) AS militaryNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END) AS officialNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=14 THEN a.CarNum ELSE 0 END) AS fleetNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END) AS preferNum
+        FROM
+        tbstatexit a
+        <where>
+            AND StationID in
+            <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                #{stationId}
+            </foreach>
+            <if test="intTime != null and intTime != ''">
+                AND StaDate = #{intTime}
+            </if>
+            <if test="shiftId != null and shiftId != ''">
+                AND ShiftID = #{shiftId}
+            </if>
+        </where>
+        GROUP BY OperatorID
+        ORDER BY ShiftID ASC, OperatorID ASC
+    </select>
+
+    <select id="sdtStationShift" resultType="com.itssky.system.domain.vo.CardStatisticsVo"
+            parameterType="com.itssky.system.domain.dto.CardStatisticsDtoV2">
+        SELECT
+        a.ShiftID AS shiftId,
+        a.OperatorID AS operatorId,
+        a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        LEFT(a.StaDate, 6) AS monthDate,
+        a.StaDate AS staDate,
+        SUM(CASE WHEN a.VehicleClass = 1 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        cust1,
+        SUM(CASE WHEN a.VehicleClass = 2 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust2,
+        SUM(CASE WHEN a.VehicleClass = 3 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust3,
+        SUM(CASE WHEN a.VehicleClass = 4 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust4,
+        SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0
+        END) AS custSubTotal,
+        SUM(CASE WHEN a.VehicleClass = 11 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck1,
+        SUM(CASE WHEN a.VehicleClass = 12 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck2,
+        SUM(CASE WHEN a.VehicleClass = 13 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck3,
+        SUM(CASE WHEN a.VehicleClass = 14 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck4,
+        SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS ruck5,
+        SUM(CASE WHEN a.VehicleClass = 16 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck6,
+        SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 AND a.CardType != 22 AND
+        a.CardType != 23 THEN a.CarNum ELSE 0 END) AS truckSubTotal,
+        SUM(CASE WHEN a.VehicleClass = 21 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec1,
+        SUM(CASE WHEN a.VehicleClass = 22 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec2,
+        SUM(CASE WHEN a.VehicleClass = 23 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec3,
+        SUM(CASE WHEN a.VehicleClass = 24 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec4,
+        SUM(CASE WHEN a.VehicleClass = 25 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec5,
+        SUM(CASE WHEN a.VehicleClass = 26 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec6,
+        SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 AND a.CardType != 22 AND
+        a.CardType != 23 THEN a.CarNum ELSE 0 END) AS specSubTotal,
+        SUM(CASE WHEN a.CardType = 22 OR a.CardType = 23 THEN a.CarNum ELSE 0 END) AS etcNum,
+        SUM(CASE WHEN a.CardType = 254 THEN a.CarNum ELSE 0 END) AS paperNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END) AS militaryNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END) AS officialNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=14 THEN a.CarNum ELSE 0 END) AS fleetNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END) AS preferNum
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
+            SELECT
+            *
+            FROM ${tableName} AS alias${index + 1}
+            <where>
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                GROUP BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                GROUP BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                GROUP BY StationID
+            </when>
+        </choose>
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                ORDER BY StaDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                ORDER BY monthDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                ORDER BY StationID ASC
+            </when>
+        </choose>
+    </select>
+
+    <select id="cdtStationShift" resultType="com.itssky.system.domain.vo.CdtStatisticsVo"
+            parameterType="com.itssky.system.domain.dto.CardStatisticsDtoV2">
+        SELECT
+        a.ShiftID AS shiftId,
+        a.OperatorID AS operatorId,
+        a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        LEFT(a.StaDate, 6) AS monthDate,
+        a.StaDate AS staDate,
+        SUM(CASE WHEN a.VehicleClass = 1 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        cust1,
+        SUM(CASE WHEN a.VehicleClass = 2 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust2,
+        SUM(CASE WHEN a.VehicleClass = 3 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust3,
+        SUM(CASE WHEN a.VehicleClass = 4 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS cust4,
+        SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0
+        END) AS custSubTotal,
+        SUM(CASE WHEN a.VehicleClass = 11 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck1,
+        SUM(CASE WHEN a.VehicleClass = 12 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck2,
+        SUM(CASE WHEN a.VehicleClass = 13 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck3,
+        SUM(CASE WHEN a.VehicleClass = 14 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck4,
+        SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS ruck5,
+        SUM(CASE WHEN a.VehicleClass = 16 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS
+        truck6,
+        SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 AND a.CardType != 22 AND
+        a.CardType != 23 THEN a.CarNum ELSE 0 END) AS truckSubTotal,
+        SUM(CASE WHEN a.VehicleClass = 21 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec1,
+        SUM(CASE WHEN a.VehicleClass = 22 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec2,
+        SUM(CASE WHEN a.VehicleClass = 23 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec3,
+        SUM(CASE WHEN a.VehicleClass = 24 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec4,
+        SUM(CASE WHEN a.VehicleClass = 25 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec5,
+        SUM(CASE WHEN a.VehicleClass = 26 AND a.CardType != 22 AND a.CardType != 23 THEN a.CarNum ELSE 0 END ) AS spec6,
+        SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 AND a.CardType != 22 AND
+        a.CardType != 23 THEN a.CarNum ELSE 0 END) AS specSubTotal,
+        SUM(CASE WHEN a.CardType = 22 OR a.CardType = 23 THEN a.CarNum ELSE 0 END) AS etcNum,
+        SUM(CASE WHEN a.CardType = 254 THEN a.CarNum ELSE 0 END) AS paperNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END) AS militaryNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END) AS officialNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=14 THEN a.CarNum ELSE 0 END) AS fleetNum,
+        SUM(CASE WHEN a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END) AS preferNum
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
+            SELECT
+            *
+            FROM ${tableName} AS alias${index + 1}
+            <where>
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                GROUP BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                GROUP BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                GROUP BY StationID
+            </when>
+        </choose>
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                ORDER BY StaDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                ORDER BY monthDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                ORDER BY StationID ASC
+            </when>
+        </choose>
+    </select>
+
+    <select id="getTbStcList" resultType="com.itssky.system.domain.vo.TbStcVo"
+            parameterType="com.itssky.system.domain.dto.TbStcDto">
+        SELECT StationID AS stationId,
+        StaDate AS staDate,
+        ShiftID AS shiftId,
+        StockNum AS stockNum,
+        SendNum AS sendNum,
+        ReceivedNum AS receivedNum,
+        InNum AS inNum,
+        OutNum AS outNum,
+        RecoverNum AS recoverNum,
+        BadStockNum AS badStockNum,
+        BadRecNum AS badRecNum,
+        BadOutNum AS badOutNum,
+        AdjustNum AS adjustNum,
+        BalanceOP AS balanceOp
+        FROM
+        tbstc
+        <where>
+            AND StationID in
+            <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                #{stationId}
+            </foreach>
+            <if test="staDate != null and staDate != ''">
+                AND StaDate = #{staDate}
+            </if>
+            <if test="shiftId != null and shiftId != ''">
+                AND ShiftID = #{shiftId}
+            </if>
+        </where>
+        ORDER BY BalanceOP ASC
+    </select>
+
+    <select id="getTbStcListV2" resultType="com.itssky.system.domain.vo.TbStcVo"
+            parameterType="com.itssky.system.domain.dto.TbStcDtoV2">
+        SELECT
+        a.StationID AS stationId,
+        a.StaDate AS staDate,
+        a.ShiftID AS shiftId,
+        a.BalanceOP AS balanceOp,
+        LEFT(a.StaDate, 6) AS monthDate,
+        SUM(a.StockNum) AS stockNum,
+        SUM(a.SendNum) AS sendNum,
+        SUM(a.ReceivedNum) AS receivedNum,
+        SUM(a.InNum) AS inNum,
+        SUM(a.OutNum) AS outNum,
+        SUM(a.RecoverNum) AS recoverNum,
+        SUM(a.BadStockNum) AS badStockNum,
+        SUM(a.BadRecNum) AS badRecNum,
+        SUM(a.BadOutNum) AS badOutNum,
+        SUM(a.AdjustNum) AS adjustNum,
+        SUM(a.BalanceOP) AS balanceOp
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
+        SELECT
+        *
+        FROM ${tableName} AS alias${index + 1}
+            <where>
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                GROUP BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                GROUP BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                GROUP BY StationID
+            </when>
+        </choose>
+    </select>
+</mapper>

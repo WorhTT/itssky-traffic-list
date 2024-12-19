@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itssky.system.mapper.TbCorpInfoMapper">
+  <resultMap id="BaseResultMap" type="com.itssky.system.domain.TbCorpInfo">
+    <!--@mbg.generated-->
+    <!--@Table tbcorpinfo-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="corpno" jdbcType="VARCHAR" property="corpno" />
+    <result column="corpname" jdbcType="VARCHAR" property="corpname" />
+    <result column="corpshort" jdbcType="VARCHAR" property="corpshort" />
+    <result column="corpid" jdbcType="INTEGER" property="corpid" />
+    <result column="ownerid" jdbcType="INTEGER" property="ownerid" />
+    <result column="ownername" jdbcType="VARCHAR" property="ownername" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="indexno" jdbcType="INTEGER" property="indexno" />
+    <result column="spare1" jdbcType="INTEGER" property="spare1" />
+    <result column="spare2" jdbcType="VARCHAR" property="spare2" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, corpno, corpname, corpshort, corpid, ownerid, ownername, `level`, indexno, spare1, 
+    spare2
+  </sql>
+</mapper>

@@ -3,78 +3,31 @@
     <div style="width: 100%;
     height: 50px;
     line-height: 30px;
+    margin-bottom: 25px;
     display:flex;
     font-size: 30px;
     justify-content: center;
     align-content: center;
     align-items: center;">高速通行费收入统计表
     </div>
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <!--      <el-form-item label="公告标题" prop="noticeTitle">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.noticeTitle"-->
-      <!--          placeholder="请输入公告标题"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="操作人员" prop="createBy">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.createBy"-->
-      <!--          placeholder="请输入操作人员"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="类型" prop="noticeType">-->
-      <!--        <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable>-->
-      <!--          <el-option-->
-      <!--            v-for="dict in dict.type.sys_notice_type"-->
-      <!--            :key="dict.value"-->
-      <!--            :label="dict.label"-->
-      <!--            :value="dict.value"-->
-      <!--          />-->
-      <!--        </el-select>-->
-      <!--      </el-form-item>-->
-<!--      <el-form-item>-->
-<!--        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>-->
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
-<!--      </el-form-item>-->
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
+      <el-form-item label="选择时间：" prop="time">
+        <el-date-picker
+          v-model="queryParams.dateRange"
+          type="daterange"
+          range-separator="至"
+          value-format="yyyy-MM-dd"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-form-item>
     </el-form>
 
         <el-row :gutter="10" class="mb8">
-    <!--      <el-col :span="1.5">-->
-    <!--        <el-button-->
-    <!--          type="primary"-->
-    <!--          plain-->
-    <!--          icon="el-icon-plus"-->
-    <!--          size="mini"-->
-    <!--          @click="handleAdd"-->
-    <!--          v-hasPermi="['system:notice:add']"-->
-    <!--        >新增</el-button>-->
-    <!--      </el-col>-->
-    <!--      <el-col :span="1.5">-->
-    <!--        <el-button-->
-    <!--          type="success"-->
-    <!--          plain-->
-    <!--          icon="el-icon-edit"-->
-    <!--          size="mini"-->
-    <!--          :disabled="single"-->
-    <!--          @click="handleUpdate"-->
-    <!--          v-hasPermi="['system:notice:edit']"-->
-    <!--        >修改</el-button>-->
-    <!--      </el-col>-->
-    <!--      <el-col :span="1.5">-->
-    <!--        <el-button-->
-    <!--          type="danger"-->
-    <!--          plain-->
-    <!--          icon="el-icon-delete"-->
-    <!--          size="mini"-->
-    <!--          :disabled="multiple"-->
-    <!--          @click="handleDelete"-->
-    <!--          v-hasPermi="['system:notice:remove']"-->
-    <!--        >删除</el-button>-->
-    <!--      </el-col>-->
           <el-col :span="1.5">
             <el-button
               type="warning"
@@ -99,12 +52,12 @@
           <el-table-column label="车次" align="center" prop="qkcc"/>
           <el-table-column label="金额" align="center" prop="qkje"/>
         </el-table-column>
-        <el-table-column label="加收款" align="center">
-          <el-table-column label="现金" align="center" prop="jsxj"/>
-          <el-table-column label="金额" align="center" prop="jsje"/>
-          <el-table-column label="合计" align="center" prop="jshj"/>
-          <el-table-column label="次数" align="center" prop="jscs"/>
-        </el-table-column>
+<!--        <el-table-column label="加收款" align="center">-->
+<!--          <el-table-column label="现金" align="center" prop="jsxj"/>-->
+<!--          <el-table-column label="金额" align="center" prop="jsje"/>-->
+<!--          <el-table-column label="合计" align="center" prop="jshj"/>-->
+<!--          <el-table-column label="次数" align="center" prop="jscs"/>-->
+<!--        </el-table-column>-->
       </el-table-column>
       <el-table-column label="移动支付" align="center" prop="ydzf" width="100"/>
       <el-table-column label="电子支付消费额" align="center">
@@ -112,25 +65,25 @@
         <el-table-column label="记账卡" align="center" prop="dzjzk"/>
         <el-table-column label="合计" align="center" prop="dzhj"/>
       </el-table-column>
-      <el-table-column label="打印票据" align="center">
-        <el-table-column label="现金" align="center">
-          <el-table-column label="张数" align="center" prop="xjpjzs"/>
-          <el-table-column label="打票金额" align="center" prop="xjdpje" width="100"/>
-        </el-table-column>
-        <el-table-column label="移动支付" align="center">
-          <el-table-column label="张数" align="center" prop="ydzfzs"/>
-          <el-table-column label="打票金额" align="center" prop="ydzfdpje" width="100"/>
-        </el-table-column>
-        <el-table-column label="打印票合计" align="center" prop="dyphj" width="125"/>
-      </el-table-column>
-      <el-table-column label="定额票据" align="center">
-        <el-table-column label="张数" align="center" prop="depjzs"/>
-        <el-table-column label="金额" align="center" prop="depjje"/>
-      </el-table-column>
-      <el-table-column label="废票" align="center">
-        <el-table-column label="张数" align="center" prop="fpzs"/>
-        <el-table-column label="金额" align="center" prop="fpje"/>
-      </el-table-column>
+<!--      <el-table-column label="打印票据" align="center">-->
+<!--        <el-table-column label="现金" align="center">-->
+<!--          <el-table-column label="张数" align="center" prop="xjpjzs"/>-->
+<!--          <el-table-column label="打票金额" align="center" prop="xjdpje" width="100"/>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column label="移动支付" align="center">-->
+<!--          <el-table-column label="张数" align="center" prop="ydzfzs"/>-->
+<!--          <el-table-column label="打票金额" align="center" prop="ydzfdpje" width="100"/>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column label="打印票合计" align="center" prop="dyphj" width="125"/>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="定额票据" align="center">-->
+<!--        <el-table-column label="张数" align="center" prop="depjzs"/>-->
+<!--        <el-table-column label="金额" align="center" prop="depjje"/>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="废票" align="center">-->
+<!--        <el-table-column label="张数" align="center" prop="fpzs"/>-->
+<!--        <el-table-column label="金额" align="center" prop="fpje"/>-->
+<!--      </el-table-column>-->
       <el-table-column label="公务IC卡" align="center" prop="gwic" width="100"/>
       <el-table-column label="军车IC卡" align="center" prop="jcic" width="100"/>
       <el-table-column label="免费IC卡" align="center" prop="mfic" width="100"/>
@@ -194,7 +147,7 @@
 
 <script>
 
-import {getCharge} from "@/api/report/charge"
+import {getCharge, exportCharge} from "@/api/report/charge"
 
 export default {
   name: "EntryFlow",
@@ -222,7 +175,8 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        timeType: 0
+        timeType: 0,
+        dateRange: null
         // noticeTitle: undefined,
         // createBy: undefined,
         // status: undefined
@@ -258,6 +212,19 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      const queryParams = this.queryParams;
+      this.$confirm('是否确认导出高速FT通行费收入统计表?', "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(function () {
+        return exportCharge(queryParams);
+      }).then(response => {
+        this.downloadFile(response.msg);
+      })
     },
     // 取消按钮
     cancel() {

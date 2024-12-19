@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itssky.system.mapper.TbStationInfoMapper">
+  <resultMap id="BaseResultMap" type="com.itssky.system.domain.TbStationInfo">
+    <!--@mbg.generated-->
+    <!--@Table tbstationinfo-->
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="StationID" jdbcType="INTEGER" property="stationid" />
+    <result column="StationHex" jdbcType="VARCHAR" property="stationhex" />
+    <result column="StationName" jdbcType="VARCHAR" property="stationname" />
+    <result column="DBIP" jdbcType="VARCHAR" property="dbip" />
+    <result column="DBUser" jdbcType="VARCHAR" property="dbuser" />
+    <result column="DBPasswd" jdbcType="VARCHAR" property="dbpasswd" />
+    <result column="EdgeIP" jdbcType="VARCHAR" property="edgeip" />
+    <result column="IsUsed" jdbcType="TINYINT" property="isused" />
+    <result column="Indexes" jdbcType="TINYINT" property="indexes" />
+    <result column="CorpNo" jdbcType="VARCHAR" property="corpno" />
+    <result column="Spare1" jdbcType="INTEGER" property="spare1" />
+    <result column="Spare2" jdbcType="VARCHAR" property="spare2" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ID, StationID, StationHex, StationName, DBIP, DBUser, DBPasswd, EdgeIP, IsUsed, Indexes, 
+    CorpNo, Spare1, Spare2
+  </sql>
+</mapper>
