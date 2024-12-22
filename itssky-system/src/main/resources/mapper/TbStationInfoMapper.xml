@@ -23,4 +23,169 @@
     ID, StationID, StationHex, StationName, DBIP, DBUser, DBPasswd, EdgeIP, IsUsed, Indexes, 
     CorpNo, Spare1, Spare2
   </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from tbstationinfo
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from tbstationinfo
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="com.itssky.system.domain.TbStationInfo" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into tbstationinfo (StationID, StationHex, StationName, 
+      DBIP, DBUser, DBPasswd, 
+      EdgeIP, IsUsed, Indexes, 
+      CorpNo, Spare1, Spare2
+      )
+    values (#{stationid,jdbcType=INTEGER}, #{stationhex,jdbcType=VARCHAR}, #{stationname,jdbcType=VARCHAR}, 
+      #{dbip,jdbcType=VARCHAR}, #{dbuser,jdbcType=VARCHAR}, #{dbpasswd,jdbcType=VARCHAR}, 
+      #{edgeip,jdbcType=VARCHAR}, #{isused,jdbcType=TINYINT}, #{indexes,jdbcType=TINYINT}, 
+      #{corpno,jdbcType=VARCHAR}, #{spare1,jdbcType=INTEGER}, #{spare2,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="com.itssky.system.domain.TbStationInfo" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into tbstationinfo
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="stationid != null">
+        StationID,
+      </if>
+      <if test="stationhex != null">
+        StationHex,
+      </if>
+      <if test="stationname != null">
+        StationName,
+      </if>
+      <if test="dbip != null">
+        DBIP,
+      </if>
+      <if test="dbuser != null">
+        DBUser,
+      </if>
+      <if test="dbpasswd != null">
+        DBPasswd,
+      </if>
+      <if test="edgeip != null">
+        EdgeIP,
+      </if>
+      <if test="isused != null">
+        IsUsed,
+      </if>
+      <if test="indexes != null">
+        Indexes,
+      </if>
+      <if test="corpno != null">
+        CorpNo,
+      </if>
+      <if test="spare1 != null">
+        Spare1,
+      </if>
+      <if test="spare2 != null">
+        Spare2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="stationid != null">
+        #{stationid,jdbcType=INTEGER},
+      </if>
+      <if test="stationhex != null">
+        #{stationhex,jdbcType=VARCHAR},
+      </if>
+      <if test="stationname != null">
+        #{stationname,jdbcType=VARCHAR},
+      </if>
+      <if test="dbip != null">
+        #{dbip,jdbcType=VARCHAR},
+      </if>
+      <if test="dbuser != null">
+        #{dbuser,jdbcType=VARCHAR},
+      </if>
+      <if test="dbpasswd != null">
+        #{dbpasswd,jdbcType=VARCHAR},
+      </if>
+      <if test="edgeip != null">
+        #{edgeip,jdbcType=VARCHAR},
+      </if>
+      <if test="isused != null">
+        #{isused,jdbcType=TINYINT},
+      </if>
+      <if test="indexes != null">
+        #{indexes,jdbcType=TINYINT},
+      </if>
+      <if test="corpno != null">
+        #{corpno,jdbcType=VARCHAR},
+      </if>
+      <if test="spare1 != null">
+        #{spare1,jdbcType=INTEGER},
+      </if>
+      <if test="spare2 != null">
+        #{spare2,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.itssky.system.domain.TbStationInfo">
+    <!--@mbg.generated-->
+    update tbstationinfo
+    <set>
+      <if test="stationid != null">
+        StationID = #{stationid,jdbcType=INTEGER},
+      </if>
+      <if test="stationhex != null">
+        StationHex = #{stationhex,jdbcType=VARCHAR},
+      </if>
+      <if test="stationname != null">
+        StationName = #{stationname,jdbcType=VARCHAR},
+      </if>
+      <if test="dbip != null">
+        DBIP = #{dbip,jdbcType=VARCHAR},
+      </if>
+      <if test="dbuser != null">
+        DBUser = #{dbuser,jdbcType=VARCHAR},
+      </if>
+      <if test="dbpasswd != null">
+        DBPasswd = #{dbpasswd,jdbcType=VARCHAR},
+      </if>
+      <if test="edgeip != null">
+        EdgeIP = #{edgeip,jdbcType=VARCHAR},
+      </if>
+      <if test="isused != null">
+        IsUsed = #{isused,jdbcType=TINYINT},
+      </if>
+      <if test="indexes != null">
+        Indexes = #{indexes,jdbcType=TINYINT},
+      </if>
+      <if test="corpno != null">
+        CorpNo = #{corpno,jdbcType=VARCHAR},
+      </if>
+      <if test="spare1 != null">
+        Spare1 = #{spare1,jdbcType=INTEGER},
+      </if>
+      <if test="spare2 != null">
+        Spare2 = #{spare2,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.itssky.system.domain.TbStationInfo">
+    <!--@mbg.generated-->
+    update tbstationinfo
+    set StationID = #{stationid,jdbcType=INTEGER},
+      StationHex = #{stationhex,jdbcType=VARCHAR},
+      StationName = #{stationname,jdbcType=VARCHAR},
+      DBIP = #{dbip,jdbcType=VARCHAR},
+      DBUser = #{dbuser,jdbcType=VARCHAR},
+      DBPasswd = #{dbpasswd,jdbcType=VARCHAR},
+      EdgeIP = #{edgeip,jdbcType=VARCHAR},
+      IsUsed = #{isused,jdbcType=TINYINT},
+      Indexes = #{indexes,jdbcType=TINYINT},
+      CorpNo = #{corpno,jdbcType=VARCHAR},
+      Spare1 = #{spare1,jdbcType=INTEGER},
+      Spare2 = #{spare2,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
 </mapper>

@@ -16,7 +16,7 @@ itssky:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8089
+  port: 8090
   servlet:
     # 应用的访问路径
     context-path: /
@@ -47,7 +47,7 @@ user:
 # Spring配置
 spring:
   profiles:
-    active: dev
+    active: @spring.profiles.active@
   # 资源信息
   messages:
     # 国际化资源文件路径

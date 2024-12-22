@@ -69,6 +69,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/f1StationShiftDetail',
+    component: () => import('@/views/report/toll/f1StationShiftDetail.vue'),
+    hidden: true
+  },
+  {
     path: '/',
     redirect: '/f1StationShift'
   },
@@ -87,6 +92,12 @@ export const constantRoutes = [
         name: 'F1收费站通行费收入班统计表',
         meta: {title: 'F1收费站通行费收入班统计表', icon: 'chart'},
         component: () => import('@/views/report/toll/f1StationShift.vue'),
+      },
+      {
+        path: '/print',
+        name: '打印',
+        meta: {title: '打印', icon: 'chart'},
+        component: () => import('@/views/report/toll/print.vue'),
       },
       {
         path: '/f2StationShift',

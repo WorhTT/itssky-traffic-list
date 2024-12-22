@@ -2,7 +2,7 @@
   <div class="login">
     <div class="login-container">
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-        <h3 class="title">itssky 快速开发平台</h3>
+        <h3 class="title">统计报表系统</h3>
         <el-form-item prop="username">
           <el-input
             v-model="loginForm.username"
@@ -211,7 +211,7 @@ export default {
 }
 
 .background-container {
-  background: url(../assets/login/login_background.svg);
+  background: url(../assets/login/背景.svg);
   background-repeat: no-repeat;
   background-position: right;
   /* 图片居中 */

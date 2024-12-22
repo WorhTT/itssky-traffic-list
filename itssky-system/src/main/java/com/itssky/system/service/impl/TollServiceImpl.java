@@ -2,17 +2,23 @@ package com.itssky.system.service.impl;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itssky.common.annotation.DynamicTableName;
+import com.itssky.common.core.domain.model.LoginUser;
+import com.itssky.system.domain.TbStationInfo;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.domain.dto.FtStationDto;
 import com.itssky.system.domain.dto.StationShiftDto;
 import com.itssky.system.domain.dto.VehicleClassStatDto;
+import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.mapper.TollMapper;
 import com.itssky.system.service.ITollService;
 import com.itssky.util.TableUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -31,6 +37,9 @@ public class TollServiceImpl implements ITollService {
     @Autowired
     private TollMapper tollMapper;
 
+    @Autowired
+    private TbStationInfoMapper tbStationInfoMapper;
+
     /**
      * F1收费站通行费收入班统计
      * 统计金额 = 应收款 + 电子支付 + 移动支付
@@ -41,10 +50,21 @@ public class TollServiceImpl implements ITollService {
     @DynamicTableName(dateParam = "#dto.time")
     public List<StationShiftVo> f1StationShift(StationShiftDto dto) {
         dto.setTimeFormat(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
-        if (!CollectionUtils.isEmpty(dto.getStationIdArray())) {
-            List<Integer> stationIdList = new ArrayList<>();
-            dto.getStationIdArray().forEach(d -> stationIdList.add(d.get(2)));
-            dto.setStationIdList(stationIdList);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
         List<StationShiftVo> stationShiftVos = tollMapper.f1StationShift(dto);
         List<TbShVo> tbShData = tollMapper.getTbShData(dto);

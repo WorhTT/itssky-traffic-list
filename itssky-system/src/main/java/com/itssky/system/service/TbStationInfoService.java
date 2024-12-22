@@ -35,3 +35,4 @@ public interface TbStationInfoService extends IService<TbStationInfo> {
      */
     public Integer currentAssignStationId();
 }
+

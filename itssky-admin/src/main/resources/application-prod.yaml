@@ -69,3 +69,4 @@ secure:
       - /webjars/**
       - /*/api-docs
       - /druid/**
+      - /logout

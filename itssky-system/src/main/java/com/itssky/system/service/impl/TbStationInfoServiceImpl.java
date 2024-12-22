@@ -137,14 +137,19 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
     public List<Map<String, Object>> listStationSelect() {
         LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
         tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
-                TbStationInfo::getStationid).apply(" length(corpno)=6 ");
+                TbStationInfo::getStationid);
+//                .apply(" length(corpno)=6 ");
         List<TbStationInfo> tbStationInfoList = baseMapper.selectList(tbStationInfoLambdaQueryWrapper);
         if (CollectionUtils.isEmpty(tbStationInfoList)) {
             return new ArrayList<>();
         }
         return tbStationInfoList.stream().filter(Objects::nonNull).map(obj -> {
             Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("value", obj.getStationid());
+            if (Objects.nonNull(obj.getStationid())) {
+                tempMap.put("value", obj.getStationid());
+            } else {
+                tempMap.put("value", -1);
+            }
             tempMap.put("label", obj.getStationname());
             return tempMap;
         }).collect(Collectors.toList());

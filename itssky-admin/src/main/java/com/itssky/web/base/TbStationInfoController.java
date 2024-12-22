@@ -2,6 +2,7 @@ package com.itssky.web.base;
 
 import com.itssky.common.core.domain.AjaxResult;
 import com.itssky.common.core.domain.model.LoginUser;
+import com.itssky.common.exception.biz.BizException;
 import com.itssky.system.service.TbStationInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,9 +45,10 @@ public class TbStationInfoController {
     public AjaxResult listStationSelect() {
         HashMap<String, Object> tempMap = new HashMap<>();
         List<Map<String, Object>> tempList = tbStationInfoService.listStationSelect();
-        Integer stationId = tbStationInfoService.currentAssignStationId();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         tempMap.put("array", tempList);
-        tempMap.put("defaultValue", stationId);
+        tempMap.put("defaultValue", Objects.requireNonNull(loginUser.getStationId()));
         return AjaxResult.success(tempMap);
     }
 

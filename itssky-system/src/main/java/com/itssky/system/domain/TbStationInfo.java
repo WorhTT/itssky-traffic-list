@@ -1,60 +1,138 @@
 package com.itssky.system.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.io.Serializable;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @TableName(value = "tbstationinfo")
-public class TbStationInfo implements Serializable {
-    @TableId(value = "ID", type = IdType.AUTO)
+public class TbStationInfo {
+    private static final long serialVersionUID = 1L;
     private Integer id;
 
-    @TableField(value = "StationID")
     private Integer stationid;
 
-    @TableField(value = "StationHex")
     private String stationhex;
 
-    @TableField(value = "StationName")
     private String stationname;
 
-    @TableField(value = "DBIP")
     private String dbip;
 
-    @TableField(value = "DBUser")
     private String dbuser;
 
-    @TableField(value = "DBPasswd")
     private String dbpasswd;
 
-    @TableField(value = "EdgeIP")
     private String edgeip;
 
-    @TableField(value = "IsUsed")
     private Byte isused;
 
-    @TableField(value = "Indexes")
     private Byte indexes;
 
-    @TableField(value = "CorpNo")
     private String corpno;
 
-    @TableField(value = "Spare1")
     private Integer spare1;
 
-    @TableField(value = "Spare2")
     private String spare2;
 
-    private static final long serialVersionUID = 1L;
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getStationid() {
+        return stationid;
+    }
+
+    public void setStationid(Integer stationid) {
+        this.stationid = stationid;
+    }
+
+    public String getStationhex() {
+        return stationhex;
+    }
+
+    public void setStationhex(String stationhex) {
+        this.stationhex = stationhex;
+    }
+
+    public String getStationname() {
+        return stationname;
+    }
+
+    public void setStationname(String stationname) {
+        this.stationname = stationname;
+    }
+
+    public String getDbip() {
+        return dbip;
+    }
+
+    public void setDbip(String dbip) {
+        this.dbip = dbip;
+    }
+
+    public String getDbuser() {
+        return dbuser;
+    }
+
+    public void setDbuser(String dbuser) {
+        this.dbuser = dbuser;
+    }
+
+    public String getDbpasswd() {
+        return dbpasswd;
+    }
+
+    public void setDbpasswd(String dbpasswd) {
+        this.dbpasswd = dbpasswd;
+    }
+
+    public String getEdgeip() {
+        return edgeip;
+    }
+
+    public void setEdgeip(String edgeip) {
+        this.edgeip = edgeip;
+    }
+
+    public Byte getIsused() {
+        return isused;
+    }
+
+    public void setIsused(Byte isused) {
+        this.isused = isused;
+    }
+
+    public Byte getIndexes() {
+        return indexes;
+    }
+
+    public void setIndexes(Byte indexes) {
+        this.indexes = indexes;
+    }
+
+    public String getCorpno() {
+        return corpno;
+    }
+
+    public void setCorpno(String corpno) {
+        this.corpno = corpno;
+    }
+
+    public Integer getSpare1() {
+        return spare1;
+    }
+
+    public void setSpare1(Integer spare1) {
+        this.spare1 = spare1;
+    }
+
+    public String getSpare2() {
+        return spare2;
+    }
+
+    public void setSpare2(String spare2) {
+        this.spare2 = spare2;
+    }
 }
