@@ -14,6 +14,8 @@ import lombok.*;
 @ToString
 public class CardStatisticsVo {
 
+    private String statType;
+
     /**
      * 班次ID
      */

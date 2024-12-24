@@ -1,5 +1,6 @@
 <template>
-  <div class="app-container" ref="box">
+  <div class="app-container">
+
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -14,47 +15,49 @@
       <el-col :span="1.5">
         <el-button
           type="warning"
-          icon="el-icon-document"
+          icon="el-icon-download"
           size="mini"
-          @click="printTable"
           class="print-button-container"
+          @click="printTable"
         >打印
         </el-button>
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="dataList" ref="myTable" style="width: 100%;table-layout: fixed;">
-      <el-table-column label="班次" align="center" prop="shiftId"/>
-      <el-table-column label="班组" align="center" prop="teamId"/>
-      <el-table-column label="工号" align="center" prop="operatorId"/>
-      <el-table-column label="通行费收入总额" align="center">
-        <el-table-column label="统计金额" align="center" prop="statAmount"/>
-        <el-table-column label="应缴金额" align="center" prop="dueAmount"/>
-        <el-table-column label="实缴金额" align="center" prop="paidAmount"/>
-        <el-table-column label="金额差异" align="center" prop="amountDiff"/>
-        <el-table-column label="欠款" align="center" prop="arrearsAmount"/>
-        <el-table-column label="加收款" align="center" prop="extraTotal"/>
-      </el-table-column>
-      <el-table-column label="移动支付" align="center" prop="mobilePaymentAmount"/>
-      <el-table-column label="电子支付" align="center" prop="epaymentAmount"/>
-      <el-table-column label="公务IC卡" align="center" prop="officialIcCardCount"/>
-      <el-table-column label="军车IC卡" align="center" prop="militaryIcCardCount"/>
-      <el-table-column label="免费IC卡" align="center" prop="freeIcCardCount"/>
-      <el-table-column label="应缴IC卡" align="center" prop="dueIcCardCount"/>
+    <el-table v-loading="loading" :data="dataList" border ref="myTable">
+      <el-table-column label="统计方式" align="center" prop="statType"/>
+      <el-table-column label="客一" align="center" prop="cust1"/>
+      <el-table-column label="客二" align="center" prop="cust2"/>
+      <el-table-column label="客三" align="center" prop="cust3"/>
+      <el-table-column label="客四" align="center" prop="cust4"/>
+      <el-table-column label="客车小计" align="center" prop="custSubTotal"/>
+      <el-table-column label="货一" align="center" prop="truck1"/>
+      <el-table-column label="货二" align="center" prop="truck2"/>
+      <el-table-column label="货三" align="center" prop="truck3"/>
+      <el-table-column label="货四" align="center" prop="truck4"/>
+      <el-table-column label="货五" align="center" prop="truck5"/>
+      <el-table-column label="货六" align="center" prop="truck6"/>
+      <el-table-column label="货车小计" align="center" prop="truckSubTotal"/>
+      <el-table-column label="专一" align="center" prop="spec1"/>
+      <el-table-column label="专二" align="center" prop="spec2"/>
+      <el-table-column label="专三" align="center" prop="spec3"/>
+      <el-table-column label="专四" align="center" prop="spec4"/>
+      <el-table-column label="专五" align="center" prop="spec5"/>
+      <el-table-column label="专六" align="center" prop="spec6"/>
+      <el-table-column label="专车小计" align="center" prop="specSubTotal"/>
+      <el-table-column label="加收" align="center" prop="addedAmount"/>
+      <el-table-column label="合计" align="center" prop="totalAmount"/>
     </el-table>
-    <!-- Hidden iframe for printing -->
     <iframe id="printFrame" style="display: none;"></iframe>
   </div>
 </template>
 
 <script>
 
-import {f1StationShift, exportF1Station} from "@/api/report/toll"
-import printJS from 'print-js';
+import {afvGeneral,exportAfvGeneral} from "@/api/report/toll";
 
 export default {
-  name: "F1StationShiftDetail",
-  components: {},
+  name: "AFVComVehicleDetail",
   data() {
     return {
       props: {multiple: true},
@@ -77,22 +80,22 @@ export default {
       // 是否显示弹出层
       open: false,
       // 查询参数
-      queryParams: {},
+      queryParams: {
+      },
       // 表单参数
       form: {},
       // 表单校验
-      rules: {},
+      rules: {
+      },
       stationOptions: [],
-      shiftOptions: [
-        {label: '早班', value: 1},
-        {label: '中班', value: 2},
-        {label: '晚班', value: 3},
-      ],
+      shiftOptions: [],
+      pickerType: 'date',
       pickOptions: {
         disabledDate(time) {
           return time.getTime() > Date.now();
         },
       },
+      showProp: null,
     };
   },
   computed: {},
@@ -102,31 +105,32 @@ export default {
       this.getList();
     }
   },
+  watch: {
+  },
   methods: {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      f1StationShift(this.queryParams).then(response => {
+      afvGeneral(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
       }).finally(() => {
         this.loading = false;
-      });
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出F1收费站通行费收入班统计表?', "警告", {
+      this.$confirm('是否确认导出AFV综合(MTC+ETC)按车型统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportF1Station(queryParams);
+        return exportAfvGeneral(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       })
     },
-
     printTable() {
       const elTable = this.$refs.myTable.$el;
       const printFrame = document.getElementById('printFrame');
@@ -135,6 +139,9 @@ export default {
       printDocument.write('<html><head><title>Print Table</title>');
       printDocument.write('<style>');
       printDocument.write(`
+        .table-container {
+          zoom: 0.9
+        }
         .print-title {
           text-align: center;
           font-size: 24px;
@@ -197,9 +204,11 @@ export default {
       `);
       printDocument.write('</style>');
       printDocument.write('</head><body>');
-      printDocument.write('<div class="print-title">F1收费站通行费收入班统计表</div>'); // Add the title here
+      printDocument.write('<div class="print-title">EEF电子支付通行费(MTC+ETC)统计表</div>'); // Add the title here
       printDocument.write('<div class="container"><span class="info-left">收费站：中心</span><span class="info-center">统计时间：2024-12-04</span></div>'); // Add the info line here // Add the info line here
+      printDocument.write('<div class="table-container">');
       printDocument.write(elTable.outerHTML);
+      printDocument.write('</div>');
       printDocument.write('</body></html>');
       printDocument.close();
 
@@ -213,12 +222,4 @@ export default {
 
 <style lang="scss" scoped>
 
-
-.print-button-container {
-  display: flex;
-}
-
-.export-button-container {
-  display: flex;
-}
 </style>

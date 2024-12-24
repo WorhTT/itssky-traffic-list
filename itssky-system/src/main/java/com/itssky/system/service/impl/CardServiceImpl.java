@@ -2,20 +2,28 @@ package com.itssky.system.service.impl;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itssky.common.annotation.DynamicTableName;
+import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.MybatisPlusTableNameHelper;
+import com.itssky.system.domain.TbStationInfo;
 import com.itssky.system.domain.dto.*;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.mapper.CardMapper;
+import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.mapper.TollMapper;
 import com.itssky.system.service.CardService;
 import com.itssky.util.TableUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author ITSSKY
@@ -30,6 +38,9 @@ public class CardServiceImpl implements CardService {
     @Autowired
     private TollMapper tollMapper;
 
+    @Autowired
+    private TbStationInfoMapper tbStationInfoMapper;
+
     /**
      * S1收费站通行卡发放班统计表
      *
@@ -39,10 +50,21 @@ public class CardServiceImpl implements CardService {
     @DynamicTableName(dateParam = "#dto.time")
     public List<CardStatisticsVo> s1StationShift(CardStatisticsDto dto) {
         //获取收费站ID列表
-        if (!CollectionUtils.isEmpty(dto.getStationIdArray())) {
-            List<Integer> stationIdList = new ArrayList<>();
-            dto.getStationIdArray().forEach(d -> stationIdList.add(d.get(2)));
-            dto.setStationIdList(stationIdList);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
         if (Objects.nonNull(dto.getTime())) {
             dto.setIntTime(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
@@ -99,6 +121,145 @@ public class CardServiceImpl implements CardService {
         return cardStatisticsVos;
     }
 
+    @Override
+    @DynamicTableName(dateParam = "#dto.time")
+    public ExportVo getSCardStationShift(CardStatisticsDto dto) {
+        List<CardStatisticsVo> cardStatisticsVos = s1StationShift(dto);
+        if (CollectionUtils.isEmpty(cardStatisticsVos)) {
+            return new ExportVo(new ArrayList<>(), new ArrayList<>());
+        }
+        List<SCardStatVo> result = new ArrayList<>();
+        cardStatisticsVos.forEach(i -> {
+            SCardStatVo sCardStatVo = new SCardStatVo();
+            BeanUtils.copyProperties(i, sCardStatVo);
+            result.add(sCardStatVo);
+        });
+        ExportVo exportVo = new ExportVo();
+        exportVo.setResult(result);
+        exportVo.setConditionList(buildConditionList(dto.getStationId(), dto.getTime()));
+        return exportVo;
+    }
+
+    @Override
+    @DynamicTableName(dateParam = "#dto.time")
+    public ExportVo getCCardStationShift(CardStatisticsDto dto) {
+        List<CardStatisticsVo> cardStatisticsVos = s1StationShift(dto);
+        if (CollectionUtils.isEmpty(cardStatisticsVos)) {
+            return new ExportVo(new ArrayList<>(), new ArrayList<>());
+        }
+        List<CCardStatVo> result = new ArrayList<>();
+        cardStatisticsVos.forEach(i -> {
+            CCardStatVo cCardStatVo = new CCardStatVo();
+            BeanUtils.copyProperties(i, cCardStatVo);
+            result.add(cCardStatVo);
+        });
+        ExportVo exportVo = new ExportVo();
+        exportVo.setResult(result);
+        exportVo.setConditionList(buildConditionList(dto.getStationId(), dto.getTime()));
+        return exportVo;
+    }
+
+    @Override
+    @DynamicTableName(dateParam = "#dto.time")
+    public ExportVo getSCardStationDay(CardStatisticsDto dto) {
+        List<CardStatisticsVo> cardStatisticsVos = s2StationShift(dto);
+        if (CollectionUtils.isEmpty(cardStatisticsVos)) {
+            return new ExportVo(new ArrayList<>(), new ArrayList<>());
+        }
+        List<SCardStatVo> result = new ArrayList<>();
+        cardStatisticsVos.forEach(i -> {
+            SCardStatVo sCardStatVo = new SCardStatVo();
+            BeanUtils.copyProperties(i, sCardStatVo);
+            result.add(sCardStatVo);
+        });
+        ExportVo exportVo = new ExportVo();
+        exportVo.setResult(result);
+        exportVo.setConditionList(buildConditionList(dto.getStationId(), dto.getTime()));
+        return exportVo;
+    }
+
+    @Override
+    @DynamicTableName(dateParam = "#dto.time")
+    public ExportVo getCCardStationDay(CardStatisticsDto dto) {
+        List<CardStatisticsVo> cardStatisticsVos = s2StationShift(dto);
+        if (CollectionUtils.isEmpty(cardStatisticsVos)) {
+            return new ExportVo(new ArrayList<>(), new ArrayList<>());
+        }
+        List<CCardStatVo> result = new ArrayList<>();
+        cardStatisticsVos.forEach(i -> {
+            CCardStatVo cCardStatVo = new CCardStatVo();
+            BeanUtils.copyProperties(i, cCardStatVo);
+            result.add(cCardStatVo);
+        });
+        ExportVo exportVo = new ExportVo();
+        exportVo.setResult(result);
+        exportVo.setConditionList(buildConditionList(dto.getStationId(), dto.getTime()));
+        return exportVo;
+    }
+
+    @Override
+    public List<String> buildConditionList(Integer stationId, Date time, Integer shiftId) {
+        List<String> conditionList = new ArrayList<>();
+        if (stationId == -1) {
+            conditionList.add("收费站：中心");
+        } else {
+            LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(TbStationInfo::getStationid, stationId);
+            TbStationInfo tbStationInfo = tbStationInfoMapper.selectOne(wrapper);
+            if (Objects.nonNull(tbStationInfo)) {
+                conditionList.add("收费站：" + Objects.requireNonNull(tbStationInfo.getStationname()));
+            }
+        }
+        conditionList.add("统计日期：" + DateUtil.format(time, DatePattern.NORM_DATE_PATTERN));
+        String shiftName = null;
+        if (!Objects.isNull(shiftId)) {
+            if (shiftId == 1) {
+                shiftName = "早班";
+            } else if (shiftId == 2) {
+                shiftName = "中班";
+            } else if (shiftId == 3) {
+                shiftName = "晚班";
+            }
+            conditionList.add("班次：" + shiftName);
+        }
+        return conditionList;
+    }
+
+    @Override
+    public List<String> buildConditionList(Integer stationId, Date beginTime, Date endTime) {
+        List<String> conditionList = new ArrayList<>();
+        if (stationId == -1) {
+            conditionList.add("收费站：中心");
+        } else {
+            LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(TbStationInfo::getStationid, stationId);
+            TbStationInfo tbStationInfo = tbStationInfoMapper.selectOne(wrapper);
+            if (Objects.nonNull(tbStationInfo)) {
+                conditionList.add("收费站：" + Objects.requireNonNull(tbStationInfo.getStationname()));
+            }
+        }
+        conditionList.add("统计日期：" + DateUtil.format(beginTime, DatePattern.NORM_DATE_PATTERN) + "-" +
+                DateUtil.format(endTime, DatePattern.NORM_DATE_PATTERN));
+        return conditionList;
+    }
+
+    @Override
+    public List<String> buildConditionList(Integer stationId, Date time) {
+        List<String> conditionList = new ArrayList<>();
+        if (stationId == -1) {
+            conditionList.add("收费站：中心");
+        } else {
+            LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(TbStationInfo::getStationid, stationId);
+            TbStationInfo tbStationInfo = tbStationInfoMapper.selectOne(wrapper);
+            if (Objects.nonNull(tbStationInfo)) {
+                conditionList.add("收费站：" + Objects.requireNonNull(tbStationInfo.getStationname()));
+            }
+        }
+        conditionList.add("统计日期：" + DateUtil.format(time, DatePattern.NORM_DATE_PATTERN));
+        return conditionList;
+    }
+
     /**
      * S2收费站通行卡发放日统计表
      */
@@ -106,10 +267,21 @@ public class CardServiceImpl implements CardService {
     @DynamicTableName(dateParam = "#dto.time")
     public List<CardStatisticsVo> s2StationShift(CardStatisticsDto dto) {
         //获取收费站ID列表
-        if (!CollectionUtils.isEmpty(dto.getStationIdArray())) {
-            List<Integer> stationIdList = new ArrayList<>();
-            dto.getStationIdArray().forEach(d -> stationIdList.add(d.get(2)));
-            dto.setStationIdList(stationIdList);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
         if (Objects.nonNull(dto.getTime())) {
             dto.setIntTime(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
@@ -161,10 +333,21 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardStatisticsVo> sdtStationShift(CardStatisticsDtoV2 dto) {
-        if (!CollectionUtils.isEmpty(dto.getStationIdArray())) {
-            List<Integer> stationIdList = new ArrayList<>();
-            dto.getStationIdArray().forEach(d -> stationIdList.add(d.get(2)));
-            dto.setStationIdList(stationIdList);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
         //构建会查询到的表集合
         dto.setTableNameList(
@@ -245,8 +428,38 @@ public class CardServiceImpl implements CardService {
         cardStatisticsVos.forEach(i -> {
             i.setIssuedNum(i.getCustSubTotal() + i.getTruckSubTotal() + i.getSpecSubTotal());
             i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getMilitaryNum() + i.getPreferNum() + i.getEtcNum());
+            if (dto.getStatisticsType().equals("0")) {
+                i.setStatType(i.getStaDate().toString());
+            }
+            else if (dto.getStatisticsType().equals("1")) {
+                i.setStatType(i.getMonthDate());
+            }
+            else if (dto.getStatisticsType().equals("2")) {
+                i.setStatType(i.getStationName());
+            }
+            else if (dto.getStatisticsType().equals("3")) {
+                i.setStatType(i.getOperatorId().toString());
+            }
         });
         return cardStatisticsVos;
+    }
+
+    @Override
+    public ExportVo getSdtStationShift(CardStatisticsDtoV2 dto) {
+        List<CardStatisticsVo> cardStatisticsVos = sdtStationShift(dto);
+        if (CollectionUtils.isEmpty(cardStatisticsVos)) {
+            return new ExportVo(new ArrayList<>(), new ArrayList<>());
+        }
+        List<SdtCardStatVo> result = new ArrayList<>();
+        cardStatisticsVos.forEach(i -> {
+            SdtCardStatVo sdtCardStatVo = new SdtCardStatVo();
+            BeanUtils.copyProperties(i, sdtCardStatVo);
+            result.add(sdtCardStatVo);
+        });
+        ExportVo exportVo = new ExportVo();
+        exportVo.setResult(result);
+        exportVo.setConditionList(buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return exportVo;
     }
 
     /**
@@ -254,10 +467,21 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CdtStatisticsVo> cdtCardRecycle(CardStatisticsDtoV2 dto) {
-        if (!CollectionUtils.isEmpty(dto.getStationIdArray())) {
-            List<Integer> stationIdList = new ArrayList<>();
-            dto.getStationIdArray().forEach(d -> stationIdList.add(d.get(2)));
-            dto.setStationIdList(stationIdList);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
         //构建会查询到的表集合
         dto.setTableNameList(
@@ -316,5 +540,23 @@ public class CardServiceImpl implements CardService {
         });
 
         return cdtStatisticsVos;
+    }
+
+    @Override
+    public ExportVo getCdtStationShift(CardStatisticsDtoV2 dto) {
+        List<CdtStatisticsVo> cdtStatisticsVos = cdtCardRecycle(dto);
+        if (CollectionUtils.isEmpty(cdtStatisticsVos)) {
+            return new ExportVo(new ArrayList<>(), new ArrayList<>());
+        }
+        List<CdtCardStatVo> result = new ArrayList<>();
+        cdtStatisticsVos.forEach(i -> {
+            CdtCardStatVo cdtCardStatVo = new CdtCardStatVo();
+            BeanUtils.copyProperties(i, cdtCardStatVo);
+            result.add(cdtCardStatVo);
+        });
+        ExportVo exportVo = new ExportVo();
+        exportVo.setResult(result);
+        exportVo.setConditionList(buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return exportVo;
     }
 }

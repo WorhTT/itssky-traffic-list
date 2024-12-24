@@ -35,9 +35,7 @@
         </el-select>
       </el-form-item>
       <el-form-item style="margin-left: 40px;">
-<!--        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查看详细报表</el-button>-->
         <el-button type="primary" icon="el-icon-search" size="mini" @click="openChildPage">查看详细报表</el-button>
-<!--        <el-button type="primary" icon="el-icon-search" size="mini" @click="goToDetail">查看详细报表</el-button>-->
       </el-form-item>
     </el-form>
   </div>
@@ -45,7 +43,7 @@
 
 <script>
 
-import {stationSelectList, listStationSelect} from "@/api/system/station";
+import {listStationSelect} from "@/api/system/station";
 import F1StationShiftDetail from "@/views/report/toll/f1StationShiftDetail";
 import Router from "vue-router";
 
@@ -108,42 +106,13 @@ export default {
     })
   },
   methods: {
-    /** 搜索按钮操作 */
-    handleQuery() {
-      let childComponent = this.$mount(F1StationShiftDetail);
-      childComponent.queryParams = this.queryParams;
-      let newWindow = window.open('', '_blank');
-      newWindow.document.write(childComponent.$el.outerHTML);
-      newWindow.document.close();
-    },
     openChildPage() {
       const route = {
-        path:'/f1StationShiftDetail',
+        path: '/f1StationShiftDetail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);
       window.open(resolve.href, '_blank')
-      // var routePromise = this.$router.push({path: '/f1StationShiftDetail', query: this.queryParams});
-        // 使用router.resolve()时确保参数正确传递
-        // let newWindow = window.open("", "_blank");
-        // newWindow.location.href = this.$router.resolve({
-      // this.$router.push({
-      //     path:'/f1StationShiftDetail',
-      //     query: this.queryParams
-      //   });
-      }
-,
-    goToDetail() {
-      let paramValue = this.queryParams; // 这里替换为真实的参数内容
-      // 使用字符串拼接的方式传递参数
-      this.$router.push(`/f1StationShiftDetail/${paramValue}`);
-      // 或者使用对象形式传递参数
-      this.$router.push({
-        name: 'f1StationShiftDetail',
-        params: {
-          paramValue: paramValue
-        }
-      });
     }
   }
 };

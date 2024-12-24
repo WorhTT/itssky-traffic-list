@@ -22,6 +22,7 @@ public class StationShiftDto {
 
     private List<Integer> stationIdList;
 
+    @NotNull(message = "收费站不能为空")
     private Integer stationId;
 
     @NotNull(message = "统计日期不能为空")

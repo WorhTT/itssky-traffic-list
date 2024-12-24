@@ -18,8 +18,9 @@ import java.util.List;
 @ToString
 public class CardStatisticsDto {
 
-    @NotEmpty(message = "收费站不能为空!")
     private List<List<Integer>> stationIdArray;
+
+    private Integer stationId;
 
     @NotNull(message = "统计日期不能为空")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")

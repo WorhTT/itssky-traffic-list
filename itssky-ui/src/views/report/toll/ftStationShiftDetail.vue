@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" ref="box">
+  <div class="app-container">
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -14,7 +14,7 @@
       <el-col :span="1.5">
         <el-button
           type="warning"
-          icon="el-icon-document"
+          icon="el-icon-download"
           size="mini"
           @click="printTable"
           class="print-button-container"
@@ -23,10 +23,8 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="dataList" ref="myTable" style="width: 100%;table-layout: fixed;">
-      <el-table-column label="班次" align="center" prop="shiftId"/>
-      <el-table-column label="班组" align="center" prop="teamId"/>
-      <el-table-column label="工号" align="center" prop="operatorId"/>
+    <el-table v-loading="loading" :data="dataList" border ref="myTable">
+      <el-table-column label="统计方式" align="center" prop="statType"/>
       <el-table-column label="通行费收入总额" align="center">
         <el-table-column label="统计金额" align="center" prop="statAmount"/>
         <el-table-column label="应缴金额" align="center" prop="dueAmount"/>
@@ -42,6 +40,7 @@
       <el-table-column label="免费IC卡" align="center" prop="freeIcCardCount"/>
       <el-table-column label="应缴IC卡" align="center" prop="dueIcCardCount"/>
     </el-table>
+
     <!-- Hidden iframe for printing -->
     <iframe id="printFrame" style="display: none;"></iframe>
   </div>
@@ -49,12 +48,10 @@
 
 <script>
 
-import {f1StationShift, exportF1Station} from "@/api/report/toll"
-import printJS from 'print-js';
+import {ftToll, exportFtToll} from "@/api/report/toll"
 
 export default {
-  name: "F1StationShiftDetail",
-  components: {},
+  name: "FTStationShiftDetail",
   data() {
     return {
       props: {multiple: true},
@@ -77,22 +74,34 @@ export default {
       // 是否显示弹出层
       open: false,
       // 查询参数
-      queryParams: {},
+      queryParams: {
+        beginTime: null,
+        endTime: null,
+        statisticsType: '0',
+        stationIdArray: [],
+        // noticeTitle: undefined,
+        // createBy: undefined,
+        // status: undefined
+      },
       // 表单参数
       form: {},
       // 表单校验
       rules: {},
-      stationOptions: [],
+      stationOptions: [
+      ],
       shiftOptions: [
         {label: '早班', value: 1},
         {label: '中班', value: 2},
         {label: '晚班', value: 3},
       ],
+      pickerType: 'date',
+      disabledDatePicker: false,
       pickOptions: {
         disabledDate(time) {
           return time.getTime() > Date.now();
         },
       },
+      showProp: null,
     };
   },
   computed: {},
@@ -102,31 +111,31 @@ export default {
       this.getList();
     }
   },
+  watch: {},
   methods: {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      f1StationShift(this.queryParams).then(response => {
+      ftToll(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
       }).finally(() => {
         this.loading = false;
-      });
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出F1收费站通行费收入班统计表?', "警告", {
+      this.$confirm('是否确认导出FT通行费收入统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportF1Station(queryParams);
+        return exportFtToll(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       })
     },
-
     printTable() {
       const elTable = this.$refs.myTable.$el;
       const printFrame = document.getElementById('printFrame');
@@ -197,7 +206,7 @@ export default {
       `);
       printDocument.write('</style>');
       printDocument.write('</head><body>');
-      printDocument.write('<div class="print-title">F1收费站通行费收入班统计表</div>'); // Add the title here
+      printDocument.write('<div class="print-title">FT通行费收入统计表</div>'); // Add the title here
       printDocument.write('<div class="container"><span class="info-left">收费站：中心</span><span class="info-center">统计时间：2024-12-04</span></div>'); // Add the info line here // Add the info line here
       printDocument.write(elTable.outerHTML);
       printDocument.write('</body></html>');
@@ -212,8 +221,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
-
 .print-button-container {
   display: flex;
 }

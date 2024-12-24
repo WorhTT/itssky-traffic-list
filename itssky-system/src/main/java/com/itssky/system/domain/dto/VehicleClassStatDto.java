@@ -19,7 +19,9 @@ import java.util.List;
 @ToString
 public class VehicleClassStatDto {
 
-    @NotEmpty(message = "收费站不能为空!")
+    @NotNull(message = "收费站不能为空")
+    private Integer stationId;
+
     private List<List<Integer>> stationIdArray;
 
     @NotNull(message = "统计日期不能为空!")

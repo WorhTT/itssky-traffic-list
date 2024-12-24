@@ -2011,7 +2011,7 @@ public class ExcelUtil<T>
                     field.setAccessible(true);
                     try {
                         if (!attr.onlyHeader()) {
-                            dataList.add(field.get(i).toString());
+                            dataList.add(Objects.requireNonNull(field.get(i)).toString());
                         }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
@@ -2048,22 +2048,34 @@ public class ExcelUtil<T>
         //创建第二行统计条件单元格
         int i = 0;
         XSSFCellStyle titleTwoStyle = createTitleTwoCellStyle(workbook);
+        //获取第二行需要分割的值
+        int num = 0;
+        int[] conditionRowSplit = getConditionRowSplit(columnMax, conditionList.size());
         for (String str: conditionList) {
             XSSFCell conditionCell = row2.createCell(i);
             conditionCell.setCellValue(str);
             conditionCell.setCellStyle(titleTwoStyle);
-            i+=5;
+            if (num < conditionRowSplit.length) {
+                i+=conditionRowSplit[num];
+            }
+            num++;
         }
         // 创建表头样式（可根据实际需求自定义样式，这里简单设置为加粗）
         XSSFCellStyle headerStyle = createHeadCellStyle(workbook);
         //第一行标题行合并单元格
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, columnMax - 1));
-        //获取第二行需要分割的值
-        int[] conditionRowSplit = getConditionRowSplit(columnMax, conditionList.size());
         int startColumn = 0;
         int endColumn = conditionRowSplit[0] - 1;
         for (int z = 0; z <= conditionRowSplit.length - 1; z++) {
-            sheet.addMergedRegion(new CellRangeAddress(1, 1, startColumn, endColumn));
+            CellRangeAddress region = new CellRangeAddress(1, 1, startColumn, endColumn);
+            sheet.addMergedRegion(region);
+            for (int colIndex = region.getFirstColumn(); colIndex <= region.getLastColumn(); colIndex++) {
+                XSSFCell regionCell = row2.getCell(colIndex);
+                if (regionCell == null) {
+                    regionCell = row2.createCell(colIndex);
+                }
+                regionCell.setCellStyle(titleTwoStyle);
+            }
             if (z == conditionRowSplit.length - 1) {
                 break;
             }
@@ -2137,8 +2149,15 @@ public class ExcelUtil<T>
         }
 
         XSSFCellStyle contentCellStyle = createContentCellStyle(workbook);
+        //获取当前行
+        int nowRow = 0;
+        for (Row row: sheet) {
+            if (row != null) {
+                nowRow++;
+            }
+        }
+        int bodyRowIndex = nowRow;
         // 填充表格主体数据
-        int bodyRowIndex = currentRowIndex;
         for (List<String> rowBodyData : bodyData) {
             Row row = sheet.createRow(bodyRowIndex);
             int bodyColIndex = 0;
@@ -2315,6 +2334,7 @@ public class ExcelUtil<T>
         cellStyle.setBorderLeft(BorderStyle.THIN); //左边框
         cellStyle.setBorderRight(BorderStyle.THIN); //右边框
         cellStyle.setBorderTop(BorderStyle.THIN); //上边框
+        cellStyle.setWrapText(false);
 
         cellStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
         cellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
@@ -2343,7 +2363,7 @@ public class ExcelUtil<T>
         cellStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());//背景颜色
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 //        cellStyle.setFillBackgroundColor(IndexedColors.GREEN.getIndex());
-        cellStyle.setWrapText(true);// 设置自动换行
+        cellStyle.setWrapText(false);// 设置自动换行
         cellStyle.setBorderBottom(BorderStyle.THIN); //下边框
         cellStyle.setBorderLeft(BorderStyle.THIN); //左边框
         cellStyle.setBorderRight(BorderStyle.THIN); //右边框

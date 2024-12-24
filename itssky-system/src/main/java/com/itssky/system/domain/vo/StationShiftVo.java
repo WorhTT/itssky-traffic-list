@@ -13,6 +13,11 @@ import lombok.*;
 public class StationShiftVo {
 
     /**
+     * 统计方式
+     */
+    private String statType;
+
+    /**
      * 收费站ID
      */
     private Integer stationId;

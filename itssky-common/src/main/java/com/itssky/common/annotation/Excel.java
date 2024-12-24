@@ -156,17 +156,17 @@ public @interface Excel
     /**
      * 跨行
      */
-    public int mergeRow() default 0;
+    public int mergeRow() default 1;
 
     /**
      * 跨列
      */
-    public int mergeColumn() default 0;
+    public int mergeColumn() default 1;
 
     /**
      * 表头行
      */
-    public int headerRow() default 0;
+    public int headerRow() default 2;
 
     /**
      * 纯表头 没有数据

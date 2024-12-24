@@ -2,14 +2,10 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="收费站:" prop="stationIdArray">
-          <el-cascader v-model="queryParams.stationIdArray"
-                       :options="stationOptions"
-                       :props="props"
-                       clearable
-                       collapse-tags
-                       placeholder="请选择收费站" style="width: 12vw;">
-
-          </el-cascader>
+        <el-select v-model="queryParams.stationId" placeholder="请选择收费站" clearable class="custom-input">
+          <el-option v-for="item in stationOptions" :key="item.label" :label="item.label"
+                     :value="item.value"></el-option>
+        </el-select>
         </el-form-item>
       <el-form-item label="统计日期:" prop="beginTime">
         <el-date-picker
@@ -39,8 +35,6 @@
           clearable
           style="width: 240px"
           filterable
-          @keyup.enter.native="handleQuery"
-          @change="changeStatisticsType"
         >
           <el-option value="0" label="日" key="0"/>
           <el-option value="1" label="月" key="1"/>
@@ -48,52 +42,15 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="openChildPage">查看详细报表</el-button>
       </el-form-item>
     </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-        >导出
-        </el-button>
-      </el-col>
-      <!--          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
-    </el-row>
-
-    <el-table v-loading="loading" :data="dataList" @selection-change="handleSelectionChange" border
-              :span-method="arraySpanMethod" :cell-style="cellStyle">
-      <el-table-column label="统计方式" align="center" :prop="showProp"/>
-      <el-table-column label="通行费收入总额" align="center">
-        <el-table-column label="统计金额" align="center" prop="statAmount" width="100"/>
-        <el-table-column label="应缴金额" align="center" prop="dueAmount" width="100"/>
-        <el-table-column label="实缴金额" align="center" prop="paidAmount" width="100"/>
-        <el-table-column label="金额差异" align="center" prop="amountDiff" width="100"/>
-        <el-table-column label="欠款" align="center">
-          <el-table-column label="车次" align="center" prop="arrearsTrips"/>
-          <el-table-column label="金额" align="center" prop="arrearsAmount"/>
-        </el-table-column>
-        <el-table-column label="加收款" align="center" prop="extraTotal"/>
-      </el-table-column>
-      <el-table-column label="移动支付" align="center" prop="mobilePaymentAmount" width="100"/>
-      <el-table-column label="电子支付" align="center" prop="epaymentAmount"/>
-      <el-table-column label="公务IC卡" align="center" prop="officialIcCardCount" width="100"/>
-      <el-table-column label="军车IC卡" align="center" prop="militaryIcCardCount" width="100"/>
-      <el-table-column label="免费IC卡" align="center" prop="freeIcCardCount" width="100"/>
-      <el-table-column label="应缴IC卡" align="center" prop="dueIcCardCount" width="100"/>
-    </el-table>
   </div>
 </template>
 
 <script>
 
-import {ftToll} from "@/api/report/toll"
-import {stationSelectList} from "@/api/system/station"
+import {listStationSelect} from "@/api/system/station"
 
 export default {
   name: "FTStationShift",
@@ -123,10 +80,7 @@ export default {
         beginTime: null,
         endTime: null,
         statisticsType: '0',
-        stationIdArray: [],
-        // noticeTitle: undefined,
-        // createBy: undefined,
-        // status: undefined
+        stationId: [],
       },
       // 表单参数
       form: {},
@@ -152,202 +106,26 @@ export default {
   computed: {},
   created() {
     //获取收费站下拉框
-    stationSelectList().then(res => {
-      this.stationOptions = res.data
-      this.queryParams.stationIdArray = res.selectData
+    listStationSelect().then((res) => {
+      this.stationOptions = res.data.array
+      this.currentStationId = res.data.defaultValue
+      this.$set(this.queryParams, 'stationId', this.currentStationId);
     })
   },
   watch: {},
   methods: {
-    // handleDateChange(val) {
-    //   let dateVal = new Date(val);
-    //   console.log(dateVal);
-    //   if (val && this.pickerType === 'month') {
-    //     if (dateVal instanceof Date) {
-    //       console.log('yes')
-    //     }
-    //     let year = dateVal.getFullYear();
-    //     let month = dateVal.getMonth() + 1;
-    //     // 获取下个月的月份（用于计算本月最后一天）
-    //     let nextMonth = new Date(year, month, 0);
-    //     let lastDayOfMonth = nextMonth.getDate();
-    //     this.queryParams.endTime = new Date(year, month - 1, lastDayOfMonth, 23, 59, 59);
-    //   }
-    // },
-    changeStatisticsType(val) {
-      if (val === '0') {
-        this.disabledDatePicker = false;
-        this.pickerType = 'date'
-        this.queryParams.beginTime = null;
-        this.queryParams.endTime = null;
-      } else if (val === '1') {
-        this.disabledDatePicker = false;
-        this.pickerType = 'month'
-        this.queryParams.beginTime = null;
-        this.queryParams.endTime = null;
-      } else if (val === '2') {
-        this.pickerType = 'date'
-        this.disabledDatePicker = true;
-        this.queryParams.beginTime = null;
-        this.queryParams.endTime = null;
+    openChildPage() {
+      const route = {
+        path: '/ftStationShiftDetail',
+        query: this.queryParams
       }
-    },
-    cellStyle({row, column, rowIndex, columnIndex}) {
-      if (row.totalRow === true) {
-        return 'background:yellow;';
-      }
-      if (row.subTotalRow === true) {
-        return 'background:	#C0C0C0';
-      }
-    },
-    arraySpanMethod({row, column, rowIndex, columnIndex}) {
-      if (row.subTotalRow === true) {
-        if (columnIndex === 0) {
-          return [1, 2];
-        } else if (columnIndex === 1) {
-          return [0, 0];
-        }
-      }
-      if (row.totalRow === true) {
-        if (columnIndex === 0) {
-          return [1, 2];
-        } else if (columnIndex === 1) {
-          return [0, 0];
-        }
-      }
-    },
-    spanStyle({row, column, rowIndex, columnIndex}) {
-      if (row.totalRow === true) {
-        if (columnIndex === 0) {
-          return [rowIndex, columnIndex];
-        } else {
-          return [0, 0];
-        }
-      }
-    },
-    tableHeaderColor({row, column, rowIndex, columnIndex}) {
-      return 'background:	#C0C0C0; color:#000000; font-size: 16px;';
-    },
-    tableCellColor({row, column, rowIndex, columnIndex}) {
-      return 'background:	#CCFFCC; color:#000000;';
-    },
-    /** 查询公告列表 */
-    getList() {
-      this.loading = true;
-      ftToll(this.queryParams).then(response => {
-        this.dataList = response.rows;
-        this.total = response.total;
-        if (this.queryParams.statisticsType === '0') {
-          this.showProp = 'staDate'
-        } else if (this.queryParams.statisticsType === '1') {
-          this.showProp = 'monthDate'
-        } else if (this.queryParams.statisticsType === '2') {
-          this.showProp = 'stationName'
-        }
-        this.loading = false;
-      });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm('是否确认导出高速FT通行费收入统计表?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return exportCharge(queryParams);
-      }).then(response => {
-        this.downloadFile(response.msg);
-      })
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        noticeId: undefined,
-        noticeTitle: undefined,
-        noticeType: undefined,
-        noticeContent: undefined,
-        status: "0"
-      };
-      this.resetForm("form");
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
-    },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.noticeId)
-      this.single = selection.length != 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加公告";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const noticeId = row.noticeId || this.ids
-      getNotice(noticeId).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改公告";
-      });
-    },
-    /** 提交按钮 */
-    submitForm: function () {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.noticeId != undefined) {
-            updateNotice(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addNotice(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const noticeIds = row.noticeId || this.ids
-      this.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(function () {
-        return delNotice(noticeIds);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
+      const resolve = this.$router.resolve(route);
+      window.open(resolve.href, '_blank')
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.el-table {
-  ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-    width: 15px; /*滚动条宽度*/
-    height: 15px; /*滚动条高度*/
-  }
-}
+
 </style>

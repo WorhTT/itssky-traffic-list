@@ -15,6 +15,7 @@ import com.itssky.system.mapper.TollMapper;
 import com.itssky.system.service.ITollService;
 import com.itssky.util.TableUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -115,6 +116,41 @@ public class TollServiceImpl implements ITollService {
         return result;
     }
 
+    @Override
+    @DynamicTableName(dateParam = "#dto.time")
+    public List<F2StationShiftTollVo> getF2StationShiftToll(StationShiftDto dto) {
+        List<StationShiftVo> stationShiftVos = f2StationShift(dto);
+        List<F2StationShiftTollVo> result = new ArrayList<>();
+        stationShiftVos.forEach(i -> {
+            F2StationShiftTollVo f1StationShiftTollVo = F2StationShiftTollVo.builder()
+                    .mobilePaymentAmount(i.getMobilePaymentAmount())
+                    .ePaymentAmount(i.getEPaymentAmount())
+                    .officialIcCardCount(i.getOfficialIcCardCount())
+                    .militaryIcCardCount(i.getMilitaryIcCardCount())
+                    .freeIcCardCount(i.getFreeIcCardCount())
+                    .dueIcCardCount(i.getDueIcCardCount())
+                    .statAmount(i.getStatAmount())
+                    .dueAmount(i.getDueAmount())
+                    .paidAmount(i.getPaidAmount())
+                    .amountDiff(i.getAmountDiff())
+                    .arrearsAmount(i.getArrearsAmount())
+                    .extraTotal(i.getExtraTotal())
+                    .build();
+            if (i.isSubTotalRow()) {
+                f1StationShiftTollVo.setShiftId("小计");
+                f1StationShiftTollVo.setOperatorId("");
+            } else if (i.isTotalRow()) {
+                f1StationShiftTollVo.setShiftId("合计");
+                f1StationShiftTollVo.setOperatorId("");
+            } else {
+                f1StationShiftTollVo.setShiftId(i.getShiftId().toString());
+                f1StationShiftTollVo.setOperatorId(i.getOperatorId().toString());
+            }
+            result.add(f1StationShiftTollVo);
+        });
+        return result;
+    }
+
 
     /**
      * F2收费站通行费收入日统计
@@ -125,12 +161,22 @@ public class TollServiceImpl implements ITollService {
     @Override
     @DynamicTableName(dateParam = "#dto.time")
     public List<StationShiftVo> f2StationShift(StationShiftDto dto) {
-        if (!CollectionUtils.isEmpty(dto.getStationIdArray())) {
-            List<Integer> stationIdList = new ArrayList<>();
-            dto.getStationIdArray().forEach(d -> stationIdList.add(d.get(2)));
-            dto.setStationIdList(stationIdList);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
-
         dto.setTimeFormat(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
         List<StationShiftVo> stationShiftVos = tollMapper.f2StationShift(dto);
         List<TbShVo> tbShData = tollMapper.getTbShData(dto);
@@ -225,10 +271,21 @@ public class TollServiceImpl implements ITollService {
      */
     @Override
     public List<StationShiftVo> ftToll(FtStationDto dto) {
-        if (!CollectionUtils.isEmpty(dto.getStationIdArray())) {
-            List<Integer> stationIdList = new ArrayList<>();
-            dto.getStationIdArray().forEach(d -> stationIdList.add(d.get(2)));
-            dto.setStationIdList(stationIdList);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
         //构建会查询到的表集合
         dto.setTableNameList(
@@ -285,8 +342,44 @@ public class TollServiceImpl implements ITollService {
             i.setStatAmount(i.getDueAmount() + i.getMobilePaymentAmount() + i.getEPaymentAmount());
             //计算金额差异
             i.setAmountDiff(i.getPaidAmount() - i.getDueAmount());
+            //给统计方式赋值
+            if (dto.getStatisticsType().equals("0")) {
+                i.setStatType(i.getStaDate().toString());
+            }
+            else if (dto.getStatisticsType().equals("1")) {
+                i.setStatType(i.getMonthDate());
+            }
+            else if (dto.getStatisticsType().equals("2")) {
+                i.setStatType(i.getStationName());
+            }
         });
         return stationShiftVos;
+    }
+
+    @Override
+    @DynamicTableName(dateParam = "#dto.beginTime")
+    public List<FtTollVo> getFtToll(FtStationDto dto) {
+        List<StationShiftVo> stationShiftVos = ftToll(dto);
+        List<FtTollVo> result = new ArrayList<>();
+        stationShiftVos.forEach(i -> {
+            FtTollVo f1StationShiftTollVo = FtTollVo.builder()
+                    .statType(i.getStatType())
+                    .mobilePaymentAmount(i.getMobilePaymentAmount())
+                    .ePaymentAmount(i.getEPaymentAmount())
+                    .officialIcCardCount(i.getOfficialIcCardCount())
+                    .militaryIcCardCount(i.getMilitaryIcCardCount())
+                    .freeIcCardCount(i.getFreeIcCardCount())
+                    .dueIcCardCount(i.getDueIcCardCount())
+                    .statAmount(i.getStatAmount())
+                    .dueAmount(i.getDueAmount())
+                    .paidAmount(i.getPaidAmount())
+                    .amountDiff(i.getAmountDiff())
+                    .arrearsAmount(i.getArrearsAmount())
+                    .extraTotal(i.getExtraTotal())
+                    .build();
+            result.add(f1StationShiftTollVo);
+        });
+        return result;
     }
 
     /**
@@ -294,10 +387,21 @@ public class TollServiceImpl implements ITollService {
      */
     public List<VehicleClassStatVo> afvGeneral(VehicleClassStatDto dto) {
         //获取收费站ID列表
-        if (!CollectionUtils.isEmpty(dto.getStationIdArray())) {
-            List<Integer> stationIdList = new ArrayList<>();
-            dto.getStationIdArray().forEach(d -> stationIdList.add(d.get(2)));
-            dto.setStationIdList(stationIdList);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
         //构建会查询到的表集合
         dto.setTableNameList(
@@ -355,9 +459,39 @@ public class TollServiceImpl implements ITollService {
         //计算合计
         vehicleClassStatVos.forEach(i -> i.setTotalAmount(i.getCustSubTotal()
                 + i.getTruckSubTotal() + i.getSpecSubTotal() + i.getAddedAmount()));
+        //获取统计方式
+        vehicleClassStatVos.forEach(v -> {
+            if (dto.getStatisticsType().equals("0")) {
+                v.setStatType(v.getStaDate().toString());
+            }
+            else if (dto.getStatisticsType().equals("1")) {
+                v.setStatType(v.getMonthDate());
+            }
+            else if (dto.getStatisticsType().equals("2")) {
+                v.setStatType(v.getStationName());
+            }
+            else if (dto.getStatisticsType().equals("3")) {
+                v.setStatType(v.getOperatorId().toString());
+            }
+        });
         return vehicleClassStatVos;
     }
 
+    @Override
+    @DynamicTableName(dateParam = "#dto.beginTime")
+    public List<AfvVehicleVo> getAfvGeneral(VehicleClassStatDto dto) {
+        List<VehicleClassStatVo> vehicleClassStatVos = afvGeneral(dto);
+        if (CollectionUtils.isEmpty(vehicleClassStatVos)) {
+            return new ArrayList<>();
+        }
+        List<AfvVehicleVo> result = new ArrayList<>();
+        vehicleClassStatVos.forEach(i -> {
+            AfvVehicleVo afvVehicleVo = new AfvVehicleVo();
+            BeanUtils.copyProperties(i, afvVehicleVo);
+            result.add(afvVehicleVo);
+        });
+        return result;
+    }
 
     /**
      * EEF电子支付通行费(MTC+ETC)统计表
@@ -367,10 +501,21 @@ public class TollServiceImpl implements ITollService {
     @Override
     public List<EPayTollStatVo> eefEPay(VehicleClassStatDto dto) {
         //获取收费站ID列表
-        if (!CollectionUtils.isEmpty(dto.getStationIdArray())) {
-            List<Integer> stationIdList = new ArrayList<>();
-            dto.getStationIdArray().forEach(d -> stationIdList.add(d.get(2)));
-            dto.setStationIdList(stationIdList);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
         //构建会查询到的表集合
         dto.setTableNameList(

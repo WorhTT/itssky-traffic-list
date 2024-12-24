@@ -74,6 +74,56 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/f2StationDayDetail',
+    component: () => import('@/views/report/toll/f2StationDayDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/ftStationShiftDetail',
+    component: () => import('@/views/report/toll/ftStationShiftDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/afvComVehicleDetail',
+    component: () => import('@/views/report/toll/afvComVehicleDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/eefEPayTollDetail',
+    component: () => import('@/views/report/toll/eefEPayTollDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/s1StationShiftDetail',
+    component: () => import('@/views/report/card/s1StationShiftDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/s2StationDayDetail',
+    component: () => import('@/views/report/card/s2StationDayDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/sdtHandOutDetail',
+    component: () => import('@/views/report/card/sdtHandOutDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/cdtHandInDetail',
+    component: () => import('@/views/report/card/cdtHandInDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/c1StationShiftDetail',
+    component: () => import('@/views/report/card/c1StationShiftDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/c2StationDayDetail',
+    component: () => import('@/views/report/card/c2StationDayDetail.vue'),
+    hidden: true
+  },
+  {
     path: '/',
     redirect: '/f1StationShift'
   },
@@ -98,6 +148,7 @@ export const constantRoutes = [
         name: '打印',
         meta: {title: '打印', icon: 'chart'},
         component: () => import('@/views/report/toll/print.vue'),
+        hidden: true
       },
       {
         path: '/f2StationShift',

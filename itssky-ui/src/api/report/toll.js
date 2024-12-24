@@ -24,9 +24,25 @@ export function f2StationShift(data) {
   })
 }
 
+export function exportF2Station(data) {
+  return request({
+    url: '/toll/export/f2station',
+    method: 'post',
+    data: data
+  })
+}
+
 export function ftToll(data) {
   return request({
     url: '/toll/fttoll',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportFtToll(data) {
+  return request({
+    url: '/toll/export/fttoll',
     method: 'post',
     data: data
   })
@@ -40,6 +56,13 @@ export function afvGeneral(data) {
   })
 }
 
+export function exportAfvGeneral(data) {
+  return request({
+    url: '/toll/export/afvgeneral',
+    method: 'post',
+    data: data
+  })
+}
 
 export function eefepay(data) {
   return request({
