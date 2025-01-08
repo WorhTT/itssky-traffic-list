@@ -179,3 +179,7 @@ xss:
   excludes: /system/notice
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
+
+# 业务系统服务ID
+tbsysmodule:
+  id: 12

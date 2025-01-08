@@ -24,7 +24,21 @@
     <el-table v-loading="loading" :data="dataList" border ref="myTable">
       <el-table-column label="收费员工号" align="center" prop="shiftId"/>
       <el-table-column label="收费员姓名" align="center" prop="operatorId"/>
-      <el-table-column label="发卡数" align="center" prop="cust1"/>
+      <el-table-column label="收费流量" align="center" prop="cust1"/>
+      <el-table-column label="回收卡" align="center" prop="cust2">
+        <el-table-column label="应缴卡数" align="center" prop="cust2"/>
+        <el-table-column label="实缴卡数" align="center" prop="cust2"/>
+      </el-table-column>
+      <el-table-column label="现金收入" align="center" prop="cust2">
+        <el-table-column label="应缴金额" align="center" prop="cust2"/>
+        <el-table-column label="实缴金额" align="center" prop="cust2"/>
+      </el-table-column>
+      <el-table-column label="电子支付" align="center" prop="cust2">
+        <el-table-column label="储值金额" align="center" prop="cust2"/>
+        <el-table-column label="记账卡金额" align="center" prop="cust2"/>
+      </el-table-column>
+      <el-table-column label="移动支付" align="center" prop="cust1"/>
+      <el-table-column label="收费金额合计" align="center" prop="cust1"/>
     </el-table>
 
     <iframe id="printFrame" style="display: none;"></iframe>
@@ -37,7 +51,7 @@ import {s1StationShift, exportC1StationShift} from "@/api/report/card"
 
 
 export default {
-  name: "CardAssessDetail",
+  name: "AmountAssessDetail",
   data() {
     return {
       props: {multiple: true},
@@ -92,10 +106,10 @@ export default {
     getList() {
       this.loading = true;
       s1StationShift(this.queryParams).then(response => {
-          this.dataList = response.rows;
-          this.conditionList = response.conditionList;
-      }).catch(err=>{
-        console.error("异常：{}",err)
+        this.dataList = response.rows;
+        this.conditionList = response.conditionList;
+      }).catch(err => {
+        console.error("异常：{}", err)
       }).finally(() => {
         this.loading = false;
       });
@@ -103,7 +117,7 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出FD06收费员发卡统计表?', "警告", {
+      this.$confirm('是否确认导出FD07收费员收费统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -190,7 +204,7 @@ export default {
         </style>
         </head>
         <body>
-            <div class="print-title">FD06收费员发卡统计</div>
+            <div class="print-title">FD07收费员收费统计</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
         </body>

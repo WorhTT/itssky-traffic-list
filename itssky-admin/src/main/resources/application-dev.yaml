@@ -83,6 +83,3 @@ secure:
       - /common/**
       - /logout
 
-# 业务系统服务ID
-tbsysmodule:
-  id: 12

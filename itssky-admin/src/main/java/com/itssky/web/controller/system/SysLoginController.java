@@ -3,10 +3,12 @@ package com.itssky.web.controller.system;
 import cn.hutool.core.util.StrUtil;
 import com.itssky.common.constant.Constants;
 import com.itssky.common.core.domain.AjaxResult;
+import com.itssky.common.core.domain.entity.TbMenu;
 import com.itssky.common.core.domain.model.LoginBody;
 import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.SecurityUtils;
 import com.itssky.framework.web.service.SysLoginService;
+import com.itssky.system.service.ITbMenuService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * 登录验证
@@ -35,6 +38,9 @@ public class SysLoginController {
 
     @Autowired
     private SysLoginService loginService;
+
+    @Autowired
+    private ITbMenuService menuService;
 
     /**
      * 登录方法
@@ -85,6 +91,8 @@ public class SysLoginController {
      */
     @GetMapping("getRouters")
     public AjaxResult getRouters() {
-        return AjaxResult.success(new ArrayList<>());
+        Long userId = SecurityUtils.getUserId();
+        List<TbMenu> menus = menuService.selectMenuTreeByUserId(userId);
+        return AjaxResult.success(menuService.buildMenus(menus));
     }
 }

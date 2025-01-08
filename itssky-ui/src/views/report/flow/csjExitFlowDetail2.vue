@@ -204,7 +204,7 @@ export default {
         </style>
         </head>
         <body>
-            <div class="print-title">CSJ出口(MTC+ETC)交通流量统计表</div>
+            <div class="print-title">RSJ入口(MTC+ETC)交通流量统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
         </body>

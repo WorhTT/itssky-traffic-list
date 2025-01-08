@@ -41,7 +41,7 @@ import {listStationSelect} from "@/api/system/station";
 
 
 export default {
-  name: "CardAssess",
+  name: "AmountAssess",
   data() {
     return {
       props: {multiple: true},
@@ -101,7 +101,7 @@ export default {
   methods: {
     openChildPage() {
       const route = {
-        path: '/cardAssessDetail',
+        path: '/amountAssessDetail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);
