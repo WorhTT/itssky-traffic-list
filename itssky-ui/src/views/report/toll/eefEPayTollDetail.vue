@@ -177,6 +177,7 @@ export default {
           return time.getTime() > Date.now();
         },
       },
+      conditionList: [],
     };
   },
   computed: {},
@@ -195,6 +196,7 @@ export default {
       eefepay(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
+      }).finally(() => {
         this.loading = false;
       });
     },
@@ -216,10 +218,13 @@ export default {
       const elTable = this.$refs.myTable.$el;
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
-      printDocument.open();
-      printDocument.write('<html><head><title>Print Table</title>');
-      printDocument.write('<style>');
-      printDocument.write(`
+      let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
+      let htmlContent = `
+       <!DOCTYPE html>
+        <html>
+        <head>
+        <title>Print</title>
+        <style>
         .table-container {
           zoom: 0.3
         }
@@ -282,15 +287,16 @@ export default {
           size: auto;
           margin: 0mm;
         }
-      `);
-      printDocument.write('</style>');
-      printDocument.write('</head><body>');
-      printDocument.write('<div class="print-title">EEF电子支付通行费(MTC+ETC)统计表</div>'); // Add the title here
-      printDocument.write('<div class="container"><span class="info-left">收费站：中心</span><span class="info-center">统计时间：2024-12-04</span></div>'); // Add the info line here // Add the info line here
-      printDocument.write('<div class="table-container">');
-      printDocument.write(elTable.outerHTML);
-      printDocument.write('</div>');
-      printDocument.write('</body></html>');
+        </style>
+        </head>
+        <body>
+            <div class="print-title">EEF电子支付通行费(MTC+ETC)统计表</div>
+            <div class="container">${conditionListHtml}</div>
+            <div class="table-container">${elTable.outerHTML}</div>
+        </body>
+        </html>
+      `
+      printDocument.write(htmlContent);
       printDocument.close();
 
       // Trigger print

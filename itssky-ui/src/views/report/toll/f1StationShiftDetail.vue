@@ -93,6 +93,7 @@ export default {
           return time.getTime() > Date.now();
         },
       },
+      conditionList:[]
     };
   },
   computed: {},
@@ -131,11 +132,14 @@ export default {
       const elTable = this.$refs.myTable.$el;
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
-      printDocument.open();
-      printDocument.write('<html><head><title>Print Table</title>');
-      printDocument.write('<style>');
-      printDocument.write(`
-        .print-title {
+      let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
+      let htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <title>Print</title>
+        <style>
+                .print-title {
           text-align: center;
           font-size: 24px;
           font-weight: bold;
@@ -194,13 +198,16 @@ export default {
           size: auto;
           margin: 0mm;
         }
-      `);
-      printDocument.write('</style>');
-      printDocument.write('</head><body>');
-      printDocument.write('<div class="print-title">F1收费站通行费收入班统计表</div>'); // Add the title here
-      printDocument.write('<div class="container"><span class="info-left">收费站：中心</span><span class="info-center">统计时间：2024-12-04</span></div>'); // Add the info line here // Add the info line here
-      printDocument.write(elTable.outerHTML);
-      printDocument.write('</body></html>');
+        </style>
+        </head>
+        <body>
+            <div class="print-title">F1收费站通行费收入班统计表</div>
+            <div class="container">${conditionListHtml}</div>
+            <div class="table-container">${elTable.outerHTML}</div>
+        </body>
+        </html>
+        `
+      printDocument.write(htmlContent);
       printDocument.close();
 
       // Trigger print

@@ -108,7 +108,7 @@ export default {
   methods: {
     openChildPage() {
       const route = {
-        path: '/csjExitFlowDetail',
+        path: '/csjExitFlowDetail2',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);

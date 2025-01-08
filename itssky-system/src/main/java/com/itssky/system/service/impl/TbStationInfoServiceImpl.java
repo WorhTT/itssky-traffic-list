@@ -151,14 +151,14 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
         tbStationInfoLambdaQueryWrapper.likeRight(TbStationInfo::getCorpno, corpNo)
                 .apply(" length(corpno)=6 ");
         List<TbStationInfo> tbStationInfoList = baseMapper.selectList(tbStationInfoLambdaQueryWrapper);
-        if (CollectionUtils.isEmpty(tbStationInfoList)) {
-            return new ArrayList<>();
-        }
         List<Map<String, Object>> result = new ArrayList<>();
         Map<String, Object> center = new HashMap<>();
         center.put("value", 0);
         center.put("label", "中心");
         result.add(center);
+        if (CollectionUtils.isEmpty(tbStationInfoList)) {
+            return result;
+        }
         tbStationInfoList.stream().filter(Objects::nonNull).forEach(obj -> {
             Map<String, Object> tempMap = new HashMap<>();
             if (Objects.nonNull(obj.getStationid())) {

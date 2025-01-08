@@ -96,6 +96,7 @@ export default {
           return time.getTime() > Date.now();
         },
       },
+      conditionList:[]
     };
   },
   created() {

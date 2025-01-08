@@ -96,6 +96,7 @@ export default {
           return time.getTime() > Date.now();
         },
       },
+      conditionList:[]
     };
   },
   created() {
@@ -110,7 +111,7 @@ export default {
       getExitFlow(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
-      }).then(() => {
+      }).finally(() => {
         this.loading = false;
       });
     },
