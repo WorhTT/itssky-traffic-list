@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +40,7 @@ public class CustomItsskySsoClientControllerImpl extends ItsskySsoClientControll
     private TbUserInfoService tbUserInfoService;
 
     @Override
-    public void tokenHandle(JWT jwt) {
+    public void tokenHandle(JWT jwt, HttpServletRequest request, HttpServletResponse response) {
         String userId = (String)jwt.getPayload("userId");
         String uuid = (String)jwt.getPayload("uuid");
         int exp = Integer.parseInt(String.valueOf(jwt.getPayload("exp")));

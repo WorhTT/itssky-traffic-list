@@ -3,6 +3,7 @@ package com.itssky.report.controller;
 import com.itssky.common.core.controller.BaseController;
 import com.itssky.common.core.domain.AjaxResult;
 import com.itssky.common.core.page.TableDataInfo;
+import com.itssky.common.exception.biz.BizException;
 import com.itssky.common.utils.poi.ExcelUtil;
 import com.itssky.system.domain.dto.CardStatisticsDto;
 import com.itssky.system.domain.dto.CardStatisticsDtoV2;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 /**
  * 通行卡类报表
+ *
  * @author ITSSKY
  */
 @Slf4j
@@ -42,18 +44,22 @@ public class CardController extends BaseController {
      */
     @PostMapping(value = "/s1station")
     public TableDataVo s1StationShift(@RequestBody @Valid CardStatisticsDto dto) {
-        List<CardStatisticsVo> result = cardService.s1StationShift(dto);
-        TableDataVo tableDataVo = new TableDataVo();
-        tableDataVo.setRows(result);
-        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
-        return tableDataVo;
+        try {
+            List<CardStatisticsVo> result = cardService.s1StationShift(dto);
+            TableDataVo tableDataVo = new TableDataVo();
+            tableDataVo.setRows(result);
+            tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
+            return tableDataVo;
+        } catch (Exception e) {
+            throw new BizException("查询异常!", e);
+        }
     }
 
     /**
      * 导出S1收费站通行卡发放班统计表
      */
     @PostMapping(value = "/export/s1station")
-    public AjaxResult exportS1CardStation(@RequestBody @Valid CardStatisticsDto dto) throws IOException{
+    public AjaxResult exportS1CardStation(@RequestBody @Valid CardStatisticsDto dto) throws IOException {
         ExportVo exportVo = cardService.getSCardStationShift(dto);
         List<SCardStatVo> result = exportVo.getResult().stream().filter(i -> i instanceof SCardStatVo)
                 .map(i -> (SCardStatVo) i)
@@ -67,7 +73,7 @@ public class CardController extends BaseController {
      * 导出C1收费站通行卡发放班统计表
      */
     @PostMapping(value = "/export/c1station")
-    public AjaxResult exportC1CardStation(@RequestBody @Valid CardStatisticsDto dto) throws IOException{
+    public AjaxResult exportC1CardStation(@RequestBody @Valid CardStatisticsDto dto) throws IOException {
         ExportVo exportVo = cardService.getCCardStationShift(dto);
         List<CCardStatVo> result = exportVo.getResult().stream().filter(i -> i instanceof CCardStatVo)
                 .map(i -> (CCardStatVo) i)
@@ -89,7 +95,7 @@ public class CardController extends BaseController {
      * 导出S2收费站通行卡发放日统计表
      */
     @PostMapping(value = "/export/s2station")
-    public AjaxResult exportS2CardStation(@RequestBody @Valid CardStatisticsDto dto) throws IOException{
+    public AjaxResult exportS2CardStation(@RequestBody @Valid CardStatisticsDto dto) throws IOException {
         ExportVo exportVo = cardService.getSCardStationDay(dto);
         List<SCardStatVo> result = exportVo.getResult().stream().filter(i -> i instanceof SCardStatVo)
                 .map(i -> (SCardStatVo) i)
@@ -104,7 +110,7 @@ public class CardController extends BaseController {
      * 导出C2收费站通行卡发放日统计表
      */
     @PostMapping(value = "/export/c2station")
-    public AjaxResult exportC2CardStation(@RequestBody @Valid CardStatisticsDto dto) throws IOException{
+    public AjaxResult exportC2CardStation(@RequestBody @Valid CardStatisticsDto dto) throws IOException {
         ExportVo exportVo = cardService.getCCardStationDay(dto);
         List<CCardStatVo> result = exportVo.getResult().stream().filter(i -> i instanceof CCardStatVo)
                 .map(i -> (CCardStatVo) i)
@@ -113,6 +119,7 @@ public class CardController extends BaseController {
         ExcelUtil<CCardStatVo> util = new ExcelUtil<CCardStatVo>(CCardStatVo.class);
         return util.exportDynamic(result, "C2收费站通行卡回收日统计表", conditionList, 32);
     }
+
     /**
      * SDT通行卡发放统计表
      */
@@ -130,7 +137,7 @@ public class CardController extends BaseController {
      * 导出SDT通行卡发放统计表
      */
     @PostMapping(value = "/export/sdtstation")
-    public AjaxResult exportSdtStationShift(@RequestBody @Valid CardStatisticsDtoV2 dto) throws IOException{
+    public AjaxResult exportSdtStationShift(@RequestBody @Valid CardStatisticsDtoV2 dto) throws IOException {
         ExportVo exportVo = cardService.getSdtStationShift(dto);
         List<SdtCardStatVo> result = exportVo.getResult().stream().filter(i -> i instanceof SdtCardStatVo)
                 .map(i -> (SdtCardStatVo) i)

@@ -7,6 +7,8 @@ import com.itssky.common.utils.poi.ExcelUtil;
 import com.itssky.system.domain.ReportChargeInfo;
 import com.itssky.system.domain.ReportFlowInfo;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
+import com.itssky.system.domain.vo.CCardStatVo;
+import com.itssky.system.domain.vo.ExportVo;
 import com.itssky.system.service.ITollService;
 import com.itssky.system.service.impl.ReportFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -64,12 +67,13 @@ public class ReportFlowController extends BaseController {
      */
     @PostMapping(value = "/export/exit/flow")
     public AjaxResult exportExitFlow(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
-        List<ReportFlowInfo> list = reportFlowService.getExitFlow(dto, 2);
+        ExportVo exportVo = reportFlowService.getFlowExportVo(dto, 2);
+        List<ReportFlowInfo> result = exportVo.getResult().stream().filter(i -> i instanceof ReportFlowInfo)
+                .map(i -> (ReportFlowInfo) i)
+                .collect(Collectors.toList());
+        List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
-        List<String> conditionList = new ArrayList<>();
-        conditionList.add("收费站：中心");
-        conditionList.add("统计日期：2024-12-04");
-        return util.exportDynamic(list, "CSJ出口MTC、ETC交通流量统计表", conditionList, 26);
+        return util.exportDynamic(result, "CSJ出口MTC、ETC交通流量统计表", conditionList, 26);
     }
 
     /**
@@ -77,12 +81,13 @@ public class ReportFlowController extends BaseController {
      */
     @PostMapping(value = "/export/entry/flow")
     public AjaxResult exportEntryFlow(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
-        List<ReportFlowInfo> list = reportFlowService.getExitFlow(dto, 1);
+        ExportVo exportVo = reportFlowService.getFlowExportVo(dto, 1);
+        List<ReportFlowInfo> result = exportVo.getResult().stream().filter(i -> i instanceof ReportFlowInfo)
+                .map(i -> (ReportFlowInfo) i)
+                .collect(Collectors.toList());
+        List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
-        List<String> conditionList = new ArrayList<>();
-        conditionList.add("收费站：中心");
-        conditionList.add("统计日期：2024-12-04");
-        return util.exportDynamic(list, "RSJ入口MTC、ETC交通流量统计表", conditionList, 26);
+        return util.exportDynamic(result, "RSJ入口MTC、ETC交通流量统计表", conditionList, 26);
     }
 
     /**

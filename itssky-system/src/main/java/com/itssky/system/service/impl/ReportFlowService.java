@@ -2,20 +2,23 @@ package com.itssky.system.service.impl;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.DateUtils;
 import com.itssky.common.utils.MybatisPlusTableNameHelper;
 import com.itssky.db.Dbedge;
 import com.itssky.db.Dbstats;
 import com.itssky.system.domain.*;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
-import com.itssky.system.mapper.EntryFlowMapper;
-import com.itssky.system.mapper.ExitFlowMapper;
-import com.itssky.system.mapper.ReportFlowMapper;
-import com.itssky.system.mapper.TbShMapper;
+import com.itssky.system.domain.vo.ExportVo;
+import com.itssky.system.mapper.*;
+import com.itssky.system.service.CardService;
 import com.itssky.util.TableUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -36,73 +39,14 @@ public class ReportFlowService {
     private ReportFlowMapper reportFlowMapper;
 
     @Autowired
-    private EntryFlowMapper entryFlowMapper;
-
-    @Autowired
-    private ExitFlowMapper exitFlowMapper;
+    private TbStationInfoMapper tbStationInfoMapper;
 
     @Autowired
     private TbShMapper tbShMapper;
 
+    @Autowired
+    private CardService cardService;
 
-//    /**
-//     * 获取高速入口流量报表
-//     */
-//    public List<ReportFlowInfo> getEntryFlow(ReportFlowInfo param) {
-//        List<ReportFlowInfo> result = new ArrayList<>();
-//        List<TbStateEntry> tbStateEntryList = new ArrayList<>();
-//        if (Objects.nonNull(param) && !CollectionUtils.isEmpty(param.getDateRange())) {
-//            QueryWrapper<TbStateEntry> queryWrapper = new QueryWrapper<>();
-//            if (param.getDateRange().get(0).after(param.getDateRange().get(1))) {
-//                log.error("时间范围传参有误");
-//                return new ArrayList<>();
-//            }
-//            queryWrapper.between("BalanceTime", param.getDateRange().get(0), param.getDateRange().get(1));
-//            tbStateEntryList = entryFlowMapper.selectList(queryWrapper);
-//        } else {
-//            tbStateEntryList = reportFlowMapper.getTbStateEntryList(0);
-//        }
-//
-//        if (CollectionUtils.isEmpty(tbStateEntryList)) {
-//            log.error("入口班次统计列表查询为空 请联系管理员");
-//            return result;
-//        }
-//        Set<Integer> stationIdSet = tbStateEntryList.stream()
-//                .map(TbStateEntry::getStationID).collect(Collectors.toSet());
-//        if (CollectionUtils.isEmpty(stationIdSet)) {
-//            log.error("站点编码列表查询为空 请联系管理员");
-//            return result;
-//        }
-//        List<StationCode> stationCodeByIds = reportFlowMapper.getStationCodeByIds(stationIdSet);
-//        Map<Integer, String> stationCodeMap = stationCodeByIds.stream()
-//                .collect(Collectors.toMap(StationCode::getStationid, StationCode::getStationname, (m, n) -> m));
-//        Set<Integer> vehicleClassSet = tbStateEntryList.stream()
-//                .map(TbStateEntry::getVehicleClass).collect(Collectors.toSet());
-//        if (CollectionUtils.isEmpty(vehicleClassSet)) {
-//            log.error("车型列表查询为空 请联系管理员");
-//            return result;
-//        }
-//        Map<Integer, List<TbStateEntry>> tbStateEntryMapByStationId = tbStateEntryList.stream()
-//                .collect(Collectors.groupingBy(TbStateEntry::getStationID));
-//        for (Map.Entry<Integer, List<TbStateEntry>> entry : tbStateEntryMapByStationId.entrySet()) {
-//            ReportFlowInfo reportFlowInfo = new ReportFlowInfo();
-//            Integer stationId = entry.getKey();
-//            if (!CollectionUtils.isEmpty(stationCodeMap) && Objects.nonNull(stationCodeMap.get(stationId))) {
-//                String stationName = stationCodeMap.get(stationId);
-//                reportFlowInfo.setStationName(stationName);
-//            } else {
-//                continue;
-//            }
-//            List<TbStateEntry> entryList = entry.getValue();
-//            fillEntryFlowReport(reportFlowInfo, entryList, new ArrayList<>());
-//            result.add(reportFlowInfo);
-//        }
-//        ReportFlowInfo amountReportFlowInfo = new ReportFlowInfo();
-//        amountReportFlowInfo.setStationName("合计");
-//        fillEntryFlowReport(amountReportFlowInfo, tbStateEntryList, new ArrayList<>());
-//        result.add(amountReportFlowInfo);
-//        return result;
-//    }
 
     /**
      * 获取高速出口流量报表
@@ -110,10 +54,21 @@ public class ReportFlowService {
      */
     public List<ReportFlowInfo> getExitFlow(FlowStatisticsDto dto, int flag) {
         //获取收费站ID列表
-        if (!CollectionUtils.isEmpty(dto.getStationIdArray())) {
-            List<Integer> stationIdList = new ArrayList<>();
-            dto.getStationIdArray().forEach(d -> stationIdList.add(d.get(2)));
-            dto.setStationIdList(stationIdList);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
         //构建会查询到的表集合
         String tablePrefix = null;
@@ -172,6 +127,14 @@ public class ReportFlowService {
                 .build();
         reportFlowInfos.add(total);
         return reportFlowInfos;
+    }
+
+    public ExportVo getFlowExportVo(FlowStatisticsDto dto, int flag) {
+        ExportVo exportVo = new ExportVo();
+        List<ReportFlowInfo> list = getExitFlow(dto, flag);
+        exportVo.setResult(list);
+        exportVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return exportVo;
     }
 
     /**

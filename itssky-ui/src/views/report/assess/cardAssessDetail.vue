@@ -22,38 +22,9 @@
     </el-row>
 
     <el-table v-loading="loading" :data="dataList" border ref="myTable">
-      <el-table-column label="班次" align="center" prop="shiftId"/>
-      <el-table-column label="工号" align="center" prop="operatorId"/>
-      <el-table-column label="客一" align="center" prop="cust1"/>
-      <el-table-column label="客二" align="center" prop="cust2"/>
-      <el-table-column label="客三" align="center" prop="cust3"/>
-      <el-table-column label="客四" align="center" prop="cust4"/>
-      <el-table-column label="客车小计" align="center" prop="custSubTotal"/>
-      <el-table-column label="货一" align="center" prop="truck1"/>
-      <el-table-column label="货二" align="center" prop="truck2"/>
-      <el-table-column label="货三" align="center" prop="truck3"/>
-      <el-table-column label="货四" align="center" prop="truck4"/>
-      <el-table-column label="货五" align="center" prop="truck5"/>
-      <el-table-column label="货六" align="center" prop="truck6"/>
-      <el-table-column label="货车小计" align="center" prop="truckSubTotal"/>
-      <el-table-column label="专一" align="center" prop="spec1"/>
-      <el-table-column label="专二" align="center" prop="spec2"/>
-      <el-table-column label="专三" align="center" prop="spec3"/>
-      <el-table-column label="专四" align="center" prop="spec4"/>
-      <el-table-column label="专五" align="center" prop="spec5"/>
-      <el-table-column label="专六" align="center" prop="spec6"/>
-      <el-table-column label="专车小计" align="center" prop="specSubTotal"/>
-      <el-table-column label="军车" align="center" prop="militaryNum"/>
-      <el-table-column label="公务" align="center" prop="officialNum"/>
-      <el-table-column label="车队" align="center" prop="fleetNum"/>
-      <el-table-column label="优惠" align="center" prop="preferNum"/>
-      <el-table-column label="ETC" align="center" prop="etcNum"/>
-      <el-table-column label="纸券" align="center" prop="paperNum"/>
-      <el-table-column label="应收卡" align="center" prop="issuedNum"/>
-      <el-table-column label="实收卡" align="center" prop="actualNum"/>
-      <el-table-column label="无卡" align="center" prop="noneNum"/>
-      <el-table-column label="卡损" align="center" prop="badNum"/>
-      <el-table-column label="总流量" align="center" prop="totalFlow"/>
+      <el-table-column label="收费员工号" align="center" prop="shiftId"/>
+      <el-table-column label="收费员姓名" align="center" prop="operatorId"/>
+      <el-table-column label="发卡数" align="center" prop="cust1"/>
     </el-table>
 
     <iframe id="printFrame" style="display: none;"></iframe>
@@ -66,7 +37,7 @@ import {s1StationShift, exportC1StationShift} from "@/api/report/card"
 
 
 export default {
-  name: "C1StationShiftDetail",
+  name: "CardAssessDetail",
   data() {
     return {
       props: {multiple: true},

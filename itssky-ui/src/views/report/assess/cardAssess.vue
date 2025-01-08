@@ -7,9 +7,9 @@
                      :value="item.value"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="统计日期:" prop="beginTime">
+      <el-form-item label="统计日期:" prop="time">
         <el-date-picker
-          v-model="queryParams.beginTime"
+          v-model="queryParams.time"
           placeholder="请选择日期"
           type="date"
           value-format="yyyy-MM-dd"
@@ -17,34 +17,27 @@
         >
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="结束日期:" prop="statisticsTime">
-        <el-date-picker
-          v-model="queryParams.endTime"
-          placeholder="请选择日期"
-          type="date"
-          value-format="yyyy-MM-dd"
-          :picker-options="pickOptions"
-        >
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="统计类型:" prop="statisticsType">
+      <el-form-item label="班次:" prop="shiftId">
         <el-select
-          v-model="queryParams.statisticsType"
+          v-model="queryParams.shiftId"
           class="custom-input"
-          placeholder="请选择"
+          placeholder="请选择班次"
           clearable
           style="width: 240px"
           filterable
         >
-          <el-option value="0" label="日" key="0"/>
-          <el-option value="1" label="月" key="1"/>
-          <el-option value="2" label="站" key="2"/>
+          <el-option
+            v-for="item in shiftOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="openChildPage">查看详细报表</el-button>
       </el-form-item>
     </el-form>
+
   </div>
 </template>
 
@@ -52,8 +45,9 @@
 
 import {listStationSelect} from "@/api/system/station";
 
+
 export default {
-  name: "CSJExitFlow",
+  name: "CardAssess",
   data() {
     return {
       props: {multiple: true},
@@ -77,10 +71,9 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        stationId: [],
-        beginTime: null,
-        endTime: null,
-        statisticsType: '0'
+        stationId: null,
+        time: null,
+        tableFlag: '1',
       },
       // 表单参数
       form: {},
@@ -88,7 +81,11 @@ export default {
       rules: {
       },
       stationOptions: [],
-      shiftOptions: [],
+      shiftOptions: [
+        {label : '早班', value: 1},
+        {label : '中班', value: 2},
+        {label : '晚班', value: 3},
+      ],
       pickerType: 'date',
       pickOptions: {
         disabledDate(time) {
@@ -97,6 +94,7 @@ export default {
       },
     };
   },
+  computed: {},
   created() {
     //获取收费站下拉框
     listStationSelect().then((res) => {
@@ -105,10 +103,11 @@ export default {
       this.$set(this.queryParams, 'stationId', this.currentStationId);
     })
   },
+  watch: {},
   methods: {
     openChildPage() {
       const route = {
-        path: '/csjExitFlowDetail',
+        path: '/c1StationShiftDetail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);
@@ -117,3 +116,12 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.el-table {
+  ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+    width: 15px; /*滚动条宽度*/
+    height: 15px; /*滚动条高度*/
+  }
+}
+</style>

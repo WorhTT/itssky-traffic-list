@@ -13,7 +13,7 @@
       <el-col :span="1.5">
         <el-button
           type="warning"
-          icon="el-icon-download"
+          icon="el-icon-document"
           size="mini"
           @click="printTable"
         >打印
@@ -22,38 +22,32 @@
     </el-row>
 
     <el-table v-loading="loading" :data="dataList" border ref="myTable">
-      <el-table-column label="班次" align="center" prop="shiftId"/>
-      <el-table-column label="工号" align="center" prop="operatorId"/>
-      <el-table-column label="客一" align="center" prop="cust1"/>
-      <el-table-column label="客二" align="center" prop="cust2"/>
-      <el-table-column label="客三" align="center" prop="cust3"/>
-      <el-table-column label="客四" align="center" prop="cust4"/>
-      <el-table-column label="客车小计" align="center" prop="custSubTotal"/>
-      <el-table-column label="货一" align="center" prop="truck1"/>
-      <el-table-column label="货二" align="center" prop="truck2"/>
-      <el-table-column label="货三" align="center" prop="truck3"/>
-      <el-table-column label="货四" align="center" prop="truck4"/>
-      <el-table-column label="货五" align="center" prop="truck5"/>
-      <el-table-column label="货六" align="center" prop="truck6"/>
-      <el-table-column label="货车小计" align="center" prop="truckSubTotal"/>
-      <el-table-column label="专一" align="center" prop="spec1"/>
-      <el-table-column label="专二" align="center" prop="spec2"/>
-      <el-table-column label="专三" align="center" prop="spec3"/>
-      <el-table-column label="专四" align="center" prop="spec4"/>
-      <el-table-column label="专五" align="center" prop="spec5"/>
-      <el-table-column label="专六" align="center" prop="spec6"/>
-      <el-table-column label="专车小计" align="center" prop="specSubTotal"/>
-      <el-table-column label="军车" align="center" prop="militaryNum"/>
-      <el-table-column label="公务" align="center" prop="officialNum"/>
-      <el-table-column label="车队" align="center" prop="fleetNum"/>
-      <el-table-column label="优惠" align="center" prop="preferNum"/>
-      <el-table-column label="ETC" align="center" prop="etcNum"/>
-      <el-table-column label="纸券" align="center" prop="paperNum"/>
-      <el-table-column label="应收卡" align="center" prop="issuedNum"/>
-      <el-table-column label="实收卡" align="center" prop="actualNum"/>
-      <el-table-column label="无卡" align="center" prop="noneNum"/>
-      <el-table-column label="卡损" align="center" prop="badNum"/>
-      <el-table-column label="总流量" align="center" prop="totalFlow"/>
+      <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
+      <el-table-column label="客一" align="center" prop="k1"/>
+      <el-table-column label="客二" align="center" prop="k2"/>
+      <el-table-column label="客三" align="center" prop="k3"/>
+      <el-table-column label="客四" align="center" prop="k4"/>
+      <el-table-column label="客车小计" align="center" prop="kamount"/>
+      <el-table-column label="货一" align="center" prop="h1"/>
+      <el-table-column label="货二" align="center" prop="h2"/>
+      <el-table-column label="货三" align="center" prop="h3"/>
+      <el-table-column label="货四" align="center" prop="h4"/>
+      <el-table-column label="货五" align="center" prop="h5"/>
+      <el-table-column label="货六" align="center" prop="h6"/>
+      <el-table-column label="货车小计" align="center" prop="hamount"/>
+      <el-table-column label="专一" align="center" prop="z1"/>
+      <el-table-column label="专二" align="center" prop="z2"/>
+      <el-table-column label="专三" align="center" prop="z3"/>
+      <el-table-column label="专四" align="center" prop="z4"/>
+      <el-table-column label="专五" align="center" prop="z5"/>
+      <el-table-column label="专六" align="center" prop="z6"/>
+      <el-table-column label="专车小计" align="center" prop="zamount"/>
+      <el-table-column label="公务" align="center" prop="official"/>
+      <el-table-column label="军车" align="center" prop="military"/>
+      <el-table-column label="优惠" align="center" prop="discount"/>
+      <el-table-column label="免费" align="center" prop="free"/>
+      <el-table-column label="车队" align="center" prop="fleet"/>
+      <el-table-column label="总计" align="center" prop="allAmount"/>
     </el-table>
 
     <iframe id="printFrame" style="display: none;"></iframe>
@@ -62,11 +56,10 @@
 
 <script>
 
-import {s1StationShift, exportC1StationShift} from "@/api/report/card"
-
+import {getExitFlow, exportExitFlow} from "@/api/report/exitFlow"
 
 export default {
-  name: "C1StationShiftDetail",
+  name: "CSJExitFlowDetail",
   data() {
     return {
       props: {multiple: true},
@@ -89,18 +82,14 @@ export default {
       // 是否显示弹出层
       open: false,
       // 查询参数
-      queryParams: {},
+      queryParams: {
+      },
       // 表单参数
       form: {},
       // 表单校验
       rules: {},
       stationOptions: [],
-      conditionList: [],
-      shiftOptions: [
-        {label: '早班', value: 1},
-        {label: '中班', value: 2},
-        {label: '晚班', value: 3},
-      ],
+      shiftOptions: [],
       pickerType: 'date',
       pickOptions: {
         disabledDate(time) {
@@ -109,22 +98,18 @@ export default {
       },
     };
   },
-  computed: {},
   created() {
     this.queryParams = this.$route.query;
     if (this.queryParams) {
       this.getList();
     }
   },
-  watch: {},
   methods: {
     getList() {
       this.loading = true;
-      s1StationShift(this.queryParams).then(response => {
-          this.dataList = response.rows;
-          this.conditionList = response.conditionList;
-      }).catch(err=>{
-        console.error("异常：{}",err)
+      getExitFlow(this.queryParams).then(response => {
+        this.dataList = response.rows;
+        this.total = response.total;
       }).finally(() => {
         this.loading = false;
       });
@@ -132,12 +117,12 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出C1收费站通行卡回收统计表?', "警告", {
+      this.$confirm('是否确认导出CSJ出口(MTC+ETC)交通流量统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportC1StationShift(queryParams);
+        return exportExitFlow(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       })
@@ -219,7 +204,7 @@ export default {
         </style>
         </head>
         <body>
-            <div class="print-title">C1收费站通行卡回收班统计表</div>
+            <div class="print-title">CSJ出口(MTC+ETC)交通流量统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
         </body>
@@ -235,12 +220,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.el-table {
-  ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-    width: 15px; /*滚动条宽度*/
-    height: 15px; /*滚动条高度*/
-  }
-}
-</style>

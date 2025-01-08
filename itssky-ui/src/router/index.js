@@ -124,6 +124,17 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/csjExitFlowDetail',
+    component: () => import('@/views/report/flow/csjExitFlowDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/csjExitFlowDetail2',
+    component: () => import('@/views/report/flow/csjExitFlowDetail2.vue'),
+    hidden: true
+  },
+
+  {
     path: '/',
     redirect: '/f1StationShift'
   },
@@ -239,17 +250,33 @@ export const constantRoutes = [
         component: () => import('@/views/report/flow/csjExitFlow.vue'),
       },
       {
-        path: '/rsjExitFlow',
+        path: '/csjExitFlow2',
         name: 'RSJ入口(MTC+ETC)交通流量统计表',
         meta: {title: 'RSJ入口(MTC+ETC)交通流量统计表', icon: 'chart'},
-        component: () => import('@/views/report/flow/csjExitFlow.vue'),
+        component: () => import('@/views/report/flow/csjExitFlow2.vue'),
       },
     ]
-    // }
-    // ],
-    // hidden: true,
-
-  }
+  },
+  // {
+  //   path: '/assess',
+  //   component: Layout,
+  //   name: '',
+  //   meta: {title: '员工考核类', icon: 'list'},
+  //   children: [
+  //     {
+  //       path: '/cardAssess',
+  //       name: 'FD06收费员发卡统计',
+  //       meta: {title: 'FD06收费员发卡统计', icon: 'chart'},
+  //       component: () => import('@/views/report/assess/cardAssess.vue'),
+  //     },
+  //     {
+  //       path: '/rsjExitFlow',
+  //       name: 'RSJ入口(MTC+ETC)交通流量统计表',
+  //       meta: {title: 'RSJ入口(MTC+ETC)交通流量统计表', icon: 'chart'},
+  //       component: () => import('@/views/report/flow/rsjEntryFlow.vue'),
+  //     },
+  //   ]
+  // }
 
 ]
 

@@ -3,22 +3,51 @@ spring:
   datasource:
     dynamic:
       # 设置默认的数据源或者数据源组,默认值即为master
-      primary: master
+      primary: dbtoms
       # 设置严格模式,默认false不启动. 启动后在未匹配到指定数据源时候会抛出异常,不启动则使用默认数据源.
       strict: false
       datasource:
-        master:
-          url: jdbc:mysql://localhost:3306/dbtoms?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        dbtoms:
+          url: jdbc:mysql://172.51.0.100:3306/dbtoms?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
-          password: 123456
+          password: RU#@xcN1NGSp
           driver-class-name: com.mysql.jdbc.Driver
         dbedge:
-          url: jdbc:mysql://localhost:3306/dbedge?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          url: jdbc:mysql://172.51.0.100:3306/dbedge?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
-          password: 123456
+          password: RU#@xcN1NGSp
           driver-class-name: com.mysql.jdbc.Driver
-
-
+        dbaudit:
+          url: jdbc:mysql://172.51.0.100:3306/dbaudit?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: RU#@xcN1NGSp
+          driver-class-name: com.mysql.jdbc.Driver
+        dbstats:
+          url: jdbc:mysql://172.51.0.100:3306/dbstats?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: RU#@xcN1NGSp
+          driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    # 地址
+    host: localhost
+    # 端口，默认为6379
+    port: 6379
+    # 数据库索引
+    database: 2
+    # 密码
+    password: itssoft
+    # 连接超时时间
+    timeout: 10s
+    lettuce:
+      pool:
+        # 连接池中的最小空闲连接
+        min-idle: 0
+        # 连接池中的最大空闲连接
+        max-idle: 8
+        # 连接池的最大数据库连接数
+        max-active: 8
+        # #连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1ms
 # token配置
 token:
   # 令牌自定义标识
@@ -26,32 +55,31 @@ token:
   # 令牌密钥
   secret: itsskytss
   # 令牌有效期（默认30分钟）
-  expireTime: 30
+  expireTime: 720
 
-current-service-ip: 192.168.200.193
+current-service-ip: 172.51.0.100
+#current-service-ip: 10.15.0.99
 itssky:
   sso:
-    # 本应用服务相关配置
     client:
-      #是否启用单点
-      enabled: false
-      #即本服务部署的ip地址，要求前端也跟后端在同一台服务器上，不然就要配置前端ip[初版默认同一台服务器，后期增加前端配置]
+      enabled: true
+      #即本服务部署的ip地址，要求前端也跟后端在同一台服务器上，不然就要配置前端ip
       base-ip: http://${current-service-ip}
-      # 前端端口，nginx代理端口
-      base-front-port: 80
-      # 后端端口
+      base-front-ip: http://139.198.181.105
+      base-front-port: 19093
       base-back-port: ${server.port}
       corp-no:
-    # 单点登陆服务端ip+port
+      cache-key-prefix: login_tokens_stat
     server:
-      base-ip: 192.168.200.193
-      base-port: 8080
-    # 下列不需要配置修改
+      base-ip: 172.51.0.100
+      base-port: 8091
+      base-front-ip: 139.198.181.105
+      base-front-port: 19091
     schedule:
       enabled: ${itssky.sso.client.enabled}
       remote-sso-url: http://${itssky.sso.server.base-ip}:${itssky.sso.server.base-port}
       remote-sso-ping-url: http://${itssky.sso.server.base-ip}:${itssky.sso.server.base-port}/check/status
-
+      remote-sso-redirect-url: http://${itssky.sso.server.base-front-ip}:${itssky.sso.server.base-front-port}
 
 secure:
   ignored:
@@ -68,5 +96,4 @@ secure:
       - /swagger-resources/**
       - /webjars/**
       - /*/api-docs
-      - /druid/**
       - /logout

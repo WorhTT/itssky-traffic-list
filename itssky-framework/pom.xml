@@ -26,7 +26,7 @@
         <dependency>
             <groupId>com.itssky</groupId>
             <artifactId>itssky-sso-client-starter</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>2.0-SNAPSHOT-nh</version>
         </dependency>
 
         <!-- SpringBoot 拦截器 -->

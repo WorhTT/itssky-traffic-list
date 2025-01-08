@@ -135,15 +135,31 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
      */
     @Override
     public List<Map<String, Object>> listStationSelect() {
+        LoginUser loginUser = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof LoginUser) {
+            loginUser = (LoginUser) authentication.getPrincipal();
+        }
+        if (Objects.isNull(loginUser)) {
+            log.error("获取当前登录用户为空");
+            throw new RuntimeException("获取当前登录用户为空");
+        }
+        String corpNo = loginUser.getCorpNo().substring(0, 2);
         LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
         tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
                 TbStationInfo::getStationid);
-//                .apply(" length(corpno)=6 ");
+        tbStationInfoLambdaQueryWrapper.likeRight(TbStationInfo::getCorpno, corpNo)
+                .apply(" length(corpno)=6 ");
         List<TbStationInfo> tbStationInfoList = baseMapper.selectList(tbStationInfoLambdaQueryWrapper);
         if (CollectionUtils.isEmpty(tbStationInfoList)) {
             return new ArrayList<>();
         }
-        return tbStationInfoList.stream().filter(Objects::nonNull).map(obj -> {
+        List<Map<String, Object>> result = new ArrayList<>();
+        Map<String, Object> center = new HashMap<>();
+        center.put("value", 0);
+        center.put("label", "中心");
+        result.add(center);
+        tbStationInfoList.stream().filter(Objects::nonNull).forEach(obj -> {
             Map<String, Object> tempMap = new HashMap<>();
             if (Objects.nonNull(obj.getStationid())) {
                 tempMap.put("value", obj.getStationid());
@@ -151,8 +167,9 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
                 tempMap.put("value", -1);
             }
             tempMap.put("label", obj.getStationname());
-            return tempMap;
-        }).collect(Collectors.toList());
+            result.add(tempMap);
+        });
+        return result;
     }
 
     /**
