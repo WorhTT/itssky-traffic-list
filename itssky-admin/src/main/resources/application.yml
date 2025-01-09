@@ -35,6 +35,7 @@ server:
 logging:
   level:
     org.springframework: warn
+  config: classpath:logback.xml
 
 # 用户配置
 user:

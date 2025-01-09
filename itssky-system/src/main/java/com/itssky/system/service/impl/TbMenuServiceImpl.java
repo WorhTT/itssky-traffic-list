@@ -142,15 +142,15 @@ public class TbMenuServiceImpl implements ITbMenuService {
         if (menu.getParentId().intValue() != 0 && isInnerLink(menu)) {
             routerPath = innerLinkReplaceEach(routerPath);
         }
-        // 非外链并且是一级目录（类型为目录）
+//         非外链并且是一级目录（类型为目录）
 //        if (0 == menu.getParentId().intValue() && UserConstants.TYPE_DIR.equals(menu.getMenuType())
 //                && UserConstants.NO_FRAME.equals(menu.getIsFrame())) {
 //            routerPath = "/" + menu.getPath();
 //        }
         // 非外链并且是一级目录（类型为菜单）
-        else if (isMenuFrame(menu)) {
-            routerPath = "/";
-        }
+//        else if (isMenuFrame(menu)) {
+//            routerPath = "/";
+//        }
         return routerPath;
     }
 
@@ -179,7 +179,7 @@ public class TbMenuServiceImpl implements ITbMenuService {
      * @return 结果
      */
     public boolean isMenuFrame(TbMenu menu) {
-        return menu.getParentId().intValue() == 0 && UserConstants.TYPE_MENU.equals(menu.getMenuType());
+        return menu.getParentId().intValue() == 0;
     }
 
     /**
