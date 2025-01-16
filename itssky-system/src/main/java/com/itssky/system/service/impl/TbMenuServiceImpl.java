@@ -50,7 +50,7 @@ public class TbMenuServiceImpl implements ITbMenuService {
             TbMenuDto dto = new TbMenuDto(userId, serviceId);
             menus = menuMapper.selectMenuTreeByUserId(dto);
         }
-        return getChildPerms(menus, 0);
+        return getChildPerms(menus, "0");
     }
 
 
@@ -65,7 +65,7 @@ public class TbMenuServiceImpl implements ITbMenuService {
         List<RouterVo> routers = new LinkedList<RouterVo>();
         for (TbMenu menu : menus) {
             RouterVo router = new RouterVo();
-            router.setHidden("1".equals(menu.getVisible()));
+            router.setHidden(menu.getVisible() == 1);
             router.setName(getRouteName(menu));
             router.setPath(getRouterPath(menu));
             router.setComponent(getComponent(menu));
@@ -85,7 +85,7 @@ public class TbMenuServiceImpl implements ITbMenuService {
                 children.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon(), false, menu.getPath()));
                 childrenList.add(children);
                 router.setChildren(childrenList);
-            } else if (menu.getParentId().intValue() == 0 && isInnerLink(menu)) {
+            } else if ("0".equals(menu.getParentId()) && isInnerLink(menu)) {
                 router.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon()));
                 router.setPath("/");
                 List<RouterVo> childrenList = new ArrayList<RouterVo>();
@@ -139,7 +139,7 @@ public class TbMenuServiceImpl implements ITbMenuService {
     public String getRouterPath(TbMenu menu) {
         String routerPath = menu.getPath();
         // 内链打开外网方式
-        if (menu.getParentId().intValue() != 0 && isInnerLink(menu)) {
+        if (!"0".equals(menu.getParentId()) && isInnerLink(menu)) {
             routerPath = innerLinkReplaceEach(routerPath);
         }
 //         非外链并且是一级目录（类型为目录）
@@ -164,7 +164,7 @@ public class TbMenuServiceImpl implements ITbMenuService {
         String component = UserConstants.LAYOUT;
         if (StringUtils.isNotEmpty(menu.getComponent()) && !isMenuFrame(menu)) {
             component = menu.getComponent();
-        } else if (StringUtils.isEmpty(menu.getComponent()) && menu.getParentId().intValue() != 0 && isInnerLink(menu)) {
+        } else if (StringUtils.isEmpty(menu.getComponent()) && !"0".equals(menu.getParentId()) && isInnerLink(menu)) {
             component = UserConstants.INNER_LINK;
         } else if (StringUtils.isEmpty(menu.getComponent()) && isParentView(menu)) {
             component = UserConstants.PARENT_VIEW;
@@ -179,7 +179,7 @@ public class TbMenuServiceImpl implements ITbMenuService {
      * @return 结果
      */
     public boolean isMenuFrame(TbMenu menu) {
-        return menu.getParentId().intValue() == 0;
+        return "0".equals(menu.getParentId());
     }
 
     /**
@@ -199,7 +199,7 @@ public class TbMenuServiceImpl implements ITbMenuService {
      * @return 结果
      */
     public boolean isParentView(TbMenu menu) {
-        return menu.getParentId().intValue() != 0 && UserConstants.TYPE_DIR.equals(menu.getMenuType());
+        return !"0".equals(menu.getParentId()) && UserConstants.TYPE_DIR.equals(menu.getMenuType());
     }
 
     /**
@@ -209,18 +209,18 @@ public class TbMenuServiceImpl implements ITbMenuService {
      * @param parentId 传入的父节点ID
      * @return String
      */
-    public List<TbMenu> getChildPerms(List<TbMenu> list, int parentId) {
+    public List<TbMenu> getChildPerms(List<TbMenu> list, String parentId) {
         //这里稍微改动一下 如果父节点是模块类型的 那么设置当前的parentId为0
-        Set<Long> parentMenuIdSet = list.stream().map(TbMenu::getParentId).collect(Collectors.toSet());
+        Set<String> parentMenuIdSet = list.stream().map(TbMenu::getParentId).collect(Collectors.toSet());
         if (CollectionUtils.isNotEmpty(parentMenuIdSet)) {
             List<TbMenu> tbMenus = menuMapper.selectMenuByIds(parentMenuIdSet);
-            Map<Long, TbMenu> parentMenuMap = tbMenus.stream().collect(Collectors.toMap(TbMenu::getMenuId, i -> i));
+            Map<String, TbMenu> parentMenuMap = tbMenus.stream().collect(Collectors.toMap(TbMenu::getMenuId, i -> i));
             list.forEach(i -> {
-                if (i.getParentId() != 0) {
+                if (!"0".equals(i.getParentId())) {
                     if (Objects.nonNull(parentMenuMap.get(i.getParentId()))) {
                         TbMenu parentMenu = parentMenuMap.get(i.getParentId());
                         if ("M".equals(parentMenu.getMenuType())) {
-                            i.setParentId(0L);
+                            i.setParentId("0");
                         }
                     }
                 }
@@ -230,7 +230,7 @@ public class TbMenuServiceImpl implements ITbMenuService {
         for (Iterator<TbMenu> iterator = list.iterator(); iterator.hasNext(); ) {
             TbMenu t = (TbMenu) iterator.next();
             // 一、根据传入的某个父节点ID,遍历该父节点的所有子节点
-            if (t.getParentId() == parentId) {
+            if (t.getParentId().equals(parentId)) {
                 recursionFn(list, t);
                 returnList.add(t);
             }
@@ -263,7 +263,7 @@ public class TbMenuServiceImpl implements ITbMenuService {
         Iterator<TbMenu> it = list.iterator();
         while (it.hasNext()) {
             TbMenu n = (TbMenu) it.next();
-            if (n.getParentId().longValue() == t.getMenuId().longValue()) {
+            if (n.getParentId().equals(t.getMenuId())) {
                 tlist.add(n);
             }
         }

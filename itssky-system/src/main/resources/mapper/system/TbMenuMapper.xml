@@ -28,7 +28,7 @@
 	<select id="selectMenuTreeAll" resultMap="SysMenuResult" parameterType="Integer">
 		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.visible, m.status, ifnull(m.perms,'') as perms, m.menu_type, m.icon, m.order_num
 		<!--		from tbmenu m where m.menu_type in ('M', 'C') and m.status = 0-->
-		from tbmenu m where m.menu_type in ('C') and m.status = 0 AND m.del_flag = '0'
+		from tbmenu m where m.menu_type in ('C') and m.status = 0 AND m.del_flag = 0
 		<if test="serviceId != null and serviceId != ''">
 			and m.service_id = #{serviceId}
 		</if>
@@ -44,7 +44,7 @@
 		left join tbrole ro on ur.role_id = ro.role_id
 		left join tbuserinfo u on ur.user_id = u.userid
 		<!--		where u.userid = #{userId} and m.menu_type in ('M', 'C') and m.status = 0  AND ro.status = 0-->
-		where m.menu_type in ('C') and m.status = 0  AND ro.status = 0 AND m.del_flag = '0'
+		where m.menu_type in ('C') and m.status = 0  AND ro.status = 0 AND m.del_flag = 0
 		<if test="userId != null and userId != ''">
 			and u.userid = #{userId}
 		</if>
@@ -62,7 +62,7 @@
 			<foreach collection="collection" item="menuId" open="(" separator="," close=")">
 				#{menuId}
 			</foreach>
-			AND del_flag = '0'
+			AND del_flag = 0
 		</where>
 
 	</select>

@@ -29,5 +29,5 @@ public interface TbMenuMapper {
     public List<TbMenu> selectMenuTreeByUserId(TbMenuDto dto);
 
 
-    public List<TbMenu> selectMenuByIds(Collection<Long> menuIds);
+    public List<TbMenu> selectMenuByIds(Collection<String> menuIds);
 }
