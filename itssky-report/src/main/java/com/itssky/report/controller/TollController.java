@@ -14,6 +14,7 @@ import com.itssky.system.domain.dto.FtStationDto;
 import com.itssky.system.domain.dto.StationShiftDto;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.mapper.TbStationInfoMapper;
+import com.itssky.system.service.CardService;
 import com.itssky.system.service.ITollService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class TollController extends BaseController {
     @Autowired
     private TbStationInfoMapper tbStationInfoMapper;
 
+    @Autowired
+    private CardService cardService;
+
 
     /**
      * F1收费站通行费收入班统计表
@@ -62,10 +66,7 @@ public class TollController extends BaseController {
     public AjaxResult exportF1Station(@RequestBody @Valid StationShiftDto dto) throws IOException {
         List<F1StationShiftTollVo> f1StationShiftToll = tollService.getF1StationShiftToll(dto);
         ExcelUtil<F1StationShiftTollVo> util = new ExcelUtil<F1StationShiftTollVo>(F1StationShiftTollVo.class);
-        List<String> conditionList = new ArrayList<>();
-        conditionList.add("收费站：中心");
-        conditionList.add("统计日期：2024-12-04");
-        conditionList.add("班次：早班");
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
         return util.exportDynamic(f1StationShiftToll, "F1收费站通行费收入班统计表", conditionList, 15);
     }
 
@@ -83,18 +84,7 @@ public class TollController extends BaseController {
     @PostMapping(value = "/export/f2station")
     public AjaxResult exportF2Station(@RequestBody @Valid StationShiftDto dto) throws IOException {
         List<F2StationShiftTollVo> f2StationShiftToll = tollService.getF2StationShiftToll(dto);
-        List<String> conditionList = new ArrayList<>();
-        if (dto.getStationId() == -1) {
-            conditionList.add("收费站：" + "中心");
-        } else {
-            LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(TbStationInfo::getStationid, dto.getStationId());
-            TbStationInfo tbStationInfo = tbStationInfoMapper.selectOne(wrapper);
-            if (Objects.nonNull(tbStationInfo)) {
-                conditionList.add("收费站：" + tbStationInfo.getStationname());
-            }
-        }
-        conditionList.add("统计日期：" + DateUtil.format(dto.getTime(), DatePattern.NORM_DATE_PATTERN));
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime());
         ExcelUtil<F2StationShiftTollVo> util = new ExcelUtil<F2StationShiftTollVo>(F2StationShiftTollVo.class);
         return util.exportDynamic(f2StationShiftToll, "F2收费站通行费收入日统计表", conditionList, 14);
     }
@@ -113,19 +103,7 @@ public class TollController extends BaseController {
     @PostMapping(value = "/export/fttoll")
     public AjaxResult exportFtToll(@RequestBody @Valid FtStationDto dto) throws IOException{
         List<FtTollVo> ftToll = tollService.getFtToll(dto);
-        List<String> conditionList = new ArrayList<>();
-        if (dto.getStationId() == -1) {
-            conditionList.add("收费站：" + "中心");
-        } else {
-            LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(TbStationInfo::getStationid, dto.getStationId());
-            TbStationInfo tbStationInfo = tbStationInfoMapper.selectOne(wrapper);
-            if (Objects.nonNull(tbStationInfo)) {
-                conditionList.add("收费站：" + tbStationInfo.getStationname());
-            }
-        }
-        conditionList.add("统计日期：" + DateUtil.format(dto.getBeginTime(), DatePattern.NORM_DATE_PATTERN) + "-" +
-                DateUtil.format(dto.getEndTime(), DatePattern.NORM_DATE_PATTERN));
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<FtTollVo> util = new ExcelUtil<FtTollVo>(FtTollVo.class);
         return util.exportDynamic(ftToll, "FT通行费收入统计表", conditionList, 13);
     }
@@ -144,19 +122,7 @@ public class TollController extends BaseController {
     @PostMapping(value = "/export/afvgeneral")
     public AjaxResult exportAfvGeneral(@RequestBody @Valid VehicleClassStatDto dto) throws IOException{
         List<AfvVehicleVo> afvGeneral = tollService.getAfvGeneral(dto);
-        List<String> conditionList = new ArrayList<>();
-        if (dto.getStationId() == -1) {
-            conditionList.add("收费站：" + "中心");
-        } else {
-            LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(TbStationInfo::getStationid, dto.getStationId());
-            TbStationInfo tbStationInfo = tbStationInfoMapper.selectOne(wrapper);
-            if (Objects.nonNull(tbStationInfo)) {
-                conditionList.add("收费站：" + tbStationInfo.getStationname());
-            }
-        }
-        conditionList.add("统计日期：" + DateUtil.format(dto.getBeginTime(), DatePattern.NORM_DATE_PATTERN) + "-" +
-                DateUtil.format(dto.getEndTime(), DatePattern.NORM_DATE_PATTERN));
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<AfvVehicleVo> util = new ExcelUtil<AfvVehicleVo>(AfvVehicleVo.class);
         return util.exportDynamic(afvGeneral, "AFV综合MTC、ETC按车型统计表", conditionList, 22);
     }

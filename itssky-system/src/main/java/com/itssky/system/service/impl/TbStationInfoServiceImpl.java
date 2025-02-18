@@ -153,7 +153,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
         List<TbStationInfo> tbStationInfoList = baseMapper.selectList(tbStationInfoLambdaQueryWrapper);
         List<Map<String, Object>> result = new ArrayList<>();
         Map<String, Object> center = new HashMap<>();
-        center.put("value", 0);
+        center.put("value", -1);
         center.put("label", "中心");
         result.add(center);
         if (CollectionUtils.isEmpty(tbStationInfoList)) {
