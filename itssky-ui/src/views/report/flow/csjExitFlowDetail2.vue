@@ -1,5 +1,9 @@
 <template>
   <div class="app-container">
+    <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
+      <h1 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h1>
+      <h1 style="font-weight: bolder;margin: 1vh 0">CSJ出口(MTC+ETC)交通流量统计表</h1>
+    </div>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
