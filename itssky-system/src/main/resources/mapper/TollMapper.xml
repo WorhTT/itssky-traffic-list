@@ -10,11 +10,11 @@
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
         a.TeamID AS teamId,
-        SUM(a.TotalFee) AS dueAmount,
-        SUM(a.TotalArrearage) AS arrearsAmount,
+        SUM(a.TotalFee / 100) AS dueAmount,
+        SUM(a.TotalArrearage/ 100) AS arrearsAmount,
         SUM(CASE WHEN a.TotalArrearage is not NULL AND a.TotalArrearage != 0 THEN a.CarNum ELSE 0 END) AS arrearsTrips,
-        SUM(CASE WHEN a.PayType = 16 THEN a.TotalToll ELSE 0 END) AS mobilePaymentAmount,
-        SUM(CASE WHEN a.PayType = 2 THEN a.TotalToll ELSE 0 END) AS ePaymentAmount
+        SUM(CASE WHEN a.PayType = 16 THEN a.TotalToll / 100 ELSE 0 END) AS mobilePaymentAmount,
+        SUM(CASE WHEN a.PayType = 2 THEN a.TotalToll/ 100 ELSE 0 END) AS ePaymentAmount
         FROM
         `tbstatexit` a
         <where>
@@ -320,8 +320,8 @@
         SELECT
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
-        SUM(a.HandToll) AS handToll,
-        SUM(a.AddedToll) AS addedToll,
+        SUM(a.HandToll / 100) AS handToll,
+        SUM(a.AddedToll/ 100) AS addedToll,
         SUM(a.HandInCNum) AS handInCNum,
         SUM(a.HandOutCNum) AS handOutCNum
         FROM `tbsh` a

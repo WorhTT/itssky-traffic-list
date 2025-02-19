@@ -74,11 +74,14 @@ public class TollServiceImpl implements ITollService {
             if (Objects.nonNull(tbShMap.get(i.getOperatorId()))) {
                 TbShVo tbShVo = tbShMap.get(i.getOperatorId());
                 //实缴金额
-                int handToll = new BigDecimal(tbShVo.getHandToll().toString()).intValue();
+                double handToll = new BigDecimal(tbShVo.getHandToll().toString()).doubleValue();
                 i.setPaidAmount(handToll);
                 //加收款
-                int addedToll = new BigDecimal(tbShVo.getAddedToll().toString()).intValue();
+                double addedToll = new BigDecimal(tbShVo.getAddedToll().toString()).doubleValue();
                 i.setExtraTotal(addedToll);
+                //应缴IC卡
+                int yj = new BigDecimal(tbShVo.getHandOutCNum().toString()).intValue();
+                i.setDueIcCardCount(yj);
             }
             //计算统计金额
             i.setStatAmount(i.getDueAmount() + i.getMobilePaymentAmount() + i.getEPaymentAmount());
@@ -185,10 +188,10 @@ public class TollServiceImpl implements ITollService {
             if (Objects.nonNull(tbShMap.get(i.getOperatorId()))) {
                 TbShVo tbShVo = tbShMap.get(i.getOperatorId());
                 //实缴金额
-                int handToll = new BigDecimal(tbShVo.getHandToll().toString()).intValue();
+                double handToll = new BigDecimal(tbShVo.getHandToll().toString()).doubleValue();
                 i.setPaidAmount(handToll);
                 //加收款
-                int addedToll = new BigDecimal(tbShVo.getAddedToll().toString()).intValue();
+                double addedToll = new BigDecimal(tbShVo.getAddedToll().toString()).doubleValue();
                 i.setExtraTotal(addedToll);
             }
             //计算统计金额
@@ -226,16 +229,16 @@ public class TollServiceImpl implements ITollService {
         StationShiftVo subTotalRow = new StationShiftVo();
         //统计金额
         subTotalRow.setStatAmount(list.stream().map(i -> new BigDecimal(i.getStatAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue());
         //应缴金额
         subTotalRow.setDueAmount(list.stream().map(i -> new BigDecimal(i.getDueAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue());
         //实缴金额
         subTotalRow.setPaidAmount(list.stream().map(i -> new BigDecimal(i.getPaidAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue());
         //金额差异
         subTotalRow.setAmountDiff(list.stream().map(i -> new BigDecimal(i.getAmountDiff()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue());
         //欠款车次
         subTotalRow.setArrearsTrips(list.stream().map(i -> new BigDecimal(i.getArrearsTrips()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
@@ -244,7 +247,7 @@ public class TollServiceImpl implements ITollService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         //加收款
         subTotalRow.setExtraTotal(list.stream().map(i -> new BigDecimal(i.getExtraTotal()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue());
         //移动支付
         subTotalRow.setMobilePaymentAmount(list.stream().map(i -> new BigDecimal(i.getExtraMobilePayment()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());

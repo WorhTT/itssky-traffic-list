@@ -140,11 +140,11 @@ public class VehicleClassStatVo {
     /**
      * 加收款
      */
-    private Integer addedAmount;
+    private Double addedAmount;
 
     /**
      * 总计
      */
-    private Integer totalAmount;
+    private Double totalAmount;
 
 }

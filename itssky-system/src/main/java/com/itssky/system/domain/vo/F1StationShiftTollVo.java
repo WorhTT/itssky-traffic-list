@@ -25,22 +25,22 @@ public class F1StationShiftTollVo {
     private String tollAmount;
 
     @Excel(name = "统计金额", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 4)
-    private Integer statAmount = 0;
+    private Double statAmount = 0D;
 
     @Excel(name = "应缴金额", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 5)
-    private Integer dueAmount = 0;
+    private Double dueAmount = 0D;
 
     @Excel(name = "实缴金额", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 6)
-    private Integer paidAmount = 0;
+    private Double paidAmount = 0D;
 
     @Excel(name = "金额差异", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 7)
-    private Integer amountDiff = 0;
+    private Double amountDiff = 0D;
 
     @Excel(name = "欠款", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 8)
     private Integer arrearsAmount = 0;
 
     @Excel(name = "加收款", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 9)
-    private Integer extraTotal = 0;
+    private Double extraTotal = 0D;
 
     @Excel(name = "移动支付", mergeRow = 3, headerRow = 2, mergeColumn = 1)
     private Integer mobilePaymentAmount = 0;

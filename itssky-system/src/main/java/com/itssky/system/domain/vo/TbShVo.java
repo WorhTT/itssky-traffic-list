@@ -25,12 +25,12 @@ public class TbShVo {
     /**
      * 实缴金额
      */
-    private Integer handToll;
+    private Double handToll;
 
     /**
      * 加收款
      */
-    private Integer addedToll;
+    private Double addedToll;
 
     /**
      * 统计日期

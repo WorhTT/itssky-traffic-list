@@ -56,22 +56,22 @@ public class StationShiftVo {
     /**
      * 统计金额
      */
-    private Integer statAmount = 0;
+    private Double statAmount = 0D;
 
     /**
      * 应缴金额
      */
-    private Integer dueAmount = 0;
+    private Double dueAmount = 0D;
 
     /**
      * 实缴金额
      */
-    private Integer paidAmount = 0;
+    private Double paidAmount = 0D;
 
     /**
      * 金额差异
      */
-    private Integer amountDiff = 0;
+    private Double amountDiff = 0D;
 
     /**
      * 欠款车次
@@ -96,7 +96,7 @@ public class StationShiftVo {
     /**
      * 加收款合计
      */
-    private Integer extraTotal = 0;
+    private Double extraTotal = 0D;
 
     /**
      * 移动支付金额
