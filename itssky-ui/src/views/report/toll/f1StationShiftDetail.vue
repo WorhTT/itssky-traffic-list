@@ -1,5 +1,9 @@
 <template>
   <div class="app-container" ref="box">
+    <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
+      <h1 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h1>
+      <h1 style="font-weight: bolder;margin: 1vh 0">F1收费站通行费收入班统计表</h1>
+    </div>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -22,6 +26,7 @@
         </el-button>
       </el-col>
     </el-row>
+
 
     <el-table v-loading="loading" :data="dataList" ref="myTable" style="width: 100%;table-layout: fixed;">
       <el-table-column label="班次" align="center" prop="shiftId"/>
@@ -49,8 +54,7 @@
 
 <script>
 
-import {f1StationShift, exportF1Station} from "@/api/report/toll"
-import printJS from 'print-js';
+import {exportF1Station, f1StationShift} from "@/api/report/toll"
 
 export default {
   name: "F1StationShiftDetail",
@@ -93,7 +97,7 @@ export default {
           return time.getTime() > Date.now();
         },
       },
-      conditionList:[]
+      conditionList: []
     };
   },
   computed: {},

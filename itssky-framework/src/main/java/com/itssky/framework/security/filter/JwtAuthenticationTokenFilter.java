@@ -53,7 +53,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private RedisCache redisCache;
 
-    @Autowired
+    @Autowired(required = false)
     private ClientPorperties clientPorperties;
 
     @Override
