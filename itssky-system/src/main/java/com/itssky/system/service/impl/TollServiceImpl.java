@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,7 +86,11 @@ public class TollServiceImpl implements ITollService {
                 i.setDueIcCardCount(yj);
             }
             //计算统计金额
-            i.setStatAmount(i.getDueAmount() + i.getMobilePaymentAmount() + i.getEPaymentAmount());
+            BigDecimal bigDecimal = new BigDecimal("0");
+            bigDecimal = bigDecimal.add(new BigDecimal(i.getDueAmount().toString()));
+            bigDecimal = bigDecimal.add(new BigDecimal(i.getMobilePaymentAmount().toString()));
+            bigDecimal = bigDecimal.add(new BigDecimal(i.getEPaymentAmount().toString()));
+            i.setStatAmount(bigDecimal.setScale(2, RoundingMode.HALF_UP).doubleValue());
             //计算金额差异
             i.setAmountDiff(i.getPaidAmount() - i.getDueAmount());
         });
@@ -195,7 +201,11 @@ public class TollServiceImpl implements ITollService {
                 i.setExtraTotal(addedToll);
             }
             //计算统计金额
-            i.setStatAmount(i.getDueAmount() + i.getMobilePaymentAmount() + i.getEPaymentAmount());
+            BigDecimal zero = new BigDecimal("0");
+            zero = zero.add(BigDecimal.valueOf(i.getDueAmount()));
+            zero = zero.add(BigDecimal.valueOf(i.getMobilePaymentAmount()));
+            zero = zero.add(BigDecimal.valueOf(i.getEPaymentAmount()));
+            i.setStatAmount(zero.setScale(2, RoundingMode.HALF_UP).doubleValue());
             //计算金额差异
             i.setAmountDiff(i.getPaidAmount() - i.getDueAmount());
         });
