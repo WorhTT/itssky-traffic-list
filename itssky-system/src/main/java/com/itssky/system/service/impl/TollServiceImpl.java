@@ -238,32 +238,32 @@ public class TollServiceImpl implements ITollService {
     private StationShiftVo buildTotalRowVo(List<StationShiftVo> list) {
         StationShiftVo subTotalRow = new StationShiftVo();
         //统计金额
-        subTotalRow.setStatAmount(list.stream().map(i -> new BigDecimal(i.getStatAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue());
+        subTotalRow.setStatAmount(list.stream().map(i -> BigDecimal.valueOf(i.getStatAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
         //应缴金额
-        subTotalRow.setDueAmount(list.stream().map(i -> new BigDecimal(i.getDueAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue());
+        subTotalRow.setDueAmount(list.stream().map(i -> BigDecimal.valueOf(i.getDueAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
         //实缴金额
-        subTotalRow.setPaidAmount(list.stream().map(i -> new BigDecimal(i.getPaidAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue());
+        subTotalRow.setPaidAmount(list.stream().map(i -> BigDecimal.valueOf(i.getPaidAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
         //金额差异
-        subTotalRow.setAmountDiff(list.stream().map(i -> new BigDecimal(i.getAmountDiff()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue());
+        subTotalRow.setAmountDiff(list.stream().map(i -> BigDecimal.valueOf(i.getAmountDiff()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
         //欠款车次
         subTotalRow.setArrearsTrips(list.stream().map(i -> new BigDecimal(i.getArrearsTrips()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).intValue());
         //欠款金额
-        subTotalRow.setArrearsAmount(list.stream().map(i -> new BigDecimal(i.getArrearsAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        subTotalRow.setArrearsAmount(list.stream().map(i -> BigDecimal.valueOf(i.getArrearsAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
         //加收款
-        subTotalRow.setExtraTotal(list.stream().map(i -> new BigDecimal(i.getExtraTotal()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue());
+        subTotalRow.setExtraTotal(list.stream().map(i -> BigDecimal.valueOf(i.getExtraTotal()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
         //移动支付
-        subTotalRow.setMobilePaymentAmount(list.stream().map(i -> new BigDecimal(i.getExtraMobilePayment()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        subTotalRow.setMobilePaymentAmount(list.stream().map(i -> BigDecimal.valueOf(i.getMobilePaymentAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
         //电子支付
-        subTotalRow.setEPaymentAmount(list.stream().map(i -> new BigDecimal(i.getEPaymentAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        subTotalRow.setEPaymentAmount(list.stream().map(i -> BigDecimal.valueOf(i.getEPaymentAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
         //公务IC
         subTotalRow.setOfficialIcCardCount(list.stream().map(i -> new BigDecimal(i.getOfficialIcCardCount()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
@@ -471,7 +471,7 @@ public class TollServiceImpl implements ITollService {
         }
         //计算合计
         vehicleClassStatVos.forEach(i -> i.setTotalAmount(i.getCustSubTotal()
-                + i.getTruckSubTotal() + i.getSpecSubTotal() + i.getAddedAmount()));
+                + i.getTruckSubTotal() + i.getSpecSubTotal() + (Objects.nonNull(i.getAddedAmount()) ? i.getAddedAmount() : 0)));
         //获取统计方式
         vehicleClassStatVos.forEach(v -> {
             if (dto.getStatisticsType().equals("0")) {

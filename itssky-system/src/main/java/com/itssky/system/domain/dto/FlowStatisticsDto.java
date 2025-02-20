@@ -41,4 +41,6 @@ public class FlowStatisticsDto {
     private Integer intEndTime;
 
     private List<String> tableNameList;
+
+    private Integer flag;
 }

@@ -37,16 +37,16 @@ public class F1StationShiftTollVo {
     private Double amountDiff = 0D;
 
     @Excel(name = "欠款", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 8)
-    private Integer arrearsAmount = 0;
+    private Double arrearsAmount = 0D;
 
     @Excel(name = "加收款", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 9)
     private Double extraTotal = 0D;
 
     @Excel(name = "移动支付", mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private Integer mobilePaymentAmount = 0;
+    private Double mobilePaymentAmount = 0D;
 
     @Excel(name = "电子支付", mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private Integer ePaymentAmount = 0;
+    private Double ePaymentAmount = 0D;
 
     @Excel(name = "公务IC卡", mergeRow = 3, headerRow = 2, mergeColumn = 1)
     private Integer officialIcCardCount = 0;

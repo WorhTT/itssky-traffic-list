@@ -54,6 +54,7 @@
 import {getCharge, exportCharge} from "@/api/report/charge"
 import {listStationSelect, stationSelectList} from "@/api/system/station";
 import {afvGeneral} from "@/api/report/toll";
+import { getCurrentTime, getMidnightTime } from "@/utils/dateUtils";
 
 export default {
   name: "AFVComVehicle",
@@ -104,6 +105,8 @@ export default {
   computed: {},
   created() {
     //获取收费站下拉框
+    this.queryParams.beginTime = getMidnightTime();
+    this.queryParams.endTime = getCurrentTime();
     listStationSelect().then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue

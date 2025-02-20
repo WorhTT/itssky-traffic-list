@@ -81,7 +81,7 @@ public class StationShiftVo {
     /**
      * 欠款金额
      */
-    private Integer arrearsAmount = 0;
+    private Double arrearsAmount = 0D;
 
     /**
      * 加收款现金
@@ -101,12 +101,12 @@ public class StationShiftVo {
     /**
      * 移动支付金额
      */
-    private Integer mobilePaymentAmount = 0;
+    private Double mobilePaymentAmount = 0D;
 
     /**
      * 电子支付金额
      */
-    private Integer ePaymentAmount = 0;
+    private Double ePaymentAmount = 0D;
 
     /**
      * 公务IC卡数

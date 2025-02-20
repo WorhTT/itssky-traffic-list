@@ -4,7 +4,15 @@
       <h1 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h1>
       <h1 style="font-weight: bolder;margin: 1vh 0">F1收费站通行费收入班统计表</h1>
     </div>
-    <el-row :gutter="10" class="mb8">
+    <div style="display: flex">
+      <span v-for="item in conditionList" style="flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;">
+        {{item}}
+      </span>
+    </div>
+    <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -113,6 +121,7 @@ export default {
       this.loading = true;
       f1StationShift(this.queryParams).then(response => {
         this.dataList = response.rows;
+        this.conditionList = response.conditionList;
         this.total = response.total;
       }).finally(() => {
         this.loading = false;
@@ -143,7 +152,11 @@ export default {
         <head>
         <title>Print</title>
         <style>
-                .print-title {
+        .table-container {
+          zoom: 0.9;
+          margin-top: 40px;
+        }
+         .print-title {
           text-align: center;
           font-size: 24px;
           font-weight: bold;
@@ -178,14 +191,14 @@ export default {
         .el-table td {
           border: 1px solid #ebeef5 !important;
           font-size: 16px;
-          padding: 0 0;
+          padding: 10px; 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
         }
         .el-table th {
           border: 1px solid #ebeef5 !important;
-          font-size: 16px;
+          font-size: 18px;
           padding: 4px; /* Reduce padding to make cells more compact */
           text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */
@@ -200,11 +213,12 @@ export default {
         }
         @page {
           size: auto;
-          margin: 0mm;
+          margin: 5mm;
         }
         </style>
         </head>
         <body>
+            <div class="print-title">宁杭高速</div>
             <div class="print-title">F1收费站通行费收入班统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>

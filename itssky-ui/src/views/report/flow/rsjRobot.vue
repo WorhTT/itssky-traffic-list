@@ -54,7 +54,7 @@ import {listStationSelect} from "@/api/system/station";
 import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
 
 export default {
-  name: "CSJExitFlow",
+  name: "RSJRobot",
   data() {
     return {
       props: {multiple: true},
@@ -111,7 +111,7 @@ export default {
   methods: {
     openChildPage() {
       const route = {
-        path: '/csjExitFlowDetail2',
+        path: '/csjExitFlowDetail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);

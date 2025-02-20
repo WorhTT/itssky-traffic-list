@@ -4,7 +4,15 @@
       <h1 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h1>
       <h1 style="font-weight: bolder;margin: 1vh 0">AFV综合(MTC+ETC)按车型统计表</h1>
     </div>
-    <el-row :gutter="10" class="mb8">
+    <div style="display: flex">
+      <span v-for="item in conditionList" style="flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;">
+        {{item}}
+      </span>
+    </div>
+    <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -28,19 +36,19 @@
     </el-row>
 
     <el-table v-loading="loading" :data="dataList" border ref="myTable">
-      <el-table-column label="统计方式" align="center" prop="statType"/>
+      <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
       <el-table-column label="客一" align="center" prop="cust1"/>
       <el-table-column label="客二" align="center" prop="cust2"/>
       <el-table-column label="客三" align="center" prop="cust3"/>
       <el-table-column label="客四" align="center" prop="cust4"/>
-      <el-table-column label="客车小计" align="center" prop="custSubTotal"/>
+      <el-table-column label="客车小计" align="center" prop="custSubTotal" min-width="120"/>
       <el-table-column label="货一" align="center" prop="truck1"/>
       <el-table-column label="货二" align="center" prop="truck2"/>
       <el-table-column label="货三" align="center" prop="truck3"/>
       <el-table-column label="货四" align="center" prop="truck4"/>
       <el-table-column label="货五" align="center" prop="truck5"/>
       <el-table-column label="货六" align="center" prop="truck6"/>
-      <el-table-column label="货车小计" align="center" prop="truckSubTotal"/>
+      <el-table-column label="货车小计" align="center" prop="truckSubTotal" min-width="120"/>
       <el-table-column label="专一" align="center" prop="spec1"/>
       <el-table-column label="专二" align="center" prop="spec2"/>
       <el-table-column label="专三" align="center" prop="spec3"/>
@@ -49,7 +57,7 @@
       <el-table-column label="专六" align="center" prop="spec6"/>
       <el-table-column label="专车小计" align="center" prop="specSubTotal"/>
       <el-table-column label="加收" align="center" prop="addedAmount"/>
-      <el-table-column label="合计" align="center" prop="totalAmount"/>
+      <el-table-column label="合计" align="center" prop="totalAmount" min-width="120"/>
     </el-table>
     <iframe id="printFrame" style="display: none;"></iframe>
   </div>
@@ -118,7 +126,7 @@ export default {
       afvGeneral(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
-        // this.conditionList = response.conditionList;
+        this.conditionList = response.conditionList;
       }).finally(() => {
         this.loading = false;
       })
@@ -147,8 +155,9 @@ export default {
         <head>
         <title>Print</title>
         <style>
-               .table-container {
-          zoom: 0.9
+         .table-container {
+          zoom: 0.8;
+          margin-top: 40px;
         }
         .print-title {
           text-align: center;
@@ -185,14 +194,14 @@ export default {
         .el-table td {
           border: 1px solid #ebeef5 !important;
           font-size: 16px;
-          padding: 0 0;
+          padding: 10px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
         }
         .el-table th {
           border: 1px solid #ebeef5 !important;
-          font-size: 16px;
+          font-size: 18px;
           padding: 4px; /* Reduce padding to make cells more compact */
           text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */
@@ -207,11 +216,12 @@ export default {
         }
         @page {
           size: auto;
-          margin: 0mm;
+          margin: 5mm;
         }
         </style>
         </head>
         <body>
+            <div class="print-title">宁杭高速</div>
             <div class="print-title">AFV综合(MTC+ETC)按车型统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>

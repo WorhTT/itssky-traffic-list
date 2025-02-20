@@ -55,8 +55,12 @@ public class TollController extends BaseController {
      * F1收费站通行费收入班统计表
      */
     @PostMapping(value = "/f1station")
-    public TableDataInfo f1StationShift(@RequestBody @Valid StationShiftDto dto) {
-        return getDataTable(tollService.f1StationShift(dto));
+    public TableDataVo f1StationShift(@RequestBody @Valid StationShiftDto dto) {
+        List<StationShiftVo> result = tollService.f1StationShift(dto);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(result);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
+        return tableDataVo;
     }
 
     /**
@@ -74,8 +78,12 @@ public class TollController extends BaseController {
      * F2收费站通行费收入日统计表
      */
     @PostMapping(value = "/f2station")
-    public TableDataInfo f2StationShift(@RequestBody @Valid StationShiftDto dto) {
-        return getDataTable(tollService.f2StationShift(dto));
+    public TableDataVo f2StationShift(@RequestBody @Valid StationShiftDto dto) {
+        List<StationShiftVo> result = tollService.f2StationShift(dto);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(result);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime()));
+        return tableDataVo;
     }
 
     /**
@@ -93,8 +101,12 @@ public class TollController extends BaseController {
      * FT通行费收入统计表
      */
     @PostMapping(value = "/fttoll")
-    public TableDataInfo ftToll(@RequestBody @Valid FtStationDto dto) {
-        return getDataTable(tollService.ftToll(dto));
+    public TableDataVo ftToll(@RequestBody @Valid FtStationDto dto) {
+        List<StationShiftVo> result = tollService.ftToll(dto);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(result);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return tableDataVo;
     }
 
     /**
@@ -112,8 +124,12 @@ public class TollController extends BaseController {
      * AFV综合(MTC+ETC)按车型统计表
      */
     @PostMapping(value = "/afvgeneral")
-    public TableDataInfo afvGeneral(@RequestBody @Valid VehicleClassStatDto dto) {
-        return getDataTable(tollService.afvGeneral(dto));
+    public TableDataVo afvGeneral(@RequestBody @Valid VehicleClassStatDto dto) {
+        List<VehicleClassStatVo> result = tollService.afvGeneral(dto);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(result);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return tableDataVo;
     }
 
     /**

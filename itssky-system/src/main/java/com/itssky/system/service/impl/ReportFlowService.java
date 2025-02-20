@@ -73,8 +73,15 @@ public class ReportFlowService {
         //构建会查询到的表集合
         String tablePrefix = null;
         if (flag == 1) {
+            //RSJ
             tablePrefix = "tbstatentry";
         } else if (flag == 2) {
+            //CSJ
+            tablePrefix = "tbstatexit";
+        } else if (flag == 3) {
+            //RSJ机器人
+            tablePrefix = "tbstatentry";
+        } else if (flag == 4) {
             tablePrefix = "tbstatexit";
         }
         dto.setTableNameList(

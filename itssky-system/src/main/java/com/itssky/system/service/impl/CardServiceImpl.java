@@ -238,7 +238,7 @@ public class CardServiceImpl implements CardService {
                 conditionList.add("收费站：" + Objects.requireNonNull(tbStationInfo.getStationname()));
             }
         }
-        conditionList.add("统计日期：" + DateUtil.format(beginTime, DatePattern.NORM_DATE_PATTERN) + "-" +
+        conditionList.add("统计日期：" + DateUtil.format(beginTime, DatePattern.NORM_DATE_PATTERN) + " 至 " +
                 DateUtil.format(endTime, DatePattern.NORM_DATE_PATTERN));
         return conditionList;
     }

@@ -9,6 +9,7 @@ import com.itssky.system.domain.ReportFlowInfo;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
 import com.itssky.system.domain.vo.CCardStatVo;
 import com.itssky.system.domain.vo.ExportVo;
+import com.itssky.system.domain.vo.TableDataVo;
 import com.itssky.system.service.CardService;
 import com.itssky.system.service.ITollService;
 import com.itssky.system.service.impl.ReportFlowService;
@@ -35,6 +36,9 @@ public class ReportFlowController extends BaseController {
     @Autowired
     private ITollService tollService;
 
+    @Autowired
+    private CardService cardService;
+
 
 //    /**
 //     * 获取高速入口流量报表
@@ -49,18 +53,36 @@ public class ReportFlowController extends BaseController {
      * CSJ获取高速出口流量报表
      */
     @PostMapping("/exit/flow")
-    public TableDataInfo getExitFlow(@RequestBody @Valid FlowStatisticsDto dto) {
+    public TableDataVo getExitFlow(@RequestBody @Valid FlowStatisticsDto dto) {
         List<ReportFlowInfo> exitFlow = reportFlowService.getExitFlow(dto, 2);
-        return getDataTable(exitFlow);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(exitFlow);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return tableDataVo;
     }
 
     /**
      * RSJ获得高速入口流量报表
      */
     @PostMapping(value = "/entry/flow")
-    public TableDataInfo getEntryFlow(@RequestBody @Valid FlowStatisticsDto dto) {
+    public TableDataVo getEntryFlow(@RequestBody @Valid FlowStatisticsDto dto) {
         List<ReportFlowInfo> exitFlow = reportFlowService.getExitFlow(dto, 1);
-        return getDataTable(exitFlow);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(exitFlow);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return tableDataVo;
+    }
+
+    /**
+     * RSJ获得高速入口机器人流量报表
+     */
+    @PostMapping(value = "/rsj/robot")
+    public TableDataVo getRsjRobotFlow(@RequestBody @Valid FlowStatisticsDto dto) {
+        List<ReportFlowInfo> exitFlow = reportFlowService.getExitFlow(dto, 3);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(exitFlow);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return tableDataVo;
     }
 
     /**

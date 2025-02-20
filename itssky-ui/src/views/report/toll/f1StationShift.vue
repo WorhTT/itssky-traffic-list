@@ -46,6 +46,7 @@
 import {listStationSelect} from "@/api/system/station";
 import F1StationShiftDetail from "@/views/report/toll/f1StationShiftDetail";
 import Router from "vue-router";
+import {getCurrentTime} from "@/utils/dateUtils";
 
 export default {
   name: "F1StationShift",
@@ -99,6 +100,8 @@ export default {
   },
   computed: {},
   created() {
+    this.queryParams.time = getCurrentTime();
+    this.queryParams.shiftId = 1;
     listStationSelect().then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue

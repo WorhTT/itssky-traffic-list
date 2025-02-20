@@ -28,6 +28,7 @@
 
 import {f2StationShift} from "@/api/report/toll"
 import {listStationSelect, stationSelectList} from "@/api/system/station";
+import {getCurrentTime} from "@/utils/dateUtils";
 
 export default {
   name: "F2StationDay",
@@ -79,6 +80,7 @@ export default {
   },
   computed: {},
   created() {
+    this.queryParams.time = getCurrentTime();
     //获取收费站下拉框
     listStationSelect().then((res) => {
       this.stationOptions = res.data.array
