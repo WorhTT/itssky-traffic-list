@@ -68,7 +68,7 @@
 
 <script>
 
-import {getExitFlow, exportExitFlow} from "@/api/report/exitFlow"
+import {getRsjRobot, exportRsjRobot} from "@/api/report/exitFlow"
 
 export default {
   name: "RSJRobotDetail",
@@ -120,7 +120,7 @@ export default {
   methods: {
     getList() {
       this.loading = true;
-      getExitFlow(this.queryParams).then(response => {
+      getRsjRobot(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
         this.conditionList = response.conditionList;
@@ -136,7 +136,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportExitFlow(queryParams);
+        return exportRsjRobot(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       })

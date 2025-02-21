@@ -86,6 +86,18 @@ public class ReportFlowController extends BaseController {
     }
 
     /**
+     * CSJ获得高速入口机器人流量报表
+     */
+    @PostMapping(value = "/csj/robot")
+    public TableDataVo getCsjRobotFlow(@RequestBody @Valid FlowStatisticsDto dto) {
+        List<ReportFlowInfo> exitFlow = reportFlowService.getExitFlow(dto, 4);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(exitFlow);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return tableDataVo;
+    }
+
+    /**
      * 导出CSJ
      */
     @PostMapping(value = "/export/exit/flow")
@@ -111,6 +123,34 @@ public class ReportFlowController extends BaseController {
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
         return util.exportDynamic(result, "RSJ入口MTC、ETC交通流量统计表", conditionList, 26);
+    }
+
+    /**
+     * 导出RSJ机器人
+     */
+    @PostMapping(value = "/export/rsj/robot")
+    public AjaxResult exportRsjRobot(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
+        ExportVo exportVo = reportFlowService.getFlowExportVo(dto, 3);
+        List<ReportFlowInfo> result = exportVo.getResult().stream().filter(i -> i instanceof ReportFlowInfo)
+                .map(i -> (ReportFlowInfo) i)
+                .collect(Collectors.toList());
+        List<String> conditionList = exportVo.getConditionList();
+        ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
+        return util.exportDynamic(result, "RSJ入口机器人流量统计表", conditionList, 26);
+    }
+
+    /**
+     * 导出CSJ机器人
+     */
+    @PostMapping(value = "/export/csj/robot")
+    public AjaxResult exportCsjRobot(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
+        ExportVo exportVo = reportFlowService.getFlowExportVo(dto, 4);
+        List<ReportFlowInfo> result = exportVo.getResult().stream().filter(i -> i instanceof ReportFlowInfo)
+                .map(i -> (ReportFlowInfo) i)
+                .collect(Collectors.toList());
+        List<String> conditionList = exportVo.getConditionList();
+        ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
+        return util.exportDynamic(result, "CSJ出口机器人流量统计表", conditionList, 26);
     }
 
     /**

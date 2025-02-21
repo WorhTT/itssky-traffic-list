@@ -54,7 +54,7 @@ import {listStationSelect} from "@/api/system/station";
 import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
 
 export default {
-  name: "RSJRobot",
+  name: "Green",
   data() {
     return {
       props: {multiple: true},
@@ -111,7 +111,7 @@ export default {
   methods: {
     openChildPage() {
       const route = {
-        path: '/rsjRobotDetail',
+        path: '/greenDetail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);

@@ -474,10 +474,10 @@
             SUM(CASE WHEN a.VehicleClass = 25 THEN a.CarNum ELSE 0 END) AS z5,
             SUM(CASE WHEN a.VehicleClass = 26 THEN a.CarNum ELSE 0 END) AS z6,
             SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 THEN a.CarNum ELSE 0 END) AS zAmount,
-            SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END) AS militaryNum,
-            SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END) AS officialNum,
-            SUM(CASE WHEN a.DealStatus&amp;14=14 THEN a.CarNum ELSE 0 END) AS fleetNum,
-            SUM(CASE WHEN a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END) AS preferNum,
+            SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END) AS military,
+            SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END) AS official,
+            SUM(CASE WHEN a.DealStatus&amp;14=14 THEN a.CarNum ELSE 0 END) AS fleet,
+            SUM(CASE WHEN a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END) AS prefer,
             SUM(a.CarNum) AS allAmount
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
@@ -498,6 +498,11 @@
             </where>
         </foreach>
         a
+        <where>
+            <if test="flag != null and flag > 2">
+                AND termMode = 7
+            </if>
+        </where>
         <choose>
             <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
                 GROUP BY StaDate

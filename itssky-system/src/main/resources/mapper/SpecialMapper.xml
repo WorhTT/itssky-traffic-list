@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itssky.system.mapper.SpecialMapper">
+
+    <select id="greenTable" resultType="com.itssky.system.domain.vo.GreenVo"
+            parameterType="com.itssky.system.domain.dto.GreenDto">
+        SELECT ExitDate as staDate,
+               OperatorID as operatorId,
+               EntryLane as entryLane,
+               LaneID as laneId,
+               ExitTime as exitTime,
+               LicensePlate as licensePlate,
+               TollFee / 100 as tollfee
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
+            SELECT
+            *
+            FROM ${tableName} AS alias${index + 1}
+            <where>
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND ExitTime >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND ExitTime <![CDATA[<=]]> #{intEndTime}
+                </if>
+                AND CancelFlag = 0
+                AND VehicleStatus=102 AND RecordType&amp;1=1
+            </where>
+        </foreach>
+        a
+        ORDER BY ExitTime
+    </select>
+
+    <select id="buildOperatorName" parameterType="collection" resultType="map">
+        SELECT OperatorName as operatorName,
+               OperatorID as operatorId
+        FROM dbtoms.tboperatorinfo
+        <where>
+            AND OperatorID in
+            <foreach item="operatorId" collection="operatorIds" open="(" separator="," close=")">
+                #{operatorId}
+            </foreach>
+        </where>
+    </select>
+</mapper>

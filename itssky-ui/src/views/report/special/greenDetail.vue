@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
       <h1 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h1>
-      <h1 style="font-weight: bolder;margin: 1vh 0">RSJ入口(MTC+ETC)交通流量统计表</h1>
+      <h1 style="font-weight: bolder;margin: 1vh 0">绿优台账</h1>
     </div>
     <div style="display: flex">
       <span v-for="item in conditionList" style="flex: 1;
@@ -33,33 +33,14 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="dataList" border ref="myTable">
-      <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
-      <el-table-column label="客一" align="center" prop="k1"/>
-      <el-table-column label="客二" align="center" prop="k2"/>
-      <el-table-column label="客三" align="center" prop="k3"/>
-      <el-table-column label="客四" align="center" prop="k4"/>
-      <el-table-column label="客车小计" align="center" prop="kamount"/>
-      <el-table-column label="货一" align="center" prop="h1"/>
-      <el-table-column label="货二" align="center" prop="h2"/>
-      <el-table-column label="货三" align="center" prop="h3"/>
-      <el-table-column label="货四" align="center" prop="h4"/>
-      <el-table-column label="货五" align="center" prop="h5"/>
-      <el-table-column label="货六" align="center" prop="h6"/>
-      <el-table-column label="货车小计" align="center" prop="hamount"/>
-      <el-table-column label="专一" align="center" prop="z1"/>
-      <el-table-column label="专二" align="center" prop="z2"/>
-      <el-table-column label="专三" align="center" prop="z3"/>
-      <el-table-column label="专四" align="center" prop="z4"/>
-      <el-table-column label="专五" align="center" prop="z5"/>
-      <el-table-column label="专六" align="center" prop="z6"/>
-      <el-table-column label="专车小计" align="center" prop="zamount"/>
-      <el-table-column label="公务" align="center" prop="official"/>
-      <el-table-column label="军车" align="center" prop="military"/>
-      <el-table-column label="优惠" align="center" prop="discount"/>
-      <el-table-column label="免费" align="center" prop="free"/>
-      <el-table-column label="车队" align="center" prop="fleet"/>
-      <el-table-column label="总计" align="center" prop="allAmount"/>
+    <el-table v-loading="loading" :data="dataList" border ref="myTable" :span-method="arraySpanMethod" :cell-style="cellStyle">
+      <el-table-column label="时间" align="center" prop="staDate" min-width="120"/>
+      <el-table-column label="收费员" align="center" prop="operatorName"/>
+      <el-table-column label="入口车道" align="center" prop="entryLane"/>
+      <el-table-column label="车道" align="center" prop="laneId"/>
+      <el-table-column label="交易时间" align="center" prop="exitTimeStr"/>
+      <el-table-column label="优惠前金额" align="center" prop="tollfee"/>
+      <el-table-column label="车牌" align="center" prop="licensePlate"/>
     </el-table>
 
     <iframe id="printFrame" style="display: none;"></iframe>
@@ -68,10 +49,10 @@
 
 <script>
 
-import {getEntryFlow, exportEntryFlow} from "@/api/report/exitFlow"
+import {greenTable, exportGreenTable} from "@/api/report/special"
 
 export default {
-  name: "CSJExitFlowDetail",
+  name: "GreenDetail",
   data() {
     return {
       props: {multiple: true},
@@ -118,9 +99,28 @@ export default {
     }
   },
   methods: {
+    cellStyle({row, column, rowIndex, columnIndex}) {
+      if (row.hj === true) {
+        return 'background:	#C0C0C0';
+      }
+    },
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (row.hj === true) {
+        row.staDate = "优惠前金额合计"
+        if (columnIndex === 0) {
+          return [1, 5];
+        } else if (columnIndex >= 1 && columnIndex <= 4) {
+          return [0, 0];
+        } else if (columnIndex === 5) {
+          return [5, 7]
+        } else if (columnIndex >= 5 && columnIndex <= 7) {
+          return [0, 0]
+        }
+      }
+    },
     getList() {
       this.loading = true;
-      getEntryFlow(this.queryParams).then(response => {
+      greenTable(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
         this.conditionList = response.conditionList;
@@ -131,12 +131,12 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出RSJ入口(MTC+ETC)交通流量统计表?', "警告", {
+      this.$confirm('是否确认导出绿优台账?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportEntryFlow(queryParams);
+        return exportGreenTable(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       })
@@ -192,7 +192,7 @@ export default {
         .el-table td {
           border: 1px solid #ebeef5 !important;
           font-size: 16px;
-          padding: 10px; 0;
+          padding: 10px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
@@ -219,7 +219,8 @@ export default {
         </style>
         </head>
         <body>
-            <div class="print-title">RSJ入口(MTC+ETC)交通流量统计表</div>
+            <div class="print-title">宁杭高速</div>
+            <div class="print-title">绿优台账</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
         </body>

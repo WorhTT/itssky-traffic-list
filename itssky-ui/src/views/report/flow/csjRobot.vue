@@ -111,7 +111,7 @@ export default {
   methods: {
     openChildPage() {
       const route = {
-        path: '/rsjRobotDetail',
+        path: '/csjRobotDetail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);

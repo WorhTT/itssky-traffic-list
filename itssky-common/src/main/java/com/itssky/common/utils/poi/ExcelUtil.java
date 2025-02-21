@@ -2011,7 +2011,9 @@ public class ExcelUtil<T>
                     field.setAccessible(true);
                     try {
                         if (!attr.onlyHeader()) {
-                            dataList.add(Objects.requireNonNull(field.get(i)).toString());
+                            if (field.get(i) != null) {
+                                dataList.add(Objects.requireNonNull(field.get(i)).toString());
+                            }
                         }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
@@ -2034,6 +2036,7 @@ public class ExcelUtil<T>
         XSSFWorkbook workbook = new XSSFWorkbook();
         // 创建工作表
         XSSFSheet sheet = workbook.createSheet("Sheet1");
+        sheet.setDefaultColumnWidth(20);
 
         int currentRowIndex = 0;
         // 创建第一页的第一行，索引从0开始
