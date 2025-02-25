@@ -27,6 +27,27 @@
         >
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="超限操作:" prop="cxczType">
+        <el-select
+          v-model="queryParams.cxczType"
+          class="custom-input"
+          placeholder="请选择"
+          clearable
+          style="width: 240px"
+          filterable
+        >
+          <el-option value="0" label="全部" key="0"/>
+          <el-option value="1" label="大件运输" key="1"/>
+          <el-option value="2" label="限重27吨(3轴)" key="2"/>
+          <el-option value="3" label="限重32吨(4轴)" key="3"/>
+          <el-option value="4" label="限重35吨(4轴)" key="4"/>
+          <el-option value="5" label="限重36吨(4轴)" key="5"/>
+          <el-option value="6" label="限重37吨(4轴)" key="6"/>
+          <el-option value="7" label="限重55吨(特种)" key="7"/>
+          <el-option value="8" label="其他超限放行" key="8"/>
+          <el-option value="9" label="超限拦截" key="9"/>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="openChildPage">查看详细报表</el-button>
       </el-form-item>
@@ -40,7 +61,7 @@ import {listStationSelect} from "@/api/system/station";
 import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
 
 export default {
-  name: "Green",
+  name: "Cxzc",
   data() {
     return {
       props: {multiple: true},
@@ -67,7 +88,7 @@ export default {
         stationId: [],
         beginTime: null,
         endTime: null,
-        statisticsType: '0'
+        cxczType: '0'
       },
       // 表单参数
       form: {},
@@ -97,7 +118,7 @@ export default {
   methods: {
     openChildPage() {
       const route = {
-        path: '/greenDetail',
+        path: '/cxczDetail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);

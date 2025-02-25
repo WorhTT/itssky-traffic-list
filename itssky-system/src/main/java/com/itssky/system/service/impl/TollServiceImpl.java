@@ -69,8 +69,11 @@ public class TollServiceImpl implements ITollService {
         } else {
             dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
+        //获取出口班次统计表数据
         List<StationShiftVo> stationShiftVos = tollMapper.f1StationShift(dto);
+        //获取解款数据
         List<TbShVo> tbShData = tollMapper.getTbShData(dto);
+        //获取交款记录表数据
         Map<Integer, TbShVo> tbShMap = tbShData.stream().collect(Collectors.toMap(TbShVo::getOperatorId, i -> i));
         stationShiftVos.forEach(i -> {
             if (Objects.nonNull(tbShMap.get(i.getOperatorId()))) {
@@ -81,18 +84,21 @@ public class TollServiceImpl implements ITollService {
                 //加收款
                 double addedToll = new BigDecimal(tbShVo.getAddedToll().toString()).doubleValue();
                 i.setExtraTotal(addedToll);
-                //应缴IC卡
-                int yj = new BigDecimal(tbShVo.getHandOutCNum().toString()).intValue();
-                i.setDueIcCardCount(yj);
+//                //应缴IC卡
+//                int yj = new BigDecimal(tbShVo.getHandOutCNum().toString()).intValue();
+//                i.setDueIcCardCount(yj);
             }
-            //计算统计金额
-            BigDecimal bigDecimal = new BigDecimal("0");
-            bigDecimal = bigDecimal.add(new BigDecimal(i.getDueAmount().toString()));
-            bigDecimal = bigDecimal.add(new BigDecimal(i.getMobilePaymentAmount().toString()));
-            bigDecimal = bigDecimal.add(new BigDecimal(i.getEPaymentAmount().toString()));
-            i.setStatAmount(bigDecimal.setScale(2, RoundingMode.HALF_UP).doubleValue());
+//            //计算统计金额
+//            BigDecimal bigDecimal = new BigDecimal("0");
+//            bigDecimal = bigDecimal.add(BigDecimal.valueOf(Objects.nonNull(i.getDueAmount()) ? i.getDueAmount() : 0));
+//            bigDecimal = bigDecimal.add(BigDecimal.valueOf(Objects.nonNull(i.getMobilePaymentAmount()) ? i.getMobilePaymentAmount() : 0));
+//            bigDecimal = bigDecimal.add(BigDecimal.valueOf(Objects.nonNull(i.getEPaymentAmount()) ? i.getEPaymentAmount() : 0));
+//            i.setStatAmount(bigDecimal.setScale(2, RoundingMode.HALF_UP).doubleValue());
             //计算金额差异
-            i.setAmountDiff(i.getPaidAmount() - i.getDueAmount());
+            BigDecimal decimal = BigDecimal.valueOf(Objects.nonNull(i.getPaidAmount()) ? i.getPaidAmount() : 0);
+            double amountDiff = decimal.subtract(BigDecimal.valueOf(Objects.nonNull(i.getDueAmount()) ? i.getDueAmount() : 0))
+                    .setScale(2, RoundingMode.HALF_UP).doubleValue();
+            i.setAmountDiff(amountDiff);
         });
         return stationShiftVos;
     }
@@ -201,13 +207,16 @@ public class TollServiceImpl implements ITollService {
                 i.setExtraTotal(addedToll);
             }
             //计算统计金额
-            BigDecimal zero = new BigDecimal("0");
-            zero = zero.add(BigDecimal.valueOf(i.getDueAmount()));
-            zero = zero.add(BigDecimal.valueOf(i.getMobilePaymentAmount()));
-            zero = zero.add(BigDecimal.valueOf(i.getEPaymentAmount()));
-            i.setStatAmount(zero.setScale(2, RoundingMode.HALF_UP).doubleValue());
+//            BigDecimal zero = new BigDecimal("0");
+//            zero = zero.add(BigDecimal.valueOf(Objects.nonNull(i.getDueAmount()) ? i.getDueAmount() : 0));
+//            zero = zero.add(BigDecimal.valueOf(Objects.nonNull(i.getMobilePaymentAmount()) ? i.getMobilePaymentAmount() : 0));
+//            zero = zero.add(BigDecimal.valueOf(Objects.nonNull(i.getEPaymentAmount()) ? i.getEPaymentAmount() : 0));
+//            i.setStatAmount(zero.setScale(2, RoundingMode.HALF_UP).doubleValue());
             //计算金额差异
-            i.setAmountDiff(i.getPaidAmount() - i.getDueAmount());
+            BigDecimal bigDecimal = BigDecimal.valueOf(Objects.nonNull(i.getPaidAmount()) ? i.getPaidAmount() : 0);
+            double amountDiff = bigDecimal.subtract(BigDecimal.valueOf(Objects.nonNull(i.getDueAmount()) ? i.getDueAmount() : 0))
+                    .setScale(2, RoundingMode.HALF_UP).doubleValue();
+            i.setAmountDiff(amountDiff);
         });
         //给列表增加小计行和合计行
         LinkedList<StationShiftVo> linkedList = buildTotalRow(stationShiftVos);
@@ -351,10 +360,10 @@ public class TollServiceImpl implements ITollService {
         }
         //计算金额差异和统计金额
         stationShiftVos.forEach(i -> {
-            //计算统计金额
-            i.setStatAmount(i.getDueAmount() + i.getMobilePaymentAmount() + i.getEPaymentAmount());
             //计算金额差异
-            i.setAmountDiff(i.getPaidAmount() - i.getDueAmount());
+            BigDecimal amountDiff = BigDecimal.valueOf(i.getPaidAmount());
+            amountDiff = amountDiff.subtract(BigDecimal.valueOf(i.getDueAmount()));
+            i.setAmountDiff(amountDiff.setScale(2, RoundingMode.HALF_UP).doubleValue());
             //给统计方式赋值
             if (dto.getStatisticsType().equals("0")) {
                 i.setStatType(i.getStaDate().toString());
@@ -470,8 +479,13 @@ public class TollServiceImpl implements ITollService {
             }
         }
         //计算合计
-        vehicleClassStatVos.forEach(i -> i.setTotalAmount(i.getCustSubTotal()
-                + i.getTruckSubTotal() + i.getSpecSubTotal() + (Objects.nonNull(i.getAddedAmount()) ? i.getAddedAmount() : 0)));
+        vehicleClassStatVos.forEach(i -> {
+            BigDecimal sum = BigDecimal.valueOf(Objects.nonNull(i.getCustSubTotal()) ? i.getCustSubTotal() : 0);
+            sum = sum.add(BigDecimal.valueOf(Objects.nonNull(i.getTruckSubTotal()) ? i.getTruckSubTotal() : 0));
+            sum = sum.add(BigDecimal.valueOf(Objects.nonNull(i.getSpecSubTotal()) ? i.getSpecSubTotal() : 0));
+            sum = sum.add(BigDecimal.valueOf(Objects.nonNull(i.getAddedAmount()) ? i.getAddedAmount() : 0));
+            i.setTotalAmount(sum.setScale(2, RoundingMode.HALF_UP).doubleValue());
+        });
         //获取统计方式
         vehicleClassStatVos.forEach(v -> {
             if (dto.getStatisticsType().equals("0")) {

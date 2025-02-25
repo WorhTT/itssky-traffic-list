@@ -15,3 +15,19 @@ export function exportGreenTable(data) {
     data: data
   })
 }
+
+export function cxczTable(data) {
+  return request({
+    url: '/special/cxcz',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportCxczTable(data) {
+  return request({
+    url: '/special/export/cxcz',
+    method: 'post',
+    data: data
+  })
+}

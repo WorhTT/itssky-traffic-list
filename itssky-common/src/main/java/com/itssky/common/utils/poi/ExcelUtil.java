@@ -2204,45 +2204,6 @@ public class ExcelUtil<T>
         return AjaxResult.success(filename);
     }
 
-//    private static void mergeCells(XSSFSheet sheet, int columnMax, int conditionNum, Field[] fields) {
-//        //第一行标题行合并单元格
-//        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, columnMax - 1));
-//        //获取第二行需要分割的值
-//        int[] conditionRowSplit = getConditionRowSplit(columnMax, conditionNum);
-//        int startColumn = 0;
-//        int endColumn = conditionRowSplit[0] - 1;
-//        for (int i = 0; i < conditionRowSplit.length - 1; i++) {
-//            sheet.addMergedRegion(new CellRangeAddress(1, 1, startColumn, endColumn));
-//            startColumn += conditionRowSplit[i];
-//            endColumn += conditionRowSplit[i + 1];
-//        }
-//        for (Field field: fields) {
-//            if (field.isAnnotationPresent(Excel.class)) {
-//                Excel attr = field.getAnnotation(Excel.class);
-//                field.setAccessible(true);
-//                if (attr.startRow() != 0 || attr.endRow() != 0 || attr.startColumn() != 0 || attr.endColumn() != 0) {
-//                    sheet.addMergedRegion(new CellRangeAddress(attr.startRow(), attr.endRow(), attr.startColumn(), attr.endColumn()));
-//                }
-//                if (field.getName().equals("subList")) {
-//                    //获取字段类型的Class对象
-//                    Class<?> fieldType = field.getType();
-//                    if (!fieldType.isPrimitive() && !fieldType.isInterface()) {
-//                        Field[] subFields = fieldType.getDeclaredFields();
-//                        for (Field subField: subFields) {
-//                            if (subField.isAnnotationPresent(Excel.class)) {
-//                                Excel subAttr = subField.getAnnotation(Excel.class);
-//                                subField.setAccessible(true);
-//                                if (subAttr.startRow() != 0 || subAttr.endRow() != 0 || subAttr.startColumn() != 0 || subAttr.endColumn() != 0) {
-//                                    sheet.addMergedRegion(new CellRangeAddress(subAttr.startRow(), subAttr.endRow(), subAttr.startColumn(), subAttr.endColumn()));
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//    }
 
     private static int[] getConditionRowSplit(int columnMax, int conditionNum) {
         int part = columnMax / conditionNum;
@@ -2255,24 +2216,6 @@ public class ExcelUtil<T>
         return result;
     }
 
-    private static void approvalMethodFillInData(List<Map<String, Object>> convertListMap, XSSFSheet sheet,
-                                                 XSSFCellStyle contentStyle, int rowNum,
-                                                 LinkedList<String> headerNameList) {
-        for (Map<String, Object> map : convertListMap) {
-            XSSFRow tempRow = sheet.createRow(rowNum++);
-            tempRow.setHeight((short) 500);
-            // 循环单元格填入数据
-            for (int i = 0; i < headerNameList.size(); i++) {
-                String name = headerNameList.get(i);
-                //列宽自适应，j为自适应的列，true就是自适应，false就是不自适应，默认不自适应
-                sheet.autoSizeColumn(i, true);
-                XSSFCell tempCell = tempRow.createCell(i);
-                tempCell.setCellStyle(contentStyle);
-                String tempValue = map.get(name).toString();
-                tempCell.setCellValue(tempValue);
-            }
-        }
-    }
 
     /**
      * 创建标题样式
@@ -2285,6 +2228,8 @@ public class ExcelUtil<T>
         cellStyle.setAlignment(HorizontalAlignment.CENTER);//水平居中
         cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);//垂直对齐
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        cellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+//        cellStyle.setFillBackgroundColor();
 //        cellStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.getIndex());//背景颜色
 
         XSSFFont headerFont1 = (XSSFFont) wb.createFont(); // 创建字体样式
@@ -2310,6 +2255,7 @@ public class ExcelUtil<T>
         cellStyle.setAlignment(HorizontalAlignment.CENTER);//水平居中
         cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);//垂直对齐
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        cellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
 //        cellStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.getIndex());//背景颜色
 
         XSSFFont headerFont1 = (XSSFFont) wb.createFont(); // 创建字体样式

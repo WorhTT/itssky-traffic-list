@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
-      <h1 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h1>
-      <h1 style="font-weight: bolder;margin: 1vh 0">AFV综合(MTC+ETC)按车型统计表</h1>
+      <h3 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">入口超限操作明细表</h3>
     </div>
     <div style="display: flex">
       <span v-for="item in conditionList" style="flex: 1;
@@ -11,64 +11,57 @@
         align-items: center;">
         {{item}}
       </span>
+      <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-download"
+            size="mini"
+            @click="handleExport"
+          >导出
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-document"
+            size="mini"
+            @click="printTable"
+          >打印
+          </el-button>
+        </el-col>
+      </el-row>
     </div>
-    <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          class="export-button-container"
-        >导出
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-          class="print-button-container"
-          @click="printTable"
-        >打印
-        </el-button>
-      </el-col>
-    </el-row>
+
 
     <el-table v-loading="loading" :data="dataList" border ref="myTable">
-      <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
-      <el-table-column label="客一" align="center" prop="cust1" min-width="120"/>
-      <el-table-column label="客二" align="center" prop="cust2"/>
-      <el-table-column label="客三" align="center" prop="cust3"/>
-      <el-table-column label="客四" align="center" prop="cust4"/>
-      <el-table-column label="客车小计" align="center" prop="custSubTotal" min-width="120"/>
-      <el-table-column label="货一" align="center" prop="truck1" min-width="120"/>
-      <el-table-column label="货二" align="center" prop="truck2"/>
-      <el-table-column label="货三" align="center" prop="truck3"/>
-      <el-table-column label="货四" align="center" prop="truck4"/>
-      <el-table-column label="货五" align="center" prop="truck5"/>
-      <el-table-column label="货六" align="center" prop="truck6" min-width="120"/>
-      <el-table-column label="货车小计" align="center" prop="truckSubTotal" min-width="120"/>
-      <el-table-column label="专一" align="center" prop="spec1"/>
-      <el-table-column label="专二" align="center" prop="spec2"/>
-      <el-table-column label="专三" align="center" prop="spec3"/>
-      <el-table-column label="专四" align="center" prop="spec4"/>
-      <el-table-column label="专五" align="center" prop="spec5"/>
-      <el-table-column label="专六" align="center" prop="spec6"/>
-      <el-table-column label="专车小计" align="center" prop="specSubTotal" min-width="100"/>
-      <el-table-column label="加收" align="center" prop="addedAmount"/>
-      <el-table-column label="合计" align="center" prop="totalAmount" min-width="120"/>
+      <el-table-column label="入口站" align="center" prop="stationName" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="入口车道" align="center" prop="laneName" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="卡号" align="center" prop="cardId" min-width="160" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="入口工号" align="center" prop="operatorId" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="入口时间" align="center" prop="entryTime" min-width="160" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="人工车牌" align="center" prop="vehicleLicense" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="识别车牌" align="center" prop="licensePlate" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="轴型" align="center" prop="axisType" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="车型" align="center" prop="vehicleClassStr" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="车重(KG)" align="center" prop="totalWeight" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="限重(KG)" align="center" prop="limitWeight" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="超限率%" align="center" prop="overLoadRate" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="检验方式" align="center" prop="checkType" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="超限操作" align="center" prop="cz" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+<!--      <el-table-column label="图片" align="center" prop="imagePath" min-width="120"/>-->
     </el-table>
+
     <iframe id="printFrame" style="display: none;"></iframe>
   </div>
 </template>
 
 <script>
 
-import {afvGeneral,exportAfvGeneral} from "@/api/report/toll";
+import {cxczTable, exportCxczTable} from "@/api/report/special"
 
 export default {
-  name: "AFVComVehicleDetail",
+  name: "CxczDetail",
   data() {
     return {
       props: {multiple: true},
@@ -96,8 +89,7 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      },
+      rules: {},
       stationOptions: [],
       shiftOptions: [],
       pickerType: 'date',
@@ -106,40 +98,54 @@ export default {
           return time.getTime() > Date.now();
         },
       },
-      conditionList: [],
-      showProp: null,
+      conditionList:[]
     };
   },
-  computed: {},
   created() {
     this.queryParams = this.$route.query;
     if (this.queryParams) {
       this.getList();
     }
   },
-  watch: {
-  },
   methods: {
-    /** 查询公告列表 */
+    cellStyle({row, column, rowIndex, columnIndex}) {
+      if (row.hj === true) {
+        return 'background:	#C0C0C0';
+      }
+    },
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (row.hj === true) {
+        row.staDate = "优惠前金额合计"
+        if (columnIndex === 0) {
+          return [1, 5];
+        } else if (columnIndex >= 1 && columnIndex <= 4) {
+          return [0, 0];
+        } else if (columnIndex === 5) {
+          return [5, 7]
+        } else if (columnIndex >= 5 && columnIndex <= 7) {
+          return [0, 0]
+        }
+      }
+    },
     getList() {
       this.loading = true;
-      afvGeneral(this.queryParams).then(response => {
+      cxczTable(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
         this.conditionList = response.conditionList;
       }).finally(() => {
         this.loading = false;
-      })
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出AFV综合(MTC+ETC)按车型统计表?', "警告", {
+      this.$confirm('是否确认导出入口超限操作明细表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportAfvGeneral(queryParams);
+        return exportCxczTable(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       })
@@ -150,13 +156,14 @@ export default {
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
       let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
       let htmlContent = `
-        <!DOCTYPE html>
+      <!DOCTYPE html>
         <html>
         <head>
         <title>Print</title>
         <style>
-         .table-container {
-          zoom: 0.78;
+            /* 在这里添加你的样式 */
+        .table-container {
+          zoom: 0.75;
           margin-top: 40px;
         }
         .print-title {
@@ -222,7 +229,7 @@ export default {
         </head>
         <body>
             <div class="print-title">宁杭高速</div>
-            <div class="print-title">AFV综合(MTC+ETC)按车型统计表</div>
+            <div class="print-title">入口超限操作明细表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
         </body>
@@ -237,8 +244,9 @@ export default {
     },
   }
 };
+
+
 </script>
 
 <style lang="scss" scoped>
-
 </style>

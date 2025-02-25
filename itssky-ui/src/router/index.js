@@ -159,6 +159,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/cxczDetail',
+    component: () => import('@/views/report/special/cxczDetail.vue'),
+    hidden: true
+  },
+  {
     path: '/',
     redirect: '/f1StationShift'
   },
@@ -273,41 +278,47 @@ export const constantRoutes = [
         name: '绿优台账',
         meta: {title: '绿优台账', icon: 'chart'},
         component: () => import('@/views/report/special/green.vue'),
+      },
+      {
+        path: '/cxcz',
+        name: '入口超限操作明细表',
+        meta: {title: '入口超限操作明细表', icon: 'chart'},
+        component: () => import('@/views/report/special/cxcz.vue'),
       }
     ]
   },
-  {
-    path: '/flow',
-    component: Layout,
-    name: '交通流量类',
-    meta: {title: '交通流量类', icon: 'list'},
-    children: [
-      {
-        path: '/csjExitFlow',
-        name: 'CSJ出口(MTC+ETC)交通流量统计表',
-        meta: {title: 'CSJ出口(MTC+ETC)交通流量统计表', icon: 'chart'},
-        component: () => import('@/views/report/flow/csjExitFlow.vue'),
-      },
-      {
-        path: '/csjExitFlow2',
-        name: 'RSJ入口(MTC+ETC)交通流量统计表',
-        meta: {title: 'RSJ入口(MTC+ETC)交通流量统计表', icon: 'chart'},
-        component: () => import('@/views/report/flow/csjExitFlow2.vue'),
-      },
-      {
-        path: '/rsjRobot',
-        name: 'RSJ入口机器人交通流量统计表',
-        meta: {title: 'RSJ入口机器人交通流量统计表', icon: 'chart'},
-        component: () => import('@/views/report/flow/rsjRobot.vue'),
-      },
-      {
-        path: '/csjRobot',
-        name: 'CSJ出口机器人交通流量统计表',
-        meta: {title: 'CSJ出口机器人交通流量统计表', icon: 'chart'},
-        component: () => import('@/views/report/flow/csjRobot.vue'),
-      },
-    ]
-  },
+  // {
+  //   path: '/flow',
+  //   component: Layout,
+  //   name: '交通流量类',
+  //   meta: {title: '交通流量类', icon: 'list'},
+  //   children: [
+  //     {
+  //       path: '/csjExitFlow',
+  //       name: 'CSJ出口(MTC+ETC)交通流量统计表',
+  //       meta: {title: 'CSJ出口(MTC+ETC)交通流量统计表', icon: 'chart'},
+  //       component: () => import('@/views/report/flow/csjExitFlow.vue'),
+  //     },
+  //     {
+  //       path: '/csjExitFlow2',
+  //       name: 'RSJ入口(MTC+ETC)交通流量统计表',
+  //       meta: {title: 'RSJ入口(MTC+ETC)交通流量统计表', icon: 'chart'},
+  //       component: () => import('@/views/report/flow/csjExitFlow2.vue'),
+  //     },
+  //     {
+  //       path: '/rsjRobot',
+  //       name: 'RSJ入口机器人交通流量统计表',
+  //       meta: {title: 'RSJ入口机器人交通流量统计表', icon: 'chart'},
+  //       component: () => import('@/views/report/flow/rsjRobot.vue'),
+  //     },
+  //     {
+  //       path: '/csjRobot',
+  //       name: 'CSJ出口机器人交通流量统计表',
+  //       meta: {title: 'CSJ出口机器人交通流量统计表', icon: 'chart'},
+  //       component: () => import('@/views/report/flow/csjRobot.vue'),
+  //     },
+  //   ]
+  // },
   // {
   //   path: '/assess',
   //   component: Layout,

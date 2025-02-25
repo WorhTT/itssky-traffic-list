@@ -45,106 +45,106 @@ public class VehicleClassStatVo {
     /**
      * 客一
      */
-    private Integer cust1;
+    private Double cust1;
 
     /**
      * 客二
      */
-    private Integer cust2;
+    private Double cust2;
 
     /**
      * 客三
      */
-    private Integer cust3;
+    private Double cust3;
 
     /**
      * 客四
      */
-    private Integer cust4;
+    private Double cust4;
 
     /**
      * 客车小计
      */
-    private Integer custSubTotal;
+    private Double custSubTotal;
 
     /**
      * 货一
      */
-    private Integer truck1;
+    private Double truck1;
 
     /**
      * 货二
      */
-    private Integer truck2;
+    private Double truck2;
 
     /**
      * 货三
      */
-    private Integer truck3;
+    private Double truck3;
 
     /**
      * 货四
      */
-    private Integer truck4;
+    private Double truck4;
 
     /**
      * 货五
      */
-    private Integer truck5;
+    private Double truck5;
 
     /**
      * 货六
      */
-    private Integer truck6;
+    private Double truck6;
 
     /**
      * 货车小计
      */
-    private Integer truckSubTotal;
+    private Double truckSubTotal;
 
     /**
      * 专一
      */
-    private Integer spec1;
+    private Double spec1;
 
     /**
      * 专二
      */
-    private Integer spec2;
+    private Double spec2;
 
     /**
      * 专三
      */
-    private Integer spec3;
+    private Double spec3;
 
     /**
      * 专四
      */
-    private Integer spec4;
+    private Double spec4;
 
     /**
      * 专五
      */
-    private Integer spec5;
+    private Double spec5;
 
     /**
      * 专六
      */
-    private Integer spec6;
+    private Double spec6;
 
     /**
      * 专车小计
      */
-    private Integer specSubTotal;
+    private Double specSubTotal;
 
     /**
      * 加收款
      */
-    private Double addedAmount;
+    private Double addedAmount = 0D;
 
     /**
      * 总计
      */
-    private Double totalAmount;
+    private Double totalAmount = 0D;
 
 }

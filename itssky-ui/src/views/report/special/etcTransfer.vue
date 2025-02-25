@@ -27,6 +27,20 @@
         >
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="统计类型:" prop="statisticsType">
+        <el-select
+          v-model="queryParams.statisticsType"
+          class="custom-input"
+          placeholder="请选择"
+          clearable
+          style="width: 240px"
+          filterable
+        >
+          <el-option value="0" label="日" key="0"/>
+          <el-option value="1" label="月" key="1"/>
+          <el-option value="2" label="站" key="2"/>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="openChildPage">查看详细报表</el-button>
       </el-form-item>

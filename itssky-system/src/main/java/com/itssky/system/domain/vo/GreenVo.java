@@ -40,4 +40,8 @@ public class GreenVo {
     private Integer OperatorId;
 
     private boolean hj;
+
+    private Integer stationId;
+
+    private String stationName;
 }

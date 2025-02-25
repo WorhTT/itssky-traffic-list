@@ -7,6 +7,7 @@
     <select id="greenTable" resultType="com.itssky.system.domain.vo.GreenVo"
             parameterType="com.itssky.system.domain.dto.GreenDto">
         SELECT ExitDate as staDate,
+               StationID as stationId,
                OperatorID as operatorId,
                EntryLane as entryLane,
                LaneID as laneId,
@@ -24,10 +25,10 @@
                     #{stationId}
                 </foreach>
                 <if test="intBeginTime != null and intBeginTime != ''">
-                    AND ExitTime >= #{intBeginTime}
+                    AND ExitDate >= #{intBeginTime}
                 </if>
                 <if test="intEndTime != null and intEndTime != ''">
-                    AND ExitTime <![CDATA[<=]]> #{intEndTime}
+                    AND ExitDate <![CDATA[<=]]> #{intEndTime}
                 </if>
                 AND CancelFlag = 0
                 AND VehicleStatus=102 AND RecordType&amp;1=1
@@ -47,5 +48,87 @@
                 #{operatorId}
             </foreach>
         </where>
+    </select>
+
+    <select id="cxczTable" resultType="com.itssky.system.domain.vo.CxczVo"
+            parameterType="com.itssky.system.domain.dto.CxczDto">
+        SELECT StationID as stationId,
+               laneid as laneId,
+               (SELECT LaneName FROM dbtoms.tblaneinfo WHERE StationID = a.StationID AND LaneID = a.laneid) as laneName,
+               (SELECT StationID FROM dbtoms.tbstationinfo WHERE StationID = a.StationID) as stationName,
+               (SELECT VehicleName FROM dbtoms.tbvehicleclass WHERE VehicleClass = a.VehicleClass) as vehicleClassStr,
+               CardID as cardId,
+               OperatorID as operatorId,
+               EntryTime as entryTime,
+               VehicleLicense as vehicleLicense,
+               LicensePlate as licensePlate,
+               TotalWeight as totalWeight,
+               CASE WHEN (VehicleStatus=12 AND DealStatus&amp;0x4000=0x4000 AND LimitWeight IN (46000,49000) OR DealStatus&amp;0x20000000=0x20000000) THEN spare2 ELSE LimitWeight END as limitWeight,
+               CAST((CASE WHEN OverLoadRate>0 THEN (CASE WHEN (OverLoadRate-10000)&lt;0 THEN 0 ELSE (OverLoadRate-10000) END)/100 ELSE OverLoadRate END) AS decimal(20,2)) as overLoadRate,
+               CASE WHEN RecordType&amp;1=1 AND VehicleStatus=212 AND DealStatus&amp;14=10 and VehicleClass>10 THEN '大件运输'
+               WHEN RecordType&amp;1=1 AND LimitWeight=36000 THEN '限重36吨(4轴)'
+               WHEN RecordType&amp;1=1 AND LimitWeight=55000 THEN '限重55吨(特种)'
+               WHEN RecordType&amp;1=1 AND (VehicleStatus=12 AND DealStatus&amp;0x4000=0x4000 AND LimitWeight IN (46000,49000) OR DealStatus&amp;0x20000000=0x20000000) THEN '其他超限放行'
+               WHEN RecordType&amp;1=1 AND LimitWeight=35000 THEN '限重35吨(4轴)'
+               WHEN RecordType&amp;1=1 AND LimitWeight=37000 THEN '限重37吨(4轴)'
+               WHEN RecordType&amp;1=1 AND LimitWeight=32000 THEN '限重32吨(4轴)'
+               WHEN RecordType&amp;1=1 AND LimitWeight=27000 THEN '限重27吨(3轴)'
+               WHEN RecordType&amp;67108864=67108864 and VehicleClass>10 THEN '超限拦截'
+               ELSE '' END as cz,
+               VehicleClass as vehicleClass,
+               AxisType as axisType,
+               CASE WHEN RecordType&amp;805306368=805306368 THEN 'FFT' ELSE '人工' END checktype
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
+            SELECT
+            *
+            FROM ${tableName} AS alias${index + 1}
+            <where>
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND EntryDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND EntryDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+                <choose>
+                    <when test="cxczType != null and cxczType != '' and cxczType == 0">
+                        AND VehicleClass>10 AND SUBSTRING(laneid,-4,1)=0 AND ((RecordType&amp;1=1 AND ((VehicleStatus=212 AND DealStatus&amp;14=10) OR ( LimitWeight=27000 AND AxisNum=3) OR ( LimitWeight=32000) OR (LimitWeight=37000) OR (LimitWeight=36000) OR (LimitWeight=55000) OR ((VehicleStatus=12 AND DealStatus&amp;0x4000=0x4000 AND LimitWeight IN (46000,49000) OR DealStatus&amp;0x20000000=0x20000000)) OR (LimitWeight=35000 ))) OR RecordType&amp;67108864=67108864)
+                    </when>
+                    <when test="cxczType != null and cxczType != '' and cxczType == 1">
+                        AND RecordType&amp;1=1 AND VehicleStatus=212 AND DealStatus&amp;14=10 AND VehicleClass>10
+                    </when>
+                    <when test="cxczType != null and cxczType != '' and cxczType == 2">
+                        AND RecordType&amp;1=1 AND LimitWeight=27000 AND AxisNum=3 and SUBSTRING(laneid,-4,1)=0
+                    </when>
+                    <when test="cxczType != null and cxczType != '' and cxczType == 3">
+                        AND RecordType&amp;1=1 AND LimitWeight=32000 and SUBSTRING(laneid,-4,1)=0
+                    </when>
+                    <when test="cxczType != null and cxczType != '' and cxczType == 4">
+                        AND RecordType&amp;1=1 AND LimitWeight=35000 and SUBSTRING(laneid,-4,1)=0
+                    </when>
+                    <when test="cxczType != null and cxczType != '' and cxczType == 5">
+                        AND RecordType&amp;1=1 AND LimitWeight=36000 and SUBSTRING(laneid,-4,1)=0
+                    </when>
+                    <when test="cxczType != null and cxczType != '' and cxczType == 6">
+                        AND RecordType&amp;1=1 AND LimitWeight=37000 and SUBSTRING(laneid,-4,1)=0
+                    </when>
+                    <when test="cxczType != null and cxczType != '' and cxczType == 7">
+                        AND RecordType&amp;1=1 AND LimitWeight=55000 and SUBSTRING(laneid,-4,1)=0
+                    </when>
+                    <when test="cxczType != null and cxczType != '' and cxczType == 8">
+                        AND RecordType&amp;1=1 AND (VehicleStatus=12 AND DealStatus&amp;0x4000=0x4000 AND LimitWeight IN (46000,49000) OR DealStatus&amp;0x20000000=0x20000000)
+                    </when>
+                    <when test="cxczType != null and cxczType != '' and cxczType == 9">
+                        AND RecordType&amp;67108864=67108864 and VehicleClass>10
+                    </when>
+                </choose>
+            </where>
+        </foreach>
+        a
+        ORDER BY StationID, EntryTime
     </select>
 </mapper>

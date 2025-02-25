@@ -2,7 +2,9 @@ package com.itssky.report.controller;
 
 import com.itssky.common.core.domain.AjaxResult;
 import com.itssky.common.utils.poi.ExcelUtil;
+import com.itssky.system.domain.dto.CxczDto;
 import com.itssky.system.domain.dto.GreenDto;
+import com.itssky.system.domain.vo.CxczVo;
 import com.itssky.system.domain.vo.GreenVo;
 import com.itssky.system.domain.vo.TableDataVo;
 import com.itssky.system.service.CardService;
@@ -54,5 +56,29 @@ public class SpecialController {
                 greenDto.getBeginTime(), greenDto.getEndTime());
         ExcelUtil<GreenVo> util = new ExcelUtil<GreenVo>(GreenVo.class);
         return util.exportDynamic(greenVos, "绿优台账", conditionList, 7);
+    }
+
+    /**
+     * 入口超限操作明细表
+     */
+    @PostMapping(value = "/cxcz")
+    public TableDataVo cxczTable(@RequestBody CxczDto dto) {
+        List<CxczVo> cxczVos = specialService.cxczTable(dto);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(cxczVos);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return tableDataVo;
+    }
+
+    /**
+     * 导出入口超限操作明细表
+     */
+    @PostMapping(value = "/export/cxcz")
+    public AjaxResult exportCxczTable(@RequestBody CxczDto dto) throws IOException {
+        List<CxczVo> cxczVos = specialService.cxczTable(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(),
+                dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<CxczVo> util = new ExcelUtil<CxczVo>(CxczVo.class);
+        return util.exportDynamic(cxczVos, "入口超限操作明细表", conditionList, 14);
     }
 }

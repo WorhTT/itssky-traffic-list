@@ -10,11 +10,18 @@
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
         a.TeamID AS teamId,
-        SUM(CASE WHEN a.PayType = 0 THEN a.TotalFee / 100 ELSE 0 END) AS dueAmount,
-        SUM(a.TotalArrearage/ 100) AS arrearsAmount,
-        SUM(CASE WHEN a.TotalArrearage is not NULL AND a.TotalArrearage != 0 THEN a.CarNum ELSE 0 END) AS arrearsTrips,
-        SUM(CASE WHEN a.PayType = 16 THEN a.TotalFee / 100 ELSE 0 END) AS mobilePaymentAmount,
-        SUM(CASE WHEN a.PayType = 2 THEN a.TotalFee/ 100 ELSE 0 END) AS ePaymentAmount
+        IFNULL(SUM(TotalToll / 100), 0) as statAmount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=6 THEN CarNum ELSE 0 END),0) as officialIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=8 THEN CarNum ELSE 0 END),0) as militaryIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=12 THEN CarNum ELSE 0 END),0) as freeIcCardCount,
+        IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
+        AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
+        OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
+        SUM(CASE WHEN a.PayType = 0 THEN a.TotalToll / 100 ELSE 0 END) AS dueAmount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
+        IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
+        IFNULL(CAST(SUM(CASE WHEN PayType=2 THEN TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount
         FROM
         `tbstatexit` a
         <where>
@@ -28,6 +35,7 @@
             <if test="shiftId != null and shiftId != ''">
                 AND a.ShiftID = #{shiftId}
             </if>
+            AND CancelFlag = 0 AND RecordType&amp;1 =1
         </where>
         GROUP BY OperatorID
         ORDER BY OperatorID ASC
@@ -40,11 +48,18 @@
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
         a.TeamID AS teamId,
-        SUM(a.TotalFee / 100) AS dueAmount,
-        SUM(a.TotalArrearage / 100) AS arrearsAmount,
-        SUM(CASE WHEN a.TotalArrearage is not NULL AND a.TotalArrearage != 0 THEN a.CarNum ELSE 0 END) AS arrearsTrips,
-        SUM(CASE WHEN a.PayType = 16 THEN a.TotalFee / 100 ELSE 0 END) AS mobilePaymentAmount,
-        SUM(CASE WHEN a.PayType = 2 THEN a.TotalFee / 100 ELSE 0 END) AS ePaymentAmount
+        IFNULL(SUM(TotalToll / 100), 0) as statAmount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=6 THEN CarNum ELSE 0 END),0) as officialIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=8 THEN CarNum ELSE 0 END),0) as militaryIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=12 THEN CarNum ELSE 0 END),0) as freeIcCardCount,
+        IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
+        AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
+        OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
+        SUM(CASE WHEN a.PayType = 0 THEN a.TotalToll / 100 ELSE 0 END) AS dueAmount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
+        IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
+        IFNULL(CAST(SUM(CASE WHEN PayType=2 THEN TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount
         FROM
         `tbstatexit` a
         <where>
@@ -58,6 +73,7 @@
             <if test="shiftId != null and shiftId != ''">
                 AND a.ShiftID = #{shiftId}
             </if>
+            AND CancelFlag = 0 AND RecordType &amp;1 =1
         </where>
         GROUP BY OperatorID
         ORDER BY ShiftID ASC, OperatorID ASC
@@ -69,12 +85,18 @@
         SELECT
         a.StationID AS stationId,
         (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
-        SUM( a.TotalFee / 100) AS dueAmount,
-        SUM( a.TotalArrearage / 100) AS arrearsAmount,
-        SUM( CASE WHEN a.TotalArrearage IS NOT NULL AND a.TotalArrearage != 0 THEN a.CarNum ELSE 0 END ) AS
-        arrearsTrips,
-        SUM( CASE WHEN a.PayType = 16 THEN a.TotalFee / 100 ELSE 0 END ) AS mobilePaymentAmount,
-        SUM( CASE WHEN a.PayType = 2 THEN a.TotalFee / 100 ELSE 0 END ) AS ePaymentAmount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=6 THEN CarNum ELSE 0 END),0) as officialIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=8 THEN CarNum ELSE 0 END),0) as militaryIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=12 THEN CarNum ELSE 0 END),0) as freeIcCardCount,
+        IFNULL(SUM(TotalToll / 100), 0) as statAmount,
+        IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
+        AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
+        OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
+        SUM(CASE WHEN a.PayType = 0 THEN a.TotalToll / 100 ELSE 0 END) AS dueAmount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
+        IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
+        IFNULL(CAST(SUM(CASE WHEN PayType=2 THEN TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount,
         LEFT(a.StaDate, 6) AS monthDate,
         a.StaDate AS staDate
         FROM
@@ -93,6 +115,7 @@
                 <if test="intEndTime != null and intEndTime != ''">
                     AND StaDate <![CDATA[<=]]> #{intEndTime}
                 </if>
+                AND CancelFlag = 0 AND RecordType &amp;1 =1
             </where>
         </foreach>
         a
@@ -129,25 +152,26 @@
         a.OperatorID AS operatorId,
         LEFT(a.StaDate, 6) AS monthDate,
         a.StaDate AS staDate,
-        SUM(CASE WHEN a.VehicleClass = 1 THEN a.TotalToll ELSE 0 END) AS cust1,
-        SUM(CASE WHEN a.VehicleClass = 2 THEN a.TotalToll ELSE 0 END) AS cust2,
-        SUM(CASE WHEN a.VehicleClass = 3 THEN a.TotalToll ELSE 0 END) AS cust3,
-        SUM(CASE WHEN a.VehicleClass = 4 THEN a.TotalToll ELSE 0 END) AS cust4,
-        SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 THEN a.TotalToll ELSE 0 END) AS custSubTotal,
-        SUM(CASE WHEN a.VehicleClass = 11 THEN a.TotalToll ELSE 0 END) AS truck1,
-        SUM(CASE WHEN a.VehicleClass = 12 THEN a.TotalToll ELSE 0 END) AS truck2,
-        SUM(CASE WHEN a.VehicleClass = 13 THEN a.TotalToll ELSE 0 END) AS truck3,
-        SUM(CASE WHEN a.VehicleClass = 14 THEN a.TotalToll ELSE 0 END) AS truck4,
-        SUM(CASE WHEN a.VehicleClass = 15 THEN a.TotalToll ELSE 0 END) AS truck5,
-        SUM(CASE WHEN a.VehicleClass = 16 THEN a.TotalToll ELSE 0 END) AS truck6,
-        SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 THEN a.TotalToll ELSE 0 END) AS truckSubTotal,
-        SUM(CASE WHEN a.VehicleClass = 21 THEN a.TotalToll ELSE 0 END) AS spec1,
-        SUM(CASE WHEN a.VehicleClass = 22 THEN a.TotalToll ELSE 0 END) AS spec2,
-        SUM(CASE WHEN a.VehicleClass = 23 THEN a.TotalToll ELSE 0 END) AS spec3,
-        SUM(CASE WHEN a.VehicleClass = 24 THEN a.TotalToll ELSE 0 END) AS spec4,
-        SUM(CASE WHEN a.VehicleClass = 25 THEN a.TotalToll ELSE 0 END) AS spec5,
-        SUM(CASE WHEN a.VehicleClass = 26 THEN a.TotalToll ELSE 0 END) AS spec6,
-        SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 THEN a.TotalToll ELSE 0 END) AS specSubTotal
+        IFNULL(SUM(TotalToll / 100), 0) as totalAmount,
+        SUM(CASE WHEN a.VehicleClass = 1 THEN a.TotalToll / 100 ELSE 0 END) AS cust1,
+        SUM(CASE WHEN a.VehicleClass = 2 THEN a.TotalToll / 100 ELSE 0 END) AS cust2,
+        SUM(CASE WHEN a.VehicleClass = 3 THEN a.TotalToll / 100 ELSE 0 END) AS cust3,
+        SUM(CASE WHEN a.VehicleClass = 4 THEN a.TotalToll / 100 ELSE 0 END) AS cust4,
+        SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 THEN a.TotalToll / 100 ELSE 0 END) AS custSubTotal,
+        SUM(CASE WHEN a.VehicleClass = 11 THEN a.TotalToll / 100 ELSE 0 END) AS truck1,
+        SUM(CASE WHEN a.VehicleClass = 12 THEN a.TotalToll / 100 ELSE 0 END) AS truck2,
+        SUM(CASE WHEN a.VehicleClass = 13 THEN a.TotalToll / 100 ELSE 0 END) AS truck3,
+        SUM(CASE WHEN a.VehicleClass = 14 THEN a.TotalToll / 100 ELSE 0 END) AS truck4,
+        SUM(CASE WHEN a.VehicleClass = 15 THEN a.TotalToll / 100 ELSE 0 END) AS truck5,
+        SUM(CASE WHEN a.VehicleClass = 16 THEN a.TotalToll / 100 ELSE 0 END) AS truck6,
+        SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 THEN a.TotalToll / 100 ELSE 0 END) AS truckSubTotal,
+        SUM(CASE WHEN a.VehicleClass = 21 THEN a.TotalToll / 100 ELSE 0 END) AS spec1,
+        SUM(CASE WHEN a.VehicleClass = 22 THEN a.TotalToll / 100 ELSE 0 END) AS spec2,
+        SUM(CASE WHEN a.VehicleClass = 23 THEN a.TotalToll / 100 ELSE 0 END) AS spec3,
+        SUM(CASE WHEN a.VehicleClass = 24 THEN a.TotalToll / 100 ELSE 0 END) AS spec4,
+        SUM(CASE WHEN a.VehicleClass = 25 THEN a.TotalToll / 100 ELSE 0 END) AS spec5,
+        SUM(CASE WHEN a.VehicleClass = 26 THEN a.TotalToll / 100 ELSE 0 END) AS spec6,
+        SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 THEN a.TotalToll / 100 ELSE 0 END) AS specSubTotal
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
             SELECT
@@ -164,6 +188,7 @@
                 <if test="intEndTime != null and intEndTime != ''">
                     AND StaDate <![CDATA[<=]]> #{intEndTime}
                 </if>
+                AND CancelFlag = 0 AND RecordType &amp;1 =1
             </where>
         </foreach>
         a
@@ -320,10 +345,8 @@
         SELECT
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
-        SUM(a.HandToll / 100) AS handToll,
-        SUM(a.AddedToll/ 100) AS addedToll,
-        SUM(a.HandInCNum) AS handInCNum,
-        SUM(a.HandOutCNum) AS handOutCNum
+        IFNULL(AddedToll/100,0) as addedToll,
+        IFNULL(CAST(HandToll/100 as DECIMAL(10,2)), 0) as handToll
         FROM `tbsh` a
         <where>
             AND a.StationID in
@@ -344,11 +367,8 @@
     <select id="getTbShDataV2" resultType="com.itssky.system.domain.vo.TbShVo"
             parameterType="com.itssky.system.domain.dto.FtStationDto">
         SELECT
-        SUM(a.HandToll) AS handToll,
-        SUM(a.AddedToll) AS addedToll,
-        SUM(a.HandInCNum) AS handInCNum,
-        SUM(a.HandOutCNum) AS handOutCNum,
-        SUM(a.AddedToll) AS addedToll,
+        IFNULL(AddedToll/100,0) as addedToll,
+        IFNULL(CAST(HandToll/100 as DECIMAL(10,2)), 0) as handToll,
         a.StaDate AS staDate,
         LEFT(a.StaDate, 6) AS monthDate,
         a.StationID AS stationId,
