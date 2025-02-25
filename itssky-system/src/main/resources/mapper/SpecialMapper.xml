@@ -50,14 +50,28 @@
         </where>
     </select>
 
+    <select id="buildStationName" parameterType="collection" resultType="map">
+        SELECT StationName as stationName,
+        StationID as stationId
+        FROM dbtoms.tbstationinfo
+        <where>
+            AND StationID in
+            <foreach item="stationId" collection="stationIds" open="(" separator="," close=")">
+                #{stationId}
+            </foreach>
+        </where>
+    </select>
+
     <select id="cxczTable" resultType="com.itssky.system.domain.vo.CxczVo"
             parameterType="com.itssky.system.domain.dto.CxczDto">
         SELECT StationID as stationId,
                laneid as laneId,
                (SELECT LaneName FROM dbtoms.tblaneinfo WHERE StationID = a.StationID AND LaneID = a.laneid) as laneName,
-               (SELECT StationID FROM dbtoms.tbstationinfo WHERE StationID = a.StationID) as stationName,
+               (SELECT StationName FROM dbtoms.tbstationinfo WHERE StationID = a.StationID) as stationName,
                (SELECT VehicleName FROM dbtoms.tbvehicleclass WHERE VehicleClass = a.VehicleClass) as vehicleClassStr,
                CardID as cardId,
+               CardType as cardType,
+               NetWork as netWork,
                OperatorID as operatorId,
                EntryTime as entryTime,
                VehicleLicense as vehicleLicense,

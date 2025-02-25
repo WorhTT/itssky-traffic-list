@@ -267,26 +267,26 @@ export const constantRoutes = [
   //   ]
   // },
 
-  {
-    path: '/special',
-    component: Layout,
-    name: '特情类',
-    meta: {title: '特情类', icon: 'list'},
-    children: [
-      {
-        path: '/green',
-        name: '绿优台账',
-        meta: {title: '绿优台账', icon: 'chart'},
-        component: () => import('@/views/report/special/green.vue'),
-      },
-      {
-        path: '/cxcz',
-        name: '入口超限操作明细表',
-        meta: {title: '入口超限操作明细表', icon: 'chart'},
-        component: () => import('@/views/report/special/cxcz.vue'),
-      }
-    ]
-  },
+  // {
+  //   path: '/special',
+  //   component: Layout,
+  //   name: '特情类',
+  //   meta: {title: '特情类', icon: 'list'},
+  //   children: [
+  //     {
+  //       path: '/green',
+  //       name: '绿优台账',
+  //       meta: {title: '绿优台账', icon: 'chart'},
+  //       component: () => import('@/views/report/special/green.vue'),
+  //     },
+  //     {
+  //       path: '/cxcz',
+  //       name: '入口超限操作明细表',
+  //       meta: {title: '入口超限操作明细表', icon: 'chart'},
+  //       component: () => import('@/views/report/special/cxcz.vue'),
+  //     }
+  //   ]
+  // },
   // {
   //   path: '/flow',
   //   component: Layout,

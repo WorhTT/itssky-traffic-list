@@ -19,6 +19,8 @@ public interface SpecialMapper {
 
     public List<Map> buildOperatorName(@Param(value = "operatorIds") Set<Integer> operatorIds);
 
+    public List<Map> buildStationName(@Param(value = "stationIds") Set<Integer> stationIds);
+
     @ItsData
     public List<CxczVo> cxczTable(CxczDto dto);
 

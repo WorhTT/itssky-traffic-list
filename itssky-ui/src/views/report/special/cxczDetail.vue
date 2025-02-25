@@ -35,20 +35,20 @@
 
 
     <el-table v-loading="loading" :data="dataList" border ref="myTable">
-      <el-table-column label="入口站" align="center" prop="stationName" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="入口车道" align="center" prop="laneName" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="卡号" align="center" prop="cardId" min-width="160" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="入口工号" align="center" prop="operatorId" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="入口时间" align="center" prop="entryTime" min-width="160" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="人工车牌" align="center" prop="vehicleLicense" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="识别车牌" align="center" prop="licensePlate" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="轴型" align="center" prop="axisType" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="车型" align="center" prop="vehicleClassStr" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="车重(KG)" align="center" prop="totalWeight" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="限重(KG)" align="center" prop="limitWeight" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="超限率%" align="center" prop="overLoadRate" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="检验方式" align="center" prop="checkType" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
-      <el-table-column label="超限操作" align="center" prop="cz" min-width="120" :header-cell-style="{ height: '10px', lineHeight: '10px' }"/>
+      <el-table-column label="入口站" align="center" prop="stationName" min-width="120"/>
+      <el-table-column label="入口车道" align="center" prop="laneName"/>
+      <el-table-column label="卡号" align="center" prop="cardId" min-width="180"/>
+      <el-table-column label="入口工号" align="center" prop="operatorId" min-width="120"/>
+      <el-table-column label="入口时间" align="center" prop="entryTime" min-width="160"/>
+      <el-table-column label="人工车牌" align="center" prop="vehicleLicense" min-width="120"/>
+      <el-table-column label="识别车牌" align="center" prop="licensePlate" min-width="120"/>
+      <el-table-column label="轴型" align="center" prop="axisType"/>
+      <el-table-column label="车型" align="center" prop="vehicleClassStr"/>
+      <el-table-column label="车重(KG)" align="center" prop="totalWeight" min-width="120"/>
+      <el-table-column label="限重(KG)" align="center" prop="limitWeight" min-width="120"/>
+      <el-table-column label="超限率%" align="center" prop="overLoadRate"/>
+      <el-table-column label="检验方式" align="center" prop="checkType"/>
+      <el-table-column label="超限操作" align="center" prop="cz" min-width="120"/>
 <!--      <el-table-column label="图片" align="center" prop="imagePath" min-width="120"/>-->
     </el-table>
 
@@ -164,13 +164,13 @@ export default {
             /* 在这里添加你的样式 */
         .table-container {
           zoom: 0.75;
-          margin-top: 40px;
+          margin-top: 20px;
         }
         .print-title {
           text-align: center;
-          font-size: 24px;
+          font-size: 20px;
           font-weight: bold;
-          margin-bottom: 20px;
+          margin-bottom: 5px;
         }
         body {
           margin: 0;
@@ -201,7 +201,7 @@ export default {
         .el-table td {
           border: 1px solid #ebeef5 !important;
           font-size: 16px;
-          padding: 10px 0;
+          padding: 1px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
@@ -249,4 +249,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::v-deep .el-table .el-table__header-wrapper th {
+  height: 20px;
+}
+::v-deep .el-table--medium .el-table__cell {
+  padding: 4px 0;
+}
 </style>

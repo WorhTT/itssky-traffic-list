@@ -16,6 +16,10 @@ public class CxczVo {
     @Excel(name = "入口站")
     private String stationName = "";
 
+    private String netWork = "";
+
+    private Integer cardType;
+
     /**
      * 入口车道ID
      */

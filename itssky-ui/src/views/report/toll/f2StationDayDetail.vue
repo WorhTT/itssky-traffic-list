@@ -198,13 +198,13 @@ export default {
         <style>
         .table-container {
           zoom: 0.9;
-          margin-top: 40px;
+          margin-top: 20px;
         }
         .print-title {
           text-align: center;
-          font-size: 24px;
+          font-size: 20px;
           font-weight: bold;
-          margin-bottom: 20px;
+          margin-bottom: 5px;
         }
         body {
           margin: 0;
@@ -235,7 +235,7 @@ export default {
         .el-table td {
           border: 1px solid #ebeef5 !important;
           font-size: 16px;
-          padding: 10px 0;
+          padding: 1px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
@@ -287,5 +287,12 @@ export default {
 
 .export-button-container {
   display: flex;
+}
+
+::v-deep .el-table .el-table__header-wrapper th {
+  height: 20px;
+}
+::v-deep .el-table--medium .el-table__cell {
+  padding: 4px 0;
 }
 </style>

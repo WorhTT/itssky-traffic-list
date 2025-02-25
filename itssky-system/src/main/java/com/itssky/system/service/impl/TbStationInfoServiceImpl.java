@@ -144,18 +144,23 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
             log.error("获取当前登录用户为空");
             throw new RuntimeException("获取当前登录用户为空");
         }
-        String corpNo = loginUser.getCorpNo().substring(0, 2);
+        String corpNo = loginUser.getCorpNo();
         LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
         tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
                 TbStationInfo::getStationid);
         tbStationInfoLambdaQueryWrapper.likeRight(TbStationInfo::getCorpno, corpNo)
                 .apply(" length(corpno)=6 ");
+        if (corpNo.length() == 6) {
+            tbStationInfoLambdaQueryWrapper.eq(TbStationInfo::getStationid, loginUser.getStationId());
+        }
         List<TbStationInfo> tbStationInfoList = baseMapper.selectList(tbStationInfoLambdaQueryWrapper);
         List<Map<String, Object>> result = new ArrayList<>();
-        Map<String, Object> center = new HashMap<>();
-        center.put("value", -1);
-        center.put("label", "中心");
-        result.add(center);
+        if (corpNo.length() == 2) {
+            Map<String, Object> center = new HashMap<>();
+            center.put("value", -1);
+            center.put("label", "中心");
+            result.add(center);
+        }
         if (CollectionUtils.isEmpty(tbStationInfoList)) {
             return result;
         }

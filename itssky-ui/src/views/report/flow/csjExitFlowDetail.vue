@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
-      <h1 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h1>
-      <h1 style="font-weight: bolder;margin: 1vh 0">CSJ出口(MTC+ETC)交通流量统计表</h1>
+      <h3 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">CSJ出口(MTC+ETC)交通流量统计表</h3>
     </div>
     <div style="display: flex">
       <span v-for="item in conditionList" style="flex: 1;
@@ -11,27 +11,27 @@
         align-items: center;">
         {{item}}
       </span>
+      <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-download"
+            size="mini"
+            @click="handleExport"
+          >导出
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-document"
+            size="mini"
+            @click="printTable"
+          >打印
+          </el-button>
+        </el-col>
+      </el-row>
     </div>
-    <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-        >导出
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          icon="el-icon-document"
-          size="mini"
-          @click="printTable"
-        >打印
-        </el-button>
-      </el-col>
-    </el-row>
 
     <el-table v-loading="loading" :data="dataList" border ref="myTable">
       <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
@@ -155,13 +155,13 @@ export default {
             /* 在这里添加你的样式 */
         .table-container {
           zoom: 0.6;
-          margin-top: 40px;
+          margin-top: 20px;
         }
         .print-title {
           text-align: center;
-          font-size: 24px;
+          font-size: 20px;
           font-weight: bold;
-          margin-bottom: 20px;
+          margin-bottom: 5px;
         }
         body {
           margin: 0;
@@ -192,7 +192,7 @@ export default {
         .el-table td {
           border: 1px solid #ebeef5 !important;
           font-size: 16px;
-          padding: 10px 0;
+          padding: 1px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
@@ -236,3 +236,12 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+::v-deep .el-table .el-table__header-wrapper th {
+  height: 20px;
+}
+::v-deep .el-table--medium .el-table__cell {
+  padding: 4px 0;
+}
+</style>
