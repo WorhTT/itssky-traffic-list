@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
-      <h1 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h1>
-      <h1 style="font-weight: bolder;margin: 1vh 0">F2收费站通行费收入日统计表</h1>
+      <h3 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">F2收费站通行费收入日统计表</h3>
     </div>
     <div style="display: flex">
       <span v-for="item in conditionList" style="flex: 1;
@@ -11,29 +11,30 @@
         align-items: center;">
         {{item}}
       </span>
+      <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-download"
+            size="mini"
+            @click="handleExport"
+            class="export-button-container"
+          >导出
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-download"
+            size="mini"
+            @click="printTable"
+            class="print-button-container"
+          >打印
+          </el-button>
+        </el-col>
+      </el-row>
+
     </div>
-    <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          class="export-button-container"
-        >导出
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-          @click="printTable"
-          class="print-button-container"
-        >打印
-        </el-button>
-      </el-col>
-    </el-row>
 
     <el-table v-loading="loading" :data="dataList"  border
               :span-method="arraySpanMethod" :cell-style="cellStyle" ref="myTable">
