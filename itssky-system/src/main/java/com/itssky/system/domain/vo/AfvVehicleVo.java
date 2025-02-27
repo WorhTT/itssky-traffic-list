@@ -11,68 +11,68 @@ import lombok.*;
 public class AfvVehicleVo {
 
     @Excel(name = "统计方式")
-    private String statType;
+    private String statType = "";
 
     @Excel(name = "客一")
-    private Integer cust1;
+    private Double cust1 = 0D;
 
     @Excel(name = "客二")
-    private Integer cust2;
+    private Double cust2 = 0D;
 
     @Excel(name = "客三")
-    private Integer cust3;
+    private Double cust3 = 0D;
 
     @Excel(name = "客四")
-    private Integer cust4;
+    private Double cust4 = 0D;
 
     @Excel(name = "客车小计")
-    private Integer custSubTotal;
+    private Double custSubTotal = 0D;
 
     @Excel(name = "货一")
-    private Integer truck1;
+    private Double truck1 = 0D;
 
     @Excel(name = "货二")
-    private Integer truck2;
+    private Double truck2 = 0D;
 
     @Excel(name = "货三")
-    private Integer truck3;
+    private Double truck3 = 0D;
 
     @Excel(name = "货四")
-    private Integer truck4;
+    private Double truck4 = 0D;
 
     @Excel(name = "货五")
-    private Integer truck5;
+    private Double truck5 = 0D;
 
     @Excel(name = "货六")
-    private Integer truck6;
+    private Double truck6 = 0D;
 
     @Excel(name = "货车小计")
-    private Integer truckSubTotal;
+    private Double truckSubTotal = 0D;
 
     @Excel(name = "专一")
-    private Integer spec1;
+    private Double spec1 = 0D;
 
     @Excel(name = "专二")
-    private Integer spec2;
+    private Double spec2 = 0D;
 
     @Excel(name = "专三")
-    private Integer spec3;
+    private Double spec3 = 0D;
 
     @Excel(name = "专四")
-    private Integer spec4;
+    private Double spec4 = 0D;
 
     @Excel(name = "专五")
-    private Integer spec5;
+    private Double spec5 = 0D;
 
     @Excel(name = "专六")
-    private Integer spec6;
+    private Double spec6 = 0D;
 
     @Excel(name = "货车小计")
-    private Integer specSubTotal;
+    private Double specSubTotal = 0D;
 
     @Excel(name = "加收")
-    private Integer addedAmount;
+    private Double addedAmount = 0D;
 
     @Excel(name = "合计")
-    private Integer totalAmount;
+    private Double totalAmount = 0D;
 }
