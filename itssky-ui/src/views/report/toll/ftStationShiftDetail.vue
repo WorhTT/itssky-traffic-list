@@ -35,7 +35,8 @@
       </el-row>
     </div>
 
-    <el-table v-loading="loading" :data="dataList" border ref="myTable">
+    <el-table v-loading="loading" :data="dataList" border ref="myTable"
+              :cell-style="cellStyle">
       <el-table-column label="统计方式" align="center" prop="statType"/>
       <el-table-column label="通行费收入总额" align="center">
         <el-table-column label="统计金额" align="center" prop="statAmount"/>
@@ -126,6 +127,12 @@ export default {
   },
   watch: {},
   methods: {
+    cellStyle({row, column, rowIndex, columnIndex}) {
+      if (row.totalRow === true) {
+        row.statType = "合计"
+        return 'background:	#C0C0C0';
+      }
+    },
     /** 查询公告列表 */
     getList() {
       this.loading = true;

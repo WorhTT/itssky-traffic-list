@@ -375,6 +375,11 @@ public class TollServiceImpl implements ITollService {
                 i.setStatType(i.getStationName());
             }
         });
+        //合计行
+        StationShiftVo hjRow = buildTotalRowVo(stationShiftVos);
+        hjRow.setTotalRow(true);
+        hjRow.setStatType("合计");
+        stationShiftVos.add(hjRow);
         return stationShiftVos;
     }
 
@@ -501,7 +506,59 @@ public class TollServiceImpl implements ITollService {
                 v.setStatType(v.getOperatorId().toString());
             }
         });
+        //合计
+        VehicleClassStatVo totalRow = buildAfvTotalRow(vehicleClassStatVos);
+        vehicleClassStatVos.add(totalRow);
         return vehicleClassStatVos;
+    }
+
+    private VehicleClassStatVo buildAfvTotalRow(List<VehicleClassStatVo> list) {
+        VehicleClassStatVo vehicleClassStatVo = new VehicleClassStatVo();
+        vehicleClassStatVo.setStatType("合计");
+        vehicleClassStatVo.setTotalRow(true);
+        vehicleClassStatVo.setCust1(list.stream().map(i -> BigDecimal.valueOf(i.getCust1()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setCust2(list.stream().map(i -> BigDecimal.valueOf(i.getCust2()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setCust3(list.stream().map(i -> BigDecimal.valueOf(i.getCust3()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setCust4(list.stream().map(i -> BigDecimal.valueOf(i.getCust4()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setCustSubTotal(list.stream().map(i -> BigDecimal.valueOf(i.getCustSubTotal()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setTruck1(list.stream().map(i -> BigDecimal.valueOf(i.getTruck1()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setTruck2(list.stream().map(i -> BigDecimal.valueOf(i.getTruck2()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setTruck3(list.stream().map(i -> BigDecimal.valueOf(i.getTruck3()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setTruck4(list.stream().map(i -> BigDecimal.valueOf(i.getTruck4()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setTruck5(list.stream().map(i -> BigDecimal.valueOf(i.getTruck5()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setTruck6(list.stream().map(i -> BigDecimal.valueOf(i.getTruck6()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setTruckSubTotal(list.stream().map(i -> BigDecimal.valueOf(i.getTruckSubTotal()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setSpec1(list.stream().map(i -> BigDecimal.valueOf(i.getSpec1()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setSpec2(list.stream().map(i -> BigDecimal.valueOf(i.getSpec2()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setSpec3(list.stream().map(i -> BigDecimal.valueOf(i.getSpec3()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setSpec4(list.stream().map(i -> BigDecimal.valueOf(i.getSpec4()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setSpec5(list.stream().map(i -> BigDecimal.valueOf(i.getSpec5()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setSpec6(list.stream().map(i -> BigDecimal.valueOf(i.getSpec6()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setSpecSubTotal(list.stream().map(i -> BigDecimal.valueOf(i.getSpecSubTotal()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setAddedAmount(list.stream().map(i -> BigDecimal.valueOf(i.getAddedAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setTotalAmount(list.stream().map(i -> BigDecimal.valueOf(i.getTotalAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        return vehicleClassStatVo;
     }
 
     @Override

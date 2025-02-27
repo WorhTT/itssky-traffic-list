@@ -147,4 +147,6 @@ public class VehicleClassStatVo {
      */
     private Double totalAmount = 0D;
 
+    private boolean totalRow;
+
 }

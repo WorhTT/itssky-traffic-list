@@ -35,7 +35,7 @@
       </el-row>
     </div>
 
-    <el-table v-loading="loading" :data="dataList" border ref="myTable">
+    <el-table v-loading="loading" :data="dataList" border ref="myTable" :cell-style="cellStyle">
       <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
       <el-table-column label="客一" align="center" prop="cust1" min-width="120"/>
       <el-table-column label="客二" align="center" prop="cust2"/>
@@ -43,10 +43,10 @@
       <el-table-column label="客四" align="center" prop="cust4"/>
       <el-table-column label="客车小计" align="center" prop="custSubTotal" min-width="120"/>
       <el-table-column label="货一" align="center" prop="truck1" min-width="120"/>
-      <el-table-column label="货二" align="center" prop="truck2"/>
-      <el-table-column label="货三" align="center" prop="truck3"/>
-      <el-table-column label="货四" align="center" prop="truck4"/>
-      <el-table-column label="货五" align="center" prop="truck5"/>
+      <el-table-column label="货二" align="center" prop="truck2" min-width="120"/>
+      <el-table-column label="货三" align="center" prop="truck3" min-width="120"/>
+      <el-table-column label="货四" align="center" prop="truck4" min-width="120"/>
+      <el-table-column label="货五" align="center" prop="truck5" min-width="120"/>
       <el-table-column label="货六" align="center" prop="truck6" min-width="120"/>
       <el-table-column label="货车小计" align="center" prop="truckSubTotal" min-width="120"/>
       <el-table-column label="专一" align="center" prop="spec1"/>
@@ -120,6 +120,11 @@ export default {
   watch: {
   },
   methods: {
+    cellStyle({row, column, rowIndex, columnIndex}) {
+      if (row.totalRow === true) {
+        return 'background:	#C0C0C0';
+      }
+    },
     /** 查询公告列表 */
     getList() {
       this.loading = true;
@@ -156,7 +161,7 @@ export default {
         <title>Print</title>
         <style>
          .table-container {
-          zoom: 0.78;
+          zoom: 0.7;
           margin-top: 20px;
         }
         .print-title {
