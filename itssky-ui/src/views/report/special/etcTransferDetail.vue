@@ -1,0 +1,249 @@
+<template>
+  <div class="app-container">
+    <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
+      <h3 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">ETC转人工台账</h3>
+    </div>
+    <div style="display: flex">
+      <span v-for="item in conditionList" style="flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;">
+        {{item}}
+      </span>
+      <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-download"
+            size="mini"
+            @click="handleExport"
+          >导出
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-document"
+            size="mini"
+            @click="printTable"
+          >打印
+          </el-button>
+        </el-col>
+      </el-row>
+    </div>
+
+    <el-table v-loading="loading" :data="dataList" border ref="myTable" :span-method="arraySpanMethod" :cell-style="cellStyle">
+      <el-table-column label="日期" align="center" prop="staDate" min-width="120"/>
+      <el-table-column label="收费站" align="center" prop="stationName" min-width="120"/>
+      <el-table-column label="收费员" align="center" prop="operatorName"/>
+      <el-table-column label="入口车道" align="center" prop="entryLane"/>
+      <el-table-column label="出口车道车道" align="center" prop="laneId"/>
+      <el-table-column label="交易时间" align="center" prop="exitTimeStr"/>
+<!--      <el-table-column label="优惠前金额(元)" align="center" prop="tollfee"/>-->
+      <el-table-column label="车牌" align="center" prop="licensePlate"/>
+    </el-table>
+
+    <iframe id="printFrame" style="display: none;"></iframe>
+  </div>
+</template>
+
+<script>
+
+import {greenTable, exportGreenTable} from "@/api/report/special"
+
+export default {
+  name: "GreenDetail",
+  data() {
+    return {
+      props: {multiple: true},
+      // 遮罩层
+      loading: false,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 公告表格数据
+      dataList: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 查询参数
+      queryParams: {
+      },
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {},
+      stationOptions: [],
+      shiftOptions: [],
+      pickerType: 'date',
+      pickOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        },
+      },
+      conditionList:[]
+    };
+  },
+  created() {
+    this.queryParams = this.$route.query;
+    if (this.queryParams) {
+      this.getList();
+    }
+  },
+  methods: {
+    cellStyle({row, column, rowIndex, columnIndex}) {
+      if (row.hj === true) {
+        return 'background:	#C0C0C0';
+      }
+    },
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (row.hj === true) {
+        row.staDate = "优惠前金额合计"
+        if (columnIndex === 0) {
+          return [1, 6];
+        } else if (columnIndex >= 1 && columnIndex <= 5) {
+          return [0, 0];
+        } else if (columnIndex === 6) {
+          return [6, 8]
+        } else if (columnIndex >= 7 && columnIndex <= 8) {
+          return [0, 0]
+        }
+      }
+    },
+    getList() {
+      this.loading = true;
+      greenTable(this.queryParams).then(response => {
+        this.dataList = response.rows;
+        this.total = response.total;
+        this.conditionList = response.conditionList;
+      }).finally(() => {
+        this.loading = false;
+      });
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      const queryParams = this.queryParams;
+      this.$confirm('是否确认导出绿优台账?', "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(function () {
+        return exportGreenTable(queryParams);
+      }).then(response => {
+        this.downloadFile(response.msg);
+      })
+    },
+    printTable() {
+      const elTable = this.$refs.myTable.$el;
+      const printFrame = document.getElementById('printFrame');
+      const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
+      let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
+      let htmlContent = `
+      <!DOCTYPE html>
+        <html>
+        <head>
+        <title>Print</title>
+        <style>
+            /* 在这里添加你的样式 */
+        .table-container {
+          zoom: 0.8;
+          margin-top: 20px;
+        }
+        .print-title {
+          text-align: center;
+          font-size: 20px;
+          font-weight: bold;
+          margin-bottom: 5px;
+        }
+        body {
+          margin: 0;
+          padding: 20px;
+          font-family: Arial, sans-serif;
+          box-sizing: border-box;
+        }
+        .container {
+          display: flex;
+        }
+        .container span {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .el-table {
+          width: 100%;
+          border-collapse: collapse;
+          table-layout: fixed; /* Ensure fixed layout */
+        }
+        .el-table__header-wrapper {
+          border: 1px solid #ebeef5 !important;
+        }
+        .el-table__body-wrapper {
+          border: 1px solid #ebeef5 !important;
+        }
+        .el-table td {
+          border: 1px solid #ebeef5 !important;
+          font-size: 16px;
+          padding: 1px 0;
+          text-align: center; /* Center text */
+          word-wrap: break-word;
+          white-space: normal; /* Prevent text from wrapping */
+        }
+        .el-table th {
+          border: 1px solid #ebeef5 !important;
+          font-size: 18px;
+          padding: 4px; /* Reduce padding to make cells more compact */
+          text-align: center; /* Center text */
+          word-wrap: break-word; /* Ensure text wraps within cells */
+          white-space: normal; /* Allow text to wrap */
+        }
+        @media print {
+          body {
+            padding: 0;
+            -webkit-print-color-adjust: exact; /* Chrome, Safari */
+            color-adjust: exact; /* Firefox */
+          }
+        }
+        @page {
+          size: auto;
+          margin: 5mm;
+        }
+        </style>
+        </head>
+        <body>
+            <div class="print-title">宁杭高速</div>
+            <div class="print-title">绿优台账</div>
+            <div class="container">${conditionListHtml}</div>
+            <div class="table-container">${elTable.outerHTML}</div>
+        </body>
+        </html>
+      `
+      printDocument.write(htmlContent);
+      printDocument.close();
+
+      // Trigger print
+      printFrame.contentWindow.focus();
+      printFrame.contentWindow.print();
+    },
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+::v-deep .el-table .el-table__header-wrapper th {
+  height: 20px;
+}
+::v-deep .el-table--medium .el-table__cell {
+  padding: 4px 0;
+}
+</style>
+
