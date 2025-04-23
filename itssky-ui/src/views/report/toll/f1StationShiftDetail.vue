@@ -1,7 +1,8 @@
 <template>
   <div class="app-container" ref="box">
-    <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
-      <h3 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h3>
+    <div
+      style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
+      <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
       <h3 style="font-weight: bolder;margin: 1vh 0">F1收费站通行费收入班统计表</h3>
     </div>
     <div style="display: flex">
@@ -9,7 +10,7 @@
         display: flex;
         justify-content: center;
         align-items: center;">
-        {{item}}
+        {{ item }}
       </span>
       <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
         <el-col :span="1.5">
@@ -108,12 +109,19 @@ export default {
       conditionList: []
     };
   },
-  computed: {},
+  computed: {
+    corpName() {
+      return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    },
+  },
   created() {
     this.queryParams = this.$route.query;
     if (this.queryParams) {
       this.getList();
     }
+  },
+  mounted() {
+    console.log('当前公司:', process.env.VUE_APP_CORP_NAME)
   },
   methods: {
     /** 查询公告列表 */
@@ -153,8 +161,10 @@ export default {
         <title>Print</title>
         <style>
         .table-container {
-          zoom: 0.9;
-          margin-top: 20px;
+zoom: 0.9 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow: visible !important;
         }
          .print-title {
           text-align: center;
@@ -178,42 +188,46 @@ export default {
             align-items: center;
         }
         .el-table {
-          width: 100%;
-          border-collapse: collapse;
-          table-layout: fixed; /* Ensure fixed layout */
+    width: max-content !important; /* 允许表格根据内容扩展 */
+    min-width: 100% !important;
+    table-layout: auto !important; /* 自动列宽模式 */
+    font-size: 12px !important;     /* 基础字号缩小 */
         }
         .el-table__header-wrapper {
           border: 1px solid #ebeef5 !important;
         }
         .el-table__body-wrapper {
-          border: 1px solid #ebeef5 !important;
+              overflow: visible !important;
+    max-width: none !important;
         }
         .el-table td {
-          border: 1px solid #ebeef5 !important;
-          font-size: 16px;
-          padding: 1px; 0;
-          text-align: center; /* Center text */
-          word-wrap: break-word;
-          white-space: normal; /* Prevent text from wrapping */
+    font-size: 13px !important;    /* 更小字号 */
+    padding: 2px 0 !important;
+    line-height: 1.2;
+    border: 1px solid #000 !important;
         }
         .el-table th {
-          border: 1px solid #ebeef5 !important;
-          font-size: 18px;
-          padding: 4px; /* Reduce padding to make cells more compact */
-          text-align: center; /* Center text */
-          word-wrap: break-word; /* Ensure text wraps within cells */
-          white-space: normal; /* Allow text to wrap */
+    font-size: 16px !important;    /* 表头字号 */
+    padding: 3px 1px !important;    /* 紧凑内边距 */
+    white-space: nowrap;           /* 禁止换行 */
+    writing-mode: horizontal-tb;   /* 维持横向文字 */
+    min-width: 60px !important;    /* 最小列宽保证 */
+    border: 1px solid #000 !important; /* 显式黑色边框 */
         }
         @media print {
           body {
-            padding: 0;
-            -webkit-print-color-adjust: exact; /* Chrome, Safari */
-            color-adjust: exact; /* Firefox */
+-webkit-print-color-adjust: exact;
+    color-adjust: exact;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100vw !important; /* 强制占据全部视口宽度 */
+    transform: scale(0.85);  /* 初始缩放系数 */
+    transform-origin: top left;
           }
         }
         @page {
           size: auto;
-          margin: 5mm;
+          margin: 5mm 2mm !important;    /* 减少边距 */
         }
         </style>
         </head>
@@ -246,9 +260,11 @@ export default {
 .export-button-container {
   display: flex;
 }
+
 ::v-deep .el-table .el-table__header-wrapper th {
   height: 20px;
 }
+
 ::v-deep .el-table--medium .el-table__cell {
   padding: 4px 0;
 }
