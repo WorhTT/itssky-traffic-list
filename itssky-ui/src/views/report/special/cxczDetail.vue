@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
-      <h3 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
       <h3 style="font-weight: bolder;margin: 1vh 0">入口超限操作明细表</h3>
     </div>
     <div style="display: flex">
@@ -107,6 +107,11 @@ export default {
       this.getList();
     }
   },
+  computed: {
+    corpName() {
+      return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    },
+  },
   methods: {
     cellStyle({row, column, rowIndex, columnIndex}) {
       if (row.hj === true) {
@@ -151,6 +156,7 @@ export default {
       })
     },
     printTable() {
+      const corpName = this.corpName;
       const elTable = this.$refs.myTable.$el;
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
@@ -228,7 +234,7 @@ export default {
         </style>
         </head>
         <body>
-            <div class="print-title">宁杭高速</div>
+            <div class="print-title">${corpName}</div>
             <div class="print-title">入口超限操作明细表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>

@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.itssky.common.core.domain.model.LoginUser;
+import com.itssky.common.utils.SecurityUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -66,6 +69,7 @@ import com.itssky.common.utils.file.FileTypeUtils;
 import com.itssky.common.utils.file.FileUtils;
 import com.itssky.common.utils.file.ImageUtils;
 import com.itssky.common.utils.reflect.ReflectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -1979,7 +1983,7 @@ public class ExcelUtil<T>
         }
     }
 
-    public AjaxResult exportDynamic(List<T> list, String sheetName, List<String> conditionList, int columnMax) throws IOException {
+    public AjaxResult exportDynamic(List<T> list, String sheetName, List<String> conditionList, int columnMax, String corpName) throws IOException {
         List<List<HeaderCell>> headerData = new ArrayList<>();
         List<HeaderCell> firstHeader = new ArrayList<>();
         List<HeaderCell> secondHeader = new ArrayList<>();
@@ -2040,9 +2044,16 @@ public class ExcelUtil<T>
 
         int currentRowIndex = 0;
         // 创建第一页的第一行，索引从0开始
+        XSSFRow corpRow = sheet.createRow(currentRowIndex++);
+
         XSSFRow row1 = sheet.createRow(currentRowIndex++);
         //第二行
         XSSFRow row2 = sheet.createRow(currentRowIndex++);
+        //创建路公司标题
+        XSSFCellStyle corpTitleStyle = createTitleCellStyle(workbook);
+        XSSFCell corpCell = corpRow.createCell(0);
+        corpCell.setCellValue(corpName);
+        corpCell.setCellStyle(corpTitleStyle);
         //创建标题单元格
         XSSFCellStyle titleStyle = createTitleCellStyle(workbook);
         XSSFCell titleCell = row1.createCell(0);
@@ -2067,10 +2078,11 @@ public class ExcelUtil<T>
         XSSFCellStyle headerStyle = createHeadCellStyle(workbook);
         //第一行标题行合并单元格
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, columnMax - 1));
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, columnMax - 1));
         int startColumn = 0;
         int endColumn = conditionRowSplit[0] - 1;
         for (int z = 0; z <= conditionRowSplit.length - 1; z++) {
-            CellRangeAddress region = new CellRangeAddress(1, 1, startColumn, endColumn);
+            CellRangeAddress region = new CellRangeAddress(2, 2, startColumn, endColumn);
             sheet.addMergedRegion(region);
             for (int colIndex = region.getFirstColumn(); colIndex <= region.getLastColumn(); colIndex++) {
                 XSSFCell regionCell = row2.getCell(colIndex);

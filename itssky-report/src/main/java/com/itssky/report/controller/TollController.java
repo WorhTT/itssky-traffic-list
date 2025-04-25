@@ -18,6 +18,7 @@ import com.itssky.system.service.CardService;
 import com.itssky.system.service.ITollService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +41,9 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/toll")
 public class TollController extends BaseController {
+
+    @Value(("${reportTitleName}"))
+    private String reportTitleName;
 
     @Autowired
     private ITollService tollService;
@@ -71,7 +75,7 @@ public class TollController extends BaseController {
         List<F1StationShiftTollVo> f1StationShiftToll = tollService.getF1StationShiftToll(dto);
         ExcelUtil<F1StationShiftTollVo> util = new ExcelUtil<F1StationShiftTollVo>(F1StationShiftTollVo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
-        return util.exportDynamic(f1StationShiftToll, "F1收费站通行费收入班统计表", conditionList, 15);
+        return util.exportDynamic(f1StationShiftToll, "F1收费站通行费收入班统计表", conditionList, 15, reportTitleName);
     }
 
     /**
@@ -94,7 +98,7 @@ public class TollController extends BaseController {
         List<F2StationShiftTollVo> f2StationShiftToll = tollService.getF2StationShiftToll(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime());
         ExcelUtil<F2StationShiftTollVo> util = new ExcelUtil<F2StationShiftTollVo>(F2StationShiftTollVo.class);
-        return util.exportDynamic(f2StationShiftToll, "F2收费站通行费收入日统计表", conditionList, 14);
+        return util.exportDynamic(f2StationShiftToll, "F2收费站通行费收入日统计表", conditionList, 14, reportTitleName);
     }
 
     /**
@@ -117,7 +121,7 @@ public class TollController extends BaseController {
         List<FtTollVo> ftToll = tollService.getFtToll(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<FtTollVo> util = new ExcelUtil<FtTollVo>(FtTollVo.class);
-        return util.exportDynamic(ftToll, "FT通行费收入统计表", conditionList, 13);
+        return util.exportDynamic(ftToll, "FT通行费收入统计表", conditionList, 13, reportTitleName);
     }
 
     /**
@@ -140,15 +144,19 @@ public class TollController extends BaseController {
         List<AfvVehicleVo> afvGeneral = tollService.getAfvGeneral(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<AfvVehicleVo> util = new ExcelUtil<AfvVehicleVo>(AfvVehicleVo.class);
-        return util.exportDynamic(afvGeneral, "AFV综合MTC、ETC按车型统计表", conditionList, 22);
+        return util.exportDynamic(afvGeneral, "AFV综合MTC、ETC按车型统计表", conditionList, 22, reportTitleName);
     }
 
     /**
      * EEF电子支付通行费(MTC+ETC)统计表
      */
     @PostMapping(value = "/eefepay")
-    public TableDataInfo eefEPay(@RequestBody @Valid VehicleClassStatDto dto) {
-        return getDataTable(tollService.eefEPay(dto));
+    public TableDataVo eefEPay(@RequestBody @Valid VehicleClassStatDto dto) {
+        TableDataVo tableDataVo = new TableDataVo();
+        List<EPayTollStatVo> ePayTollStatVos = tollService.eefEPay(dto);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        tableDataVo.setRows(ePayTollStatVos);
+        return tableDataVo;
     }
 
     /**
@@ -163,7 +171,7 @@ public class TollController extends BaseController {
         List<String> conditionList = new ArrayList<>();
         conditionList.add("收费站：中心");
         conditionList.add("统计日期：2024-11-30至2024-12-04");
-        AjaxResult ajaxResult = util.exportDynamic(list, "EEF电子支付通行费MTC、ETC统计表", conditionList, 61);
+        AjaxResult ajaxResult = util.exportDynamic(list, "EEF电子支付通行费MTC、ETC统计表", conditionList, 61, reportTitleName);
         return ajaxResult;
     }
 }

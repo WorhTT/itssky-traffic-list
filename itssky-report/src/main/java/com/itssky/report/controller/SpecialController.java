@@ -11,6 +11,7 @@ import com.itssky.system.service.CardService;
 import com.itssky.system.service.ISpecialService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,9 @@ public class SpecialController {
     private final ISpecialService specialService;
 
     private final CardService cardService;
+
+    @Value(("${reportTitleName}"))
+    private String reportTitleName;
 
 
     /**
@@ -55,7 +59,7 @@ public class SpecialController {
         List<String> conditionList = cardService.buildConditionList(greenDto.getStationId(),
                 greenDto.getBeginTime(), greenDto.getEndTime());
         ExcelUtil<GreenVo> util = new ExcelUtil<GreenVo>(GreenVo.class);
-        return util.exportDynamic(greenVos, "绿优台账", conditionList, 7);
+        return util.exportDynamic(greenVos, "绿优台账", conditionList, 7, reportTitleName);
     }
 
     /**
@@ -79,6 +83,6 @@ public class SpecialController {
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(),
                 dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<CxczVo> util = new ExcelUtil<CxczVo>(CxczVo.class);
-        return util.exportDynamic(cxczVos, "入口超限操作明细表", conditionList, 14);
+        return util.exportDynamic(cxczVos, "入口超限操作明细表", conditionList, 14, reportTitleName);
     }
 }

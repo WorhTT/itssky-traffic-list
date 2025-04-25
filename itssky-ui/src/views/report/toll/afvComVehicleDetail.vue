@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
-      <h3 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
       <h3 style="font-weight: bolder;margin: 1vh 0">AFV综合(MTC+ETC)按车型统计表</h3>
     </div>
     <div style="display: flex">
@@ -36,11 +36,11 @@
     </div>
 
     <el-table v-loading="loading" :data="dataList" border ref="myTable" :cell-style="cellStyle">
-      <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
+      <el-table-column label="统计方式" align="center" prop="statType" width="100"/>
       <el-table-column label="客一" align="center" prop="cust1" min-width="120"/>
       <el-table-column label="客二" align="center" prop="cust2"/>
       <el-table-column label="客三" align="center" prop="cust3"/>
-      <el-table-column label="客四" align="center" prop="cust4"/>
+      <el-table-column label="客四" align="center" prop="cust4" width="100"/>
       <el-table-column label="客车小计" align="center" prop="custSubTotal" min-width="120"/>
       <el-table-column label="货一" align="center" prop="truck1" min-width="120"/>
       <el-table-column label="货二" align="center" prop="truck2" min-width="120"/>
@@ -110,7 +110,11 @@ export default {
       showProp: null,
     };
   },
-  computed: {},
+  computed: {
+    corpName() {
+      return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    },
+  },
   created() {
     this.queryParams = this.$route.query;
     if (this.queryParams) {
@@ -150,6 +154,7 @@ export default {
       })
     },
     printTable() {
+      const corpName = this.corpName;
       const elTable = this.$refs.myTable.$el;
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
@@ -161,7 +166,7 @@ export default {
         <title>Print</title>
         <style>
          .table-container {
-          zoom: 0.7;
+          zoom: 0.6;
           margin-top: 20px;
         }
         .print-title {
@@ -197,7 +202,7 @@ export default {
           border: 1px solid #ebeef5 !important;
         }
         .el-table td {
-          border: 1px solid #ebeef5 !important;
+          border: 1px solid #000000 !important;
           font-size: 16px;
           padding: 1px 0;
           text-align: center; /* Center text */
@@ -205,8 +210,8 @@ export default {
           white-space: normal; /* Prevent text from wrapping */
         }
         .el-table th {
-          border: 1px solid #ebeef5 !important;
-          font-size: 18px;
+          border: 1px solid #000000 !important;
+          font-size: 22px;
           padding: 4px; /* Reduce padding to make cells more compact */
           text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */
@@ -214,9 +219,13 @@ export default {
         }
         @media print {
           body {
-            padding: 0;
-            -webkit-print-color-adjust: exact; /* Chrome, Safari */
-            color-adjust: exact; /* Firefox */
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100vw !important; /* 强制占据全部视口宽度 */
+            transform: scale(0.85);  /* 初始缩放系数 */
+            transform-origin: top left;
           }
         }
         @page {
@@ -226,7 +235,7 @@ export default {
         </style>
         </head>
         <body>
-            <div class="print-title">宁杭高速</div>
+            <div class="print-title">${corpName}</div>
             <div class="print-title">AFV综合(MTC+ETC)按车型统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>

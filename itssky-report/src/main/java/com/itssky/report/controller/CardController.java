@@ -2,17 +2,22 @@ package com.itssky.report.controller;
 
 import com.itssky.common.core.controller.BaseController;
 import com.itssky.common.core.domain.AjaxResult;
+import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.core.page.TableDataInfo;
 import com.itssky.common.exception.biz.BizException;
+import com.itssky.common.utils.SecurityUtils;
+import com.itssky.common.utils.StringUtils;
 import com.itssky.common.utils.poi.ExcelUtil;
 import com.itssky.system.domain.dto.CardStatisticsDto;
 import com.itssky.system.domain.dto.CardStatisticsDtoV2;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.mapper.CardMapper;
+import com.itssky.system.mapper.TbCorpInfoMapper;
 import com.itssky.system.service.CardService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.loadtime.Aj;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +42,9 @@ public class CardController extends BaseController {
 
     @Autowired
     private CardService cardService;
+
+    @Value(("${reportTitleName}"))
+    private String reportTitleName;
 
 
     /**
@@ -66,7 +74,7 @@ public class CardController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<SCardStatVo> util = new ExcelUtil<SCardStatVo>(SCardStatVo.class);
-        return util.exportDynamic(result, "S1收费站通行卡发放班统计表", conditionList, 31);
+        return util.exportDynamic(result, "S1收费站通行卡发放班统计表", conditionList, 31, reportTitleName);
     }
 
     /**
@@ -80,7 +88,7 @@ public class CardController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<CCardStatVo> util = new ExcelUtil<CCardStatVo>(CCardStatVo.class);
-        return util.exportDynamic(result, "C1收费站通行卡回收班统计表", conditionList, 32);
+        return util.exportDynamic(result, "C1收费站通行卡回收班统计表", conditionList, 32, reportTitleName);
     }
 
     /**
@@ -102,7 +110,7 @@ public class CardController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<SCardStatVo> util = new ExcelUtil<SCardStatVo>(SCardStatVo.class);
-        return util.exportDynamic(result, "S2收费站通行卡发放日统计表", conditionList, 31);
+        return util.exportDynamic(result, "S2收费站通行卡发放日统计表", conditionList, 31, reportTitleName);
     }
 
 
@@ -117,7 +125,7 @@ public class CardController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<CCardStatVo> util = new ExcelUtil<CCardStatVo>(CCardStatVo.class);
-        return util.exportDynamic(result, "C2收费站通行卡回收日统计表", conditionList, 32);
+        return util.exportDynamic(result, "C2收费站通行卡回收日统计表", conditionList, 32, reportTitleName);
     }
 
     /**
@@ -143,7 +151,7 @@ public class CardController extends BaseController {
                 .map(i -> (SdtCardStatVo) i)
                 .collect(Collectors.toList());
         ExcelUtil<SdtCardStatVo> util = new ExcelUtil<SdtCardStatVo>(SdtCardStatVo.class);
-        return util.exportDynamic(result, "SDT通行卡发放统计表", exportVo.getConditionList(), 31);
+        return util.exportDynamic(result, "SDT通行卡发放统计表", exportVo.getConditionList(), 31, reportTitleName);
     }
 
     /**
@@ -168,6 +176,6 @@ public class CardController extends BaseController {
                 .map(i -> (CdtCardStatVo) i)
                 .collect(Collectors.toList());
         ExcelUtil<CdtCardStatVo> util = new ExcelUtil<CdtCardStatVo>(CdtCardStatVo.class);
-        return util.exportDynamic(result, "CDT通行卡回收统计表", exportVo.getConditionList(), 32);
+        return util.exportDynamic(result, "CDT通行卡回收统计表", exportVo.getConditionList(), 32, reportTitleName);
     }
 }

@@ -48,7 +48,14 @@ public class TbStationInfoController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         tempMap.put("array", tempList);
-        tempMap.put("defaultValue", Objects.requireNonNull(loginUser.getStationId()));
+        if (Objects.nonNull(loginUser.getStationId())) {
+            if (loginUser.getStationId() == 0) {
+                tempMap.put("defaultValue", -1);
+            } else {
+                tempMap.put("defaultValue", loginUser.getStationId());
+            }
+        }
+
         return AjaxResult.success(tempMap);
     }
 

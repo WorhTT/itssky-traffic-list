@@ -88,3 +88,4 @@ secure:
       - /common/**
       - /logout
 
+reportTitleName: "南通绕城"

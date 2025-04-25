@@ -102,3 +102,5 @@ secure:
       - /webjars/**
       - /*/api-docs
       - /logout
+
+reportTitleName: "南通绕城"

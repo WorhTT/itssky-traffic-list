@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
-      <h3 style="font-weight: bolder;margin: 1vh 0">宁杭高速</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
       <h3 style="font-weight: bolder;margin: 1vh 0">F2收费站通行费收入日统计表</h3>
     </div>
     <div style="display: flex">
@@ -114,12 +114,19 @@ export default {
       conditionList: [],
     };
   },
-  computed: {},
+  computed: {
+    corpName() {
+      return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    },
+  },
   created() {
     this.queryParams = this.$route.query;
     if (this.queryParams) {
       this.getList();
     }
+  },
+  mounted() {
+    console.log('当前公司:', process.env.VUE_APP_CORP_NAME)
   },
   methods: {
     cellStyle({row, column, rowIndex, columnIndex}) {
@@ -187,6 +194,7 @@ export default {
       })
     },
     printTable() {
+      const corpName = this.corpName;
       const elTable = this.$refs.myTable.$el;
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
@@ -199,7 +207,9 @@ export default {
         <style>
         .table-container {
           zoom: 0.9;
-          margin-top: 20px;
+          width: 100% !important;
+          max-width: 100vw !important;
+          overflow: visible !important;
         }
         .print-title {
           text-align: center;
@@ -234,7 +244,7 @@ export default {
           border: 1px solid #ebeef5 !important;
         }
         .el-table td {
-          border: 1px solid #ebeef5 !important;
+          border: 1px solid #000 !important;
           font-size: 16px;
           padding: 1px 0;
           text-align: center; /* Center text */
@@ -242,8 +252,8 @@ export default {
           white-space: normal; /* Prevent text from wrapping */
         }
         .el-table th {
-          border: 1px solid #ebeef5 !important;
-          font-size: 18px;
+          border: 1px solid #000 !important;
+          font-size: 22px;
           padding: 4px; /* Reduce padding to make cells more compact */
           text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */
@@ -251,19 +261,23 @@ export default {
         }
         @media print {
           body {
-            padding: 0;
-            -webkit-print-color-adjust: exact; /* Chrome, Safari */
-            color-adjust: exact; /* Firefox */
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100vw !important; /* 强制占据全部视口宽度 */
+            transform: scale(0.85);  /* 初始缩放系数 */
+            transform-origin: top left;
           }
         }
         @page {
           size: auto;
-          margin: 5mm;
+          margin: 5mm 2mm !important;    /* 减少边距 */
         }
-                </style>
+        </style>
         </head>
         <body>
-            <div class="print-title">宁杭高速</div>
+            <div class="print-title">${corpName}</div>
             <div class="print-title">F2收费站通行费收入日统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>

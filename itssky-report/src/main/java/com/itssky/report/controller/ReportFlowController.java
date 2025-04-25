@@ -14,6 +14,7 @@ import com.itssky.system.service.CardService;
 import com.itssky.system.service.ITollService;
 import com.itssky.system.service.impl.ReportFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,6 +30,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/report")
 public class ReportFlowController extends BaseController {
+
+    @Value(("${reportTitleName}"))
+    private String reportTitleName;
 
     @Autowired
     private ReportFlowService reportFlowService;
@@ -108,7 +112,7 @@ public class ReportFlowController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
-        return util.exportDynamic(result, "CSJ出口MTC、ETC交通流量统计表", conditionList, 26);
+        return util.exportDynamic(result, "CSJ出口MTC、ETC交通流量统计表", conditionList, 26, reportTitleName);
     }
 
     /**
@@ -122,7 +126,7 @@ public class ReportFlowController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
-        return util.exportDynamic(result, "RSJ入口MTC、ETC交通流量统计表", conditionList, 26);
+        return util.exportDynamic(result, "RSJ入口MTC、ETC交通流量统计表", conditionList, 26, reportTitleName);
     }
 
     /**
@@ -136,7 +140,7 @@ public class ReportFlowController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
-        return util.exportDynamic(result, "RSJ入口机器人流量统计表", conditionList, 26);
+        return util.exportDynamic(result, "RSJ入口机器人流量统计表", conditionList, 26, reportTitleName);
     }
 
     /**
@@ -150,7 +154,7 @@ public class ReportFlowController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
-        return util.exportDynamic(result, "CSJ出口机器人流量统计表", conditionList, 26);
+        return util.exportDynamic(result, "CSJ出口机器人流量统计表", conditionList, 26, reportTitleName);
     }
 
     /**
