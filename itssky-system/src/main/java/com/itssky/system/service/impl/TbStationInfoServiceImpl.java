@@ -134,7 +134,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
      * @return {@link Map }<{@link String }, {@link Object }>
      */
     @Override
-    public List<Map<String, Object>> listStationSelect() {
+    public List<Map<String, Object>> listStationSelect(boolean needCenter) {
         LoginUser loginUser = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal() instanceof LoginUser) {
@@ -155,7 +155,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
         }
         List<TbStationInfo> tbStationInfoList = baseMapper.selectList(tbStationInfoLambdaQueryWrapper);
         List<Map<String, Object>> result = new ArrayList<>();
-        if (corpNo.length() == 2) {
+        if (needCenter && corpNo.length() == 2) {
             Map<String, Object> center = new HashMap<>();
             center.put("value", -1);
             center.put("label", "中心");

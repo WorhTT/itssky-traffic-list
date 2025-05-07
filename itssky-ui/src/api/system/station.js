@@ -8,10 +8,11 @@ export function stationSelectList(data) {
 }
 
 //下拉框选项获取
-export function listStationSelect() {
+export function listStationSelect(query) {
   return request({
     url: "/tbstation/listStationSelect",
     method: "get",
+    params: query
   });
 }
 

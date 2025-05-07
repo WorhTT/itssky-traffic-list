@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
@@ -42,15 +43,19 @@ public class TbStationInfoController {
      * @return {@link AjaxResult }
      */
     @GetMapping("listStationSelect")
-    public AjaxResult listStationSelect() {
+    public AjaxResult listStationSelect(@RequestParam(required = false, value = "needCenter") boolean needCenter) {
         HashMap<String, Object> tempMap = new HashMap<>();
-        List<Map<String, Object>> tempList = tbStationInfoService.listStationSelect();
+        List<Map<String, Object>> tempList = tbStationInfoService.listStationSelect(needCenter);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         tempMap.put("array", tempList);
         if (Objects.nonNull(loginUser.getStationId())) {
             if (loginUser.getStationId() == 0) {
-                tempMap.put("defaultValue", -1);
+                if (needCenter) {
+                    tempMap.put("defaultValue", -1);
+                } else {
+                    tempMap.put("defaultValue", tempList.get(0).get("value"));
+                }
             } else {
                 tempMap.put("defaultValue", loginUser.getStationId());
             }

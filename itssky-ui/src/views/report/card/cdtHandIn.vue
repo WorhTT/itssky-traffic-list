@@ -52,6 +52,7 @@
 
 import {listStationSelect, stationSelectList} from "@/api/system/station";
 import {cdtStation, exportCdtStation} from "@/api/report/card";
+import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
 
 export default {
   name: "CDTHandIn",
@@ -100,8 +101,10 @@ export default {
   },
   computed: {},
   created() {
+    this.queryParams.beginTime = getMidnightTime();
+    this.queryParams.endTime = getCurrentTime();
     //获取收费站下拉框
-    listStationSelect().then((res) => {
+    listStationSelect({needCenter: true}).then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue
       this.$set(this.queryParams, 'stationId', this.currentStationId);

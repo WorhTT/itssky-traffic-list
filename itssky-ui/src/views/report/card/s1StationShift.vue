@@ -43,6 +43,7 @@
 <script>
 
 import {listStationSelect} from "@/api/system/station";
+import {getCurrentTime} from "@/utils/dateUtils";
 
 export default {
   name: "S1StationShift",
@@ -93,6 +94,8 @@ export default {
   },
   computed: {},
   created() {
+    this.queryParams.time = getCurrentTime();
+    this.queryParams.shiftId = 1;
     //获取收费站下拉框
     listStationSelect().then((res) => {
       this.stationOptions = res.data.array

@@ -174,7 +174,7 @@ export default {
         <title>Print</title>
         <style>
         .table-container {
-            zoom: 0.85;
+            zoom: 0.75;
             margin-top: 20px;
         }
         .print-title {
@@ -232,7 +232,7 @@ export default {
             padding: 0 !important;
             margin: 0 !important;
             width: 100vw !important; /* 强制占据全部视口宽度 */
-            transform: scale(0.85);  /* 初始缩放系数 */
+            /*transform: scale(0.85);  !* 初始缩放系数 *!*/
             transform-origin: top left;
           }
         }

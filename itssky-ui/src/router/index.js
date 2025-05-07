@@ -164,6 +164,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/fd06Detail',
+    component: () => import("@/views/report/examine/fd06Detail.vue"),
+    hidden: true
+  },
+  {
     path: '/',
     redirect: '/f1StationShift'
   },
@@ -319,26 +324,20 @@ export const constantRoutes = [
   //     },
   //   ]
   // },
-  // {
-  //   path: '/assess',
-  //   component: Layout,
-  //   name: '',
-  //   meta: {title: '员工考核类', icon: 'list'},
-  //   children: [
-  //     {
-  //       path: '/cardAssess',
-  //       name: 'FD06收费员发卡统计',
-  //       meta: {title: 'FD06收费员发卡统计', icon: 'chart'},
-  //       component: () => import('@/views/report/assess/cardAssess.vue'),
-  //     },
-  //     {
-  //       path: '/amountAssess',
-  //       name: 'FD07收费员收费统计',
-  //       meta: {title: 'FD07收费员收费统计', icon: 'chart'},
-  //       component: () => import('@/views/report/assess/amountAssess.vue'),
-  //     },
-  //   ]
-  // }
+  {
+    path: '/examine',
+    component: Layout,
+    name: '',
+    meta: {title: '员工考核类', icon: 'list'},
+    children: [
+      {
+        path: '/fd06',
+        name: 'FD06收费员发卡统计',
+        meta: {title: 'FD06收费员发卡统计', icon: 'chart'},
+        component: () => import('@/views/report/examine/fd06.vue'),
+      },
+    ]
+  }
 
 ]
 

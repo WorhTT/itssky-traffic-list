@@ -107,7 +107,7 @@ export default {
     //获取收费站下拉框
     this.queryParams.beginTime = getMidnightTime();
     this.queryParams.endTime = getCurrentTime();
-    listStationSelect().then((res) => {
+    listStationSelect({needCenter: true}).then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue
       this.$set(this.queryParams, 'stationId', this.currentStationId);

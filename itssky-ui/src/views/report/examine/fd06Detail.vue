@@ -1,74 +1,9 @@
-<template>
-  <div class="app-container">
-    <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
-      <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
-      <h3 style="font-weight: bolder;margin: 1vh 0">AFV综合(MTC+ETC)按车型统计表</h3>
-    </div>
-    <div style="display: flex">
-      <span v-for="item in conditionList" style="flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;">
-        {{item}}
-      </span>
-      <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
-        <el-col :span="1.5">
-          <el-button
-            type="warning"
-            icon="el-icon-download"
-            size="mini"
-            @click="handleExport"
-            class="export-button-container"
-          >导出
-          </el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            type="warning"
-            icon="el-icon-download"
-            size="mini"
-            class="print-button-container"
-            @click="printTable"
-          >打印
-          </el-button>
-        </el-col>
-      </el-row>
-    </div>
-
-    <el-table v-loading="loading" :data="dataList" border ref="myTable" :cell-style="cellStyle">
-      <el-table-column label="统计方式" align="center" prop="statType" width="100"/>
-      <el-table-column label="客一" align="center" prop="cust1" min-width="120"/>
-      <el-table-column label="客二" align="center" prop="cust2"/>
-      <el-table-column label="客三" align="center" prop="cust3"/>
-      <el-table-column label="客四" align="center" prop="cust4" width="100"/>
-      <el-table-column label="客车小计" align="center" prop="custSubTotal" min-width="120"/>
-      <el-table-column label="货一" align="center" prop="truck1" min-width="120"/>
-      <el-table-column label="货二" align="center" prop="truck2" min-width="120"/>
-      <el-table-column label="货三" align="center" prop="truck3" min-width="120"/>
-      <el-table-column label="货四" align="center" prop="truck4" min-width="120"/>
-      <el-table-column label="货五" align="center" prop="truck5" min-width="120"/>
-      <el-table-column label="货六" align="center" prop="truck6" min-width="120"/>
-      <el-table-column label="货车小计" align="center" prop="truckSubTotal" min-width="120"/>
-      <el-table-column label="专一" align="center" prop="spec1"/>
-      <el-table-column label="专二" align="center" prop="spec2"/>
-      <el-table-column label="专三" align="center" prop="spec3"/>
-      <el-table-column label="专四" align="center" prop="spec4"/>
-      <el-table-column label="专五" align="center" prop="spec5"/>
-      <el-table-column label="专六" align="center" prop="spec6"/>
-      <el-table-column label="专车小计" align="center" prop="specSubTotal" min-width="100"/>
-      <el-table-column label="加收" align="center" prop="addedAmount"/>
-      <el-table-column label="合计" align="center" prop="totalAmount" min-width="120"/>
-    </el-table>
-    <iframe id="printFrame" style="display: none;"></iframe>
-  </div>
-</template>
-
 <script>
 
-import {afvGeneral,exportAfvGeneral} from "@/api/report/toll";
+import {getFd06, exportFd06} from "@/api/report/examine";
 
 export default {
-  name: "AFVComVehicleDetail",
+  name: "Fd06Detail",
   data() {
     return {
       props: {multiple: true},
@@ -96,8 +31,7 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      },
+      rules: {},
       stationOptions: [],
       shiftOptions: [],
       pickerType: 'date',
@@ -106,14 +40,8 @@ export default {
           return time.getTime() > Date.now();
         },
       },
-      conditionList: [],
-      showProp: null,
+      conditionList:[]
     };
-  },
-  computed: {
-    corpName() {
-      return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
-    },
   },
   created() {
     this.queryParams = this.$route.query;
@@ -121,34 +49,30 @@ export default {
       this.getList();
     }
   },
-  watch: {
+  computed: {
+    corpName() {
+      return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    },
   },
   methods: {
-    cellStyle({row, column, rowIndex, columnIndex}) {
-      if (row.totalRow === true) {
-        return 'background:	#C0C0C0';
-      }
-    },
-    /** 查询公告列表 */
     getList() {
       this.loading = true;
-      afvGeneral(this.queryParams).then(response => {
+      getFd06(this.queryParams).then(response => {
         this.dataList = response.rows;
-        this.total = response.total;
         this.conditionList = response.conditionList;
       }).finally(() => {
         this.loading = false;
-      })
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出AFV综合(MTC+ETC)按车型统计表?', "警告", {
+      this.$confirm('是否确认导出FD06收费员发卡统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportAfvGeneral(queryParams);
+        return exportFd06(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       })
@@ -160,13 +84,14 @@ export default {
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
       let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
       let htmlContent = `
-        <!DOCTYPE html>
+      <!DOCTYPE html>
         <html>
         <head>
         <title>Print</title>
         <style>
-         .table-container {
-          zoom: 0.5;
+            /* 在这里添加你的样式 */
+        .table-container {
+          zoom: 0.75;
           margin-top: 20px;
         }
         .print-title {
@@ -236,7 +161,7 @@ export default {
         </head>
         <body>
             <div class="print-title">${corpName}</div>
-            <div class="print-title">AFV综合(MTC+ETC)按车型统计表</div>
+            <div class="print-title">FD06收费员发卡统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
         </body>
@@ -253,11 +178,51 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-::v-deep .el-table .el-table__header-wrapper th {
-  height: 20px;
-}
-::v-deep .el-table--medium .el-table__cell {
-  padding: 4px 0;
-}
+<template>
+  <div class="app-container">
+    <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
+      <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">FD06收费员发卡统计表</h3>
+    </div>
+    <div style="display: flex">
+      <span v-for="item in conditionList" style="flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;">
+        {{item}}
+      </span>
+      <el-row :gutter="10" class="mb8" style="display: flex; justify-content: flex-end;">
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-download"
+            size="mini"
+            @click="handleExport"
+          >导出
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-document"
+            size="mini"
+            @click="printTable"
+          >打印
+          </el-button>
+        </el-col>
+      </el-row>
+    </div>
+
+    <el-table v-loading="loading" :data="dataList" border ref="myTable">
+      <el-table-column label="收费员工号" align="center" prop="operateId"/>
+      <el-table-column label="收费员姓名" align="center" prop="operateName"/>
+      <el-table-column label="发卡数" align="center" prop="cardNum"/>
+    </el-table>
+
+    <iframe id="printFrame" style="display: none;"></iframe>
+  </div>
+</template>
+
+<style scoped lang="scss">
+
 </style>

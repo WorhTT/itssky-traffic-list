@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itssky.system.mapper.ExamineMapper">
+    <select id="getFd06" resultType="com.itssky.system.domain.vo.FD06Vo" parameterType="com.itssky.system.domain.dto.FD06Dto">
+        SELECT
+            OperatorID AS operateId,
+            SUM(CardNum) as cardNum
+        FROM tbstatEntry
+        <where>
+            <if test="stationId != null and stationId != ''">
+                AND StationID = #{stationId}
+            </if>
+            <if test="intBeginTime != null and intBeginTime != ''">
+                AND StaDate >= #{intBeginTime}
+            </if>
+            <if test="intEndTime != null and intEndTime != ''">
+                AND StaDate <![CDATA[<=]]> #{intEndTime}
+            </if>
+        </where>
+        GROUP BY OperatorID
+        ORDER BY OperatorID ASC
+    </select>
+</mapper>
