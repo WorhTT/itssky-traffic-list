@@ -526,4 +526,260 @@
             </when>
         </choose>
     </select>
+
+    <select id="getFlowYh" parameterType="com.itssky.system.domain.dto.FlowStatisticsDto" resultType="com.itssky.system.domain.vo.FlowYhVo">
+        SELECT
+        a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        LEFT(a.StaDate, 6) AS monthDate,
+        a.StaDate AS staDate,
+        IFNULL(SUM(CASE WHEN a.VehicleStatus IN (1,51,52) AND a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END),0) jzx,
+        IFNULL(SUM(CASE WHEN a.VehicleStatus=101 AND a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END),0) yz,
+        IFNULL(SUM(CASE WHEN a.VehicleStatus=102 AND a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END),0) ls,
+        IFNULL(SUM(CASE WHEN a.VehicleStatus=104 AND a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END),0) kz,
+        IFNULL(SUM(CASE WHEN a.VehicleStatus=107 AND a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END),0) jg,
+        IFNULL(SUM(CASE WHEN a.VehicleStatus=105 AND (a.DealStatus&amp;14=2 OR a.PayType=2) THEN a.CarNum ELSE 0 END),0) yg,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END),0) jc,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=6 AND a.DealStatus&amp;16777216=16777216 THEN a.CarNum ELSE 0 END),0) zy,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=10 AND a.VehicleStatus=106 THEN a.CarNum ELSE 0 END),0) sgj,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=10 AND a.VehicleStatus=111 THEN a.CarNum ELSE 0 END),0) zobl,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=10 AND a.VehicleStatus=26 THEN a.CarNum ELSE 0 END),0) yj,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=10 AND a.VehicleStatus=212 THEN a.CarNum ELSE 0 END),0) djys
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
+            SELECT
+            *
+            FROM ${tableName} AS alias${index + 1}
+            <where>
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                GROUP BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                GROUP BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                GROUP BY StationID
+            </when>
+        </choose>
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                ORDER BY StaDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                ORDER BY monthDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                ORDER BY StationID ASC
+            </when>
+        </choose>
+    </select>
+
+    <select id="getFlowOd" parameterType="com.itssky.system.domain.dto.FlowStatisticsDto" resultType="com.itssky.system.domain.vo.ODFlowVo">
+        SELECT
+        a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=1 THEN a.CarNum ELSE 0 END),0) AS k1,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=2 THEN a.CarNum ELSE 0 END),0) AS k2,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=3 THEN a.CarNum ELSE 0 END),0) AS k3,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=4 THEN a.CarNum ELSE 0 END),0) AS k4,
+		IFNULL(SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 THEN a.CarNum ELSE 0 END),0) AS kSum
+		IFNULL(SUM(CASE WHEN a.VehicleClass=11 THEN a.CarNum ELSE 0 END),0) AS h1,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=12 THEN a.CarNum ELSE 0 END),0) AS h2,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=13 THEN a.CarNum ELSE 0 END),0) AS h3,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=14 THEN a.CarNum ELSE 0 END),0) AS h4,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=15 THEN a.CarNum ELSE 0 END),0) AS h5,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=16 THEN a.CarNum ELSE 0 END),0) AS h6,
+		IFNULL(SUM(CASE WHEN (a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20  THEN a.CarNum ELSE 0 END),0) AS hSum,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=21 THEN a.CarNum ELSE 0 END),0) z1,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=22 THEN a.CarNum ELSE 0 END),0) z2,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=23 THEN a.CarNum ELSE 0 END),0) z3,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=24 THEN a.CarNum ELSE 0 END),0) z4,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=25 THEN a.CarNum ELSE 0 END),0) z5,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=26 THEN a.CarNum ELSE 0 END),0) z6,
+        IFNULL(SUM(CASE WHEN (a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 THEN a.CarNum ELSE 0 END),0) zSum
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
+            SELECT
+            *
+            FROM ${tableName} AS alias${index + 1}
+            <where>
+                <if test="stationId != null and stationId != ''">
+                    AND StationID = #{stationId}
+                </if>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+
+</select>
+
+    <select id="getCRJFlow" resultType="com.itssky.system.domain.vo.CRJFlowVo" parameterType="com.itssky.system.domain.dto.FlowStatisticsDto">
+        SELECT
+        a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        LEFT(a.StaDate, 6) AS monthDate,
+        a.StaDate AS staDate,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=1 THEN a.CarNum ELSE 0 END),0) AS k1,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=2 THEN a.CarNum ELSE 0 END),0) AS k2,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=3 THEN a.CarNum ELSE 0 END),0) AS k3,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=4 THEN a.CarNum ELSE 0 END),0) AS k4,
+		IFNULL(SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 THEN a.CarNum ELSE 0 END),0) AS kSum,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=11 THEN a.CarNum ELSE 0 END),0) AS h1,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=12 THEN a.CarNum ELSE 0 END),0) AS h2,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=13 THEN a.CarNum ELSE 0 END),0) AS h3,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=14 THEN a.CarNum ELSE 0 END),0) AS h4,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=15 THEN a.CarNum ELSE 0 END),0) AS h5,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=16 THEN a.CarNum ELSE 0 END),0) AS h6,
+		IFNULL(SUM(CASE WHEN (a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20)  THEN a.CarNum ELSE 0 END),0) AS hSum,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=21 THEN a.CarNum ELSE 0 END),0) z1,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=22 THEN a.CarNum ELSE 0 END),0) z2,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=23 THEN a.CarNum ELSE 0 END),0) z3,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=24 THEN a.CarNum ELSE 0 END),0) z4,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=25 THEN a.CarNum ELSE 0 END),0) z5,
+		IFNULL(SUM(CASE WHEN a.VehicleClass=26 THEN a.CarNum ELSE 0 END),0) z6,
+        IFNULL(SUM(CASE WHEN (a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30) THEN a.CarNum ELSE 0 END),0) zSum,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END),0) gw,
+		IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END),0) jc,
+		IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END),0) yh,
+		IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=12 THEN a.CarNum ELSE 0 END),0) mf,
+		IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=14 THEN a.CarNum ELSE 0 END),0) cd
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
+            SELECT
+            *
+            FROM ${tableName} AS alias${index + 1}
+            <where>
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                GROUP BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                GROUP BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                GROUP BY StationID
+            </when>
+        </choose>
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                ORDER BY StaDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                ORDER BY monthDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                ORDER BY StationID ASC
+            </when>
+        </choose>
+    </select>
+
+    <select id="getTkFlow" resultType="com.itssky.system.domain.vo.TkFlowVo" parameterType="com.itssky.system.domain.dto.FlowStatisticsDto">
+        SELECT a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        LEFT(a.StaDate, 6) AS monthDate,
+        a.StaDate AS staDate,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.VehicleClass <![CDATA[<]]> 10 THEN a.CarNum ELSE 0 END),0) AS rkc,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<=]]> 20 THEN a.CarNum ELSE 0 END),0) AS rhc,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<=]]> 30 THEN a.CarNum ELSE 0 END),0) AS rzc,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=6 THEN a.CarNum ELSE 0 END),0) AS rgw,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=8 THEN a.CarNum ELSE 0 END),0) rjc,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=10 THEN a.CarNum ELSE 0 END),0) ryh,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=14 THEN a.CarNum ELSE 0 END),0) rcd,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.VehicleClass <![CDATA[<]]> 10 THEN a.CarNum ELSE 0 END),0) AS ckc,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<=]]> 20 THEN a.CarNum ELSE 0 END),0) AS chc,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<=]]> 30 THEN a.CarNum ELSE 0 END),0) AS czc,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.PayType=0 THEN a.CarNum ELSE 0 END),0) cxj,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.PayType=2 THEN a.CarNum ELSE 0 END),0) cepay,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.PayType=16 THEN a.CarNum ELSE 0 END),0) cmpay,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=6 THEN a.CarNum ELSE 0 END),0) cgw,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=8 THEN a.CarNum ELSE 0 END),0) cjc,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=10 THEN a.CarNum ELSE 0 END),0) cyh,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=12 THEN a.CarNum ELSE 0 END),0) cmf,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=1 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=14 THEN a.CarNum ELSE 0 END),0) ccd
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="month" index="index" open="(" close=")">
+            SELECT StationID,LaneID,StaDate,VehicleClass,CarNum,VehicleStatus,DealStatus,NULL AS PayType,CardType FROM tbstatentry${month} AS alias${index + 1}
+            <where>
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+                UNION ALL
+            SELECT StationID,LaneID,StaDate,VehicleClass,CarNum,VehicleStatus,DealStatus,PayType,CardType FROM tbstatexit${month} AS alias${index + 1}
+            <where>
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                GROUP BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                GROUP BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                GROUP BY StationID
+            </when>
+        </choose>
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                ORDER BY StaDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                ORDER BY monthDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                ORDER BY StationID ASC
+            </when>
+        </choose>
+    </select>
 </mapper>

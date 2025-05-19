@@ -79,3 +79,35 @@ export function exportEefepay(data) {
     data: data
   })
 }
+
+export function f6Toll(data) {
+  return request({
+    url: '/toll/f6toll',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportF6Toll(data) {
+  return request({
+    url: '/toll/export/f6toll',
+    method: 'post',
+    data: data
+  })
+}
+
+export function cf1Toll(data) {
+  return request({
+    url: '/toll/cf1toll',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportCf1Toll(data) {
+  return request({
+    url: '/toll/export/cf1toll',
+    method: 'post',
+    data: data
+  })
+}

@@ -12,6 +12,8 @@ import lombok.*;
 @ToString
 public class TbShVo {
 
+    private String stationName;
+
     /**
      * 收费员工号
      */

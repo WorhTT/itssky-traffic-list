@@ -22,4 +22,195 @@
         GROUP BY OperatorID
         ORDER BY OperatorID ASC
     </select>
+    
+    <select id="getTbSh" resultType="com.itssky.system.domain.vo.FD07Vo" parameterType="com.itssky.system.domain.dto.FD06Dto">
+        SELECT
+        OperatorID AS operatorId,
+        IFNULL(SUM(HandInCNum), 0) AS sjCardNum,
+        IFNULL(SUM(HandToll)/100, 0) AS sjCash,
+        IFNULL(SUM(AddedToll)/100, 0) AS addedToll
+        FROM ${tableName}
+        <where>
+            <if test="stationId != null and stationId != ''">
+                AND StationID = #{stationId}
+            </if>
+            <if test="intBeginTime != null and intBeginTime != ''">
+                AND StaDate >= #{intBeginTime}
+            </if>
+            <if test="intEndTime != null and intEndTime != ''">
+                AND StaDate <![CDATA[<=]]> #{intEndTime}
+            </if>
+        </where>
+        GROUP BY OperatorID
+        ORDER BY OperatorID ASC
+    </select>
+
+    <select id="getFd07" resultType="com.itssky.system.domain.vo.FD07Vo" parameterType="com.itssky.system.domain.dto.FD06Dto">
+        SELECT
+        a.OperatorID AS operatorId,
+        (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
+        IFNULL(SUM(a.CarNum),0) totalCarNum,
+        IFNULL(SUM(CASE WHEN a.CardType=26 THEN a.CarNum ELSE 0 END),0) yjCardNum,
+        IFNULL(CAST(SUM(CASE WHEN a.PayType=0 THEN a.TotalToll ELSE 0 END) /100 as DECIMAL(20,2)),0) sjCash,
+        IFNULL(CAST(SUM(CASE WHEN a.PayType=16 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mPay,
+        IFNULL(CAST(SUM(CASE WHEN a.PayType=2 THEN a.TotalToll ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePay
+        FROM tbstatexit a
+        <where>
+            <if test="stationId != null and stationId != ''">
+                AND a.StationID = #{stationId}
+            </if>
+            <if test="intBeginTime != null and intBeginTime != ''">
+                AND a.StaDate >= #{intBeginTime}
+            </if>
+            <if test="intEndTime != null and intEndTime != ''">
+                AND a.StaDate <![CDATA[<=]]> #{intEndTime}
+            </if>
+        </where>
+        GROUP BY a.OperatorID
+        ORDER BY a.OperatorID ASC
+    </select>
+
+
+    <select id="getFd27" parameterType="com.itssky.system.domain.dto.FD27Dto" resultType="com.itssky.system.domain.vo.FD27Vo">
+        SELECT
+        a.ExitDate AS statDate,
+        a.ShiftID AS shiftId,
+        a.OperatorID AS operatorId,
+        (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
+        a.LaneID AS laneId,
+        a.CardID AS cardId,
+        a.VehicleLicense AS licensePlate,
+        a.ExitTime AS tradeTime,
+        (SELECT VehicleName FROM dbtoms.tbvehicleclass WHERE a.PVehicleClass = VehicleClass) AS beginVehicleClass,
+        (SELECT VehicleName FROM dbtoms.tbvehicleclass WHERE a.RVehicleClass = VehicleClass) AS entryVehicleClass,
+        (SELECT VehicleName FROM dbtoms.tbvehicleclass WHERE a.VehicleClass = VehicleClass) AS tradeVehicleClass,
+        a.toll / 100 AS toll
+        FROM ${tableName} a
+        <where>
+            AND a.CancelFlag = 0
+            AND a.PVehicleClass != a.VehicleClass
+            <choose>
+                <when test="beginVehicleType != null and beginVehicleType != '' and beginVehicleType == 0">
+                    AND a.PVehicleClass IN (1,2,3,4,11,12,13,14,15,16,21,22,23,24,25,26)
+                </when>
+                <when test="beginVehicleType != null and beginVehicleType != '' and beginVehicleType == 1">
+                    AND a.PVehicleClass IN (1,2,3,4)
+                </when>
+                <when test="beginVehicleType != null and beginVehicleType != '' and beginVehicleType == 2">
+                    AND a.PVehicleClass IN (11,12,13,14,15,16)
+                </when>
+                <when test="beginVehicleType != null and beginVehicleType != '' and beginVehicleType == 3">
+                    AND a.PVehicleClass IN (21,22,23,24,25,26)
+                </when>
+            </choose>
+            <choose>
+                <when test="endVehicleType != null and endVehicleType != '' and endVehicleType == 0">
+                    AND a.VehicleClass IN (1,2,3,4,11,12,13,14,15,16,21,22,23,24,25,26)
+                </when>
+                <when test="endVehicleType != null and endVehicleType != '' and endVehicleType == 1">
+                    AND a.VehicleClass IN (1,2,3,4)
+                </when>
+                <when test="endVehicleType != null and endVehicleType != '' and endVehicleType == 2">
+                    AND a.VehicleClass IN (11,12,13,14,15,16)
+                </when>
+                <when test="endVehicleType != null and endVehicleType != '' and endVehicleType == 3">
+                    AND a.VehicleClass IN (21,22,23,24,25,26)
+                </when>
+            </choose>
+            <if test="stationId != null and stationId != ''">
+                AND a.StationID = #{stationId}
+            </if>
+            <if test="intBeginTime != null and intBeginTime != ''">
+                AND a.ExitDate >= #{intBeginTime}
+            </if>
+            <if test="intEndTime != null and intEndTime != ''">
+                AND a.ExitDate <![CDATA[<=]]> #{intEndTime}
+            </if>
+        </where>
+        ORDER BY a.ExitDate
+    </select>
+
+    <select id="getFd29" parameterType="com.itssky.system.domain.dto.FD06Dto" resultType="com.itssky.system.domain.vo.FD29Vo">
+        SELECT
+        a.OperatorID AS operatorId,
+        (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
+        IFNULL(SUM(CASE WHEN  a.vehicleclass >0 then 1 else 0 end),0) AS totalCarNum,
+        IFNULL(SUM(CASE WHEN  a.vehicleclass>a.Rvehicleclass and a.Rvehicleclass <![CDATA[<]]>11 and a.vehicleclass>0 and a.DealStatus&amp;14 != 14 then 1 else 0 end),0) AS sdCarNum
+        FROM ${tableName} a
+        <where>
+            AND a.cancelflag=0
+            AND a.recordtype&amp;1=1
+            <if test="stationId != null and stationId != ''">
+                AND a.StationID = #{stationId}
+            </if>
+            <if test="intBeginTime != null and intBeginTime != ''">
+                AND a.ExitDate >= #{intBeginTime}
+            </if>
+            <if test="intEndTime != null and intEndTime != ''">
+                AND a.ExitDate <![CDATA[<=]]> #{intEndTime}
+            </if>
+        </where>
+        GROUP BY OperatorID
+    </select>
+
+    <select id="getFd26" parameterType="com.itssky.system.domain.dto.FD26Dto" resultType="com.itssky.system.domain.vo.FD26Vo">
+        SELECT
+        a.ExitDate AS statDate,
+        (SELECT StationName FROM dbtoms.tbstationinfo WHERE a.StationID = StationID LIMIT 1 ) AS StationName,
+        a.ShiftID AS shiftId,
+        a.OperatorID AS operatorId,
+        (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
+        a.LaneID AS laneId,
+        a.CardID AS cardId,
+        a.VehicleLicense AS licensePlate,
+        a.ExitTime AS tradeTime,
+        (SELECT VehicleName FROM dbtoms.tbvehicleclass WHERE a.PVehicleClass = VehicleClass) AS beginVehicleClass,
+        (SELECT VehicleName FROM dbtoms.tbvehicleclass WHERE a.RVehicleClass = VehicleClass) AS entryVehicleClass,
+        (SELECT VehicleName FROM dbtoms.tbvehicleclass WHERE a.VehicleClass = VehicleClass) AS tradeVehicleClass,
+        a.toll / 100 AS toll
+        FROM ${tableName} a
+        <where>
+            AND a.CancelFlag = 0
+            AND a.PVehicleClass != a.VehicleClass
+            <choose>
+                <when test="beginVehicleType != null and beginVehicleType != '' and beginVehicleType == 0">
+                    AND a.PVehicleClass IN (1,2,3,4,11,12,13,14,15,16,21,22,23,24,25,26)
+                </when>
+                <when test="beginVehicleType != null and beginVehicleType != '' and beginVehicleType == 1">
+                    AND a.PVehicleClass IN (1,2,3,4)
+                </when>
+                <when test="beginVehicleType != null and beginVehicleType != '' and beginVehicleType == 2">
+                    AND a.PVehicleClass IN (11,12,13,14,15,16)
+                </when>
+                <when test="beginVehicleType != null and beginVehicleType != '' and beginVehicleType == 3">
+                    AND a.PVehicleClass IN (21,22,23,24,25,26)
+                </when>
+            </choose>
+            <choose>
+                <when test="endVehicleType != null and endVehicleType != '' and endVehicleType == 0">
+                    AND a.VehicleClass IN (1,2,3,4,11,12,13,14,15,16,21,22,23,24,25,26)
+                </when>
+                <when test="endVehicleType != null and endVehicleType != '' and endVehicleType == 1">
+                    AND a.VehicleClass IN (1,2,3,4)
+                </when>
+                <when test="endVehicleType != null and endVehicleType != '' and endVehicleType == 2">
+                    AND a.VehicleClass IN (11,12,13,14,15,16)
+                </when>
+                <when test="endVehicleType != null and endVehicleType != '' and endVehicleType == 3">
+                    AND a.VehicleClass IN (21,22,23,24,25,26)
+                </when>
+            </choose>
+            <if test="stationId != null and stationId != ''">
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+            </if>
+            <if test="intBeginTime != null and intBeginTime != ''">
+                AND a.ExitDate = #{intBeginTime}
+            </if>
+        </where>
+        ORDER BY a.ExitDate
+    </select>
+
 </mapper>

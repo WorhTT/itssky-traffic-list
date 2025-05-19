@@ -26,4 +26,9 @@ public interface ITollService {
     public List<AfvVehicleVo> getAfvGeneral(VehicleClassStatDto dto);
 
     public List<EPayTollStatVo> eefEPay(VehicleClassStatDto dto);
+
+    public List<F6TollVo> f6Toll(StationShiftDto dto);
+
+    public List<Cf1Vo> cf1Toll(StationShiftDto dto);
+
 }

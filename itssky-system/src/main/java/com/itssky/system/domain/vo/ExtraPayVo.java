@@ -9,6 +9,8 @@ import lombok.Data;
 @Data
 public class ExtraPayVo {
 
+    private Integer stationId;
+
     /**
      * 加收
      */

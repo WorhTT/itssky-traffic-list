@@ -11,7 +11,7 @@ import com.itssky.db.Dbedge;
 import com.itssky.db.Dbstats;
 import com.itssky.system.domain.*;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
-import com.itssky.system.domain.vo.ExportVo;
+import com.itssky.system.domain.vo.*;
 import com.itssky.system.mapper.*;
 import com.itssky.system.service.CardService;
 import com.itssky.util.TableUtil;
@@ -21,9 +21,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.yaml.snakeyaml.util.ArrayUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,6 +48,12 @@ public class ReportFlowService {
 
     @Autowired
     private CardService cardService;
+
+    public static final int ENTRY = 0;
+
+    public static final int EXIT = 1;
+
+
 
 
     /**
@@ -142,378 +150,6 @@ public class ReportFlowService {
         exportVo.setResult(list);
         exportVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         return exportVo;
-    }
-
-    /**
-     * 填充报表中的主要内容
-     */
-    private void fillEntryFlowReport(ReportFlowInfo reportFlowInfo, List<TbStateEntry> tbStateEntryList, List<TbStateExit> tbStateExitList) {
-
-        if (!CollectionUtils.isEmpty(tbStateEntryList)) {
-            //客一流量
-            BigDecimal k1decimal = tbStateEntryList.stream().filter(i -> 1 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setK1(k1decimal.intValue());
-            //客二
-            BigDecimal k2decimal = tbStateEntryList.stream().filter(i -> 2 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setK2(k2decimal.intValue());
-            //客三
-            BigDecimal k3decimal = tbStateEntryList.stream().filter(i -> 3 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setK3(k3decimal.intValue());
-            //客四
-            BigDecimal k4decimal = tbStateEntryList.stream().filter(i -> 4 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setK4(k4decimal.intValue());
-            //客车小计
-            BigDecimal kAmountDecimal = tbStateEntryList.stream().filter(i -> i.getVehicleClass() <= 4)
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setKAmount(kAmountDecimal.intValue());
-            //货一
-            BigDecimal h1decimal = tbStateEntryList.stream().filter(i -> 11 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH1(h1decimal.intValue());
-            //货二
-            BigDecimal h2decimal = tbStateEntryList.stream().filter(i -> 12 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH2(h2decimal.intValue());
-            //货三
-            BigDecimal h3decimal = tbStateEntryList.stream().filter(i -> 13 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH3(h3decimal.intValue());
-            //货四
-            BigDecimal h4decimal = tbStateEntryList.stream().filter(i -> 14 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH4(h4decimal.intValue());
-            //货五
-            BigDecimal h5decimal = tbStateEntryList.stream().filter(i -> 15 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH5(h5decimal.intValue());
-            //货六
-            BigDecimal h6decimal = tbStateEntryList.stream().filter(i -> 16 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH6(h6decimal.intValue());
-            //货车小计
-            BigDecimal hAmountDecimal = tbStateEntryList.stream().filter(i -> i.getVehicleClass() <= 16 && i.getVehicleClass() >= 11)
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setHAmount(hAmountDecimal.intValue());
-            //专一
-            BigDecimal z1decimal = tbStateEntryList.stream().filter(i -> 21 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ1(z1decimal.intValue());
-            //专二
-            BigDecimal z2decimal = tbStateEntryList.stream().filter(i -> 22 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ2(z2decimal.intValue());
-            //专三
-            BigDecimal z3decimal = tbStateEntryList.stream().filter(i -> 23 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ3(z3decimal.intValue());
-            //专四
-            BigDecimal z4decimal = tbStateEntryList.stream().filter(i -> 24 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ4(z4decimal.intValue());
-            //专五
-            BigDecimal z5decimal = tbStateEntryList.stream().filter(i -> 25 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ5(z5decimal.intValue());
-            //专六
-            BigDecimal z6decimal = tbStateEntryList.stream().filter(i -> 26 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ6(z6decimal.intValue());
-            //专车小计
-            BigDecimal zAmountDecimal = tbStateEntryList.stream().filter(i -> i.getVehicleClass() >= 21 && i.getVehicleClass() <= 26)
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZAmount(zAmountDecimal.intValue());
-            //公务
-            reportFlowInfo.setOfficial((int)tbStateEntryList.stream()
-                    .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("011")).count());
-            //军车
-            reportFlowInfo.setMilitary((int)tbStateEntryList.stream()
-                    .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("100")).count());
-            //优惠
-            reportFlowInfo.setDiscount((int)tbStateEntryList.stream()
-                    .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("101")).count());
-            //免费
-            reportFlowInfo.setFree((int)tbStateEntryList.stream()
-                    .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("110")).count());
-            //车队
-            reportFlowInfo.setFleet((int)tbStateEntryList.stream()
-                    .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("111")).count());
-            //总计
-            BigDecimal allAmount = tbStateEntryList.stream()
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setAllAmount(allAmount.intValue());
-        } else if (!CollectionUtils.isEmpty(tbStateExitList)) {
-            //客一流量
-            BigDecimal k1decimal = tbStateExitList.stream().filter(i -> 1 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setK1(k1decimal.intValue());
-            //客二
-            BigDecimal k2decimal = tbStateExitList.stream().filter(i -> 2 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setK2(k2decimal.intValue());
-            //客三
-            BigDecimal k3decimal = tbStateExitList.stream().filter(i -> 3 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setK3(k3decimal.intValue());
-            //客四
-            BigDecimal k4decimal = tbStateExitList.stream().filter(i -> 4 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setK4(k4decimal.intValue());
-            //客车小计
-            BigDecimal kAmountDecimal = tbStateExitList.stream().filter(i -> i.getVehicleClass() <= 4)
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setKAmount(kAmountDecimal.intValue());
-            //货一
-            BigDecimal h1decimal = tbStateExitList.stream().filter(i -> 11 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH1(h1decimal.intValue());
-            //货二
-            BigDecimal h2decimal = tbStateExitList.stream().filter(i -> 12 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH2(h2decimal.intValue());
-            //货三
-            BigDecimal h3decimal = tbStateExitList.stream().filter(i -> 13 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH3(h3decimal.intValue());
-            //货四
-            BigDecimal h4decimal = tbStateExitList.stream().filter(i -> 14 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH4(h4decimal.intValue());
-            //货五
-            BigDecimal h5decimal = tbStateExitList.stream().filter(i -> 15 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH5(h5decimal.intValue());
-            //货六
-            BigDecimal h6decimal = tbStateExitList.stream().filter(i -> 16 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setH6(h6decimal.intValue());
-            //货车小计
-            BigDecimal hAmountDecimal = tbStateExitList.stream().filter(i -> i.getVehicleClass() <= 16 && i.getVehicleClass() >= 11)
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setHAmount(hAmountDecimal.intValue());
-            //专一
-            BigDecimal z1decimal = tbStateExitList.stream().filter(i -> 21 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ1(z1decimal.intValue());
-            //专二
-            BigDecimal z2decimal = tbStateExitList.stream().filter(i -> 22 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ2(z2decimal.intValue());
-            //专三
-            BigDecimal z3decimal = tbStateExitList.stream().filter(i -> 23 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ3(z3decimal.intValue());
-            //专四
-            BigDecimal z4decimal = tbStateExitList.stream().filter(i -> 24 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ4(z4decimal.intValue());
-            //专五
-            BigDecimal z5decimal = tbStateExitList.stream().filter(i -> 25 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ5(z5decimal.intValue());
-            //专六
-            BigDecimal z6decimal = tbStateExitList.stream().filter(i -> 26 == i.getVehicleClass())
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZ6(z6decimal.intValue());
-            //专车小计
-            BigDecimal zAmountDecimal = tbStateExitList.stream().filter(i -> i.getVehicleClass() >= 21 && i.getVehicleClass() <= 26)
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setZAmount(zAmountDecimal.intValue());
-            //公务
-            reportFlowInfo.setOfficial((int)tbStateExitList.stream()
-                    .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("011")).count());
-            //军车
-            reportFlowInfo.setMilitary((int)tbStateExitList.stream()
-                    .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("100")).count());
-            //优惠
-            reportFlowInfo.setDiscount((int)tbStateExitList.stream()
-                    .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("101")).count());
-            //免费
-            reportFlowInfo.setFree((int)tbStateExitList.stream()
-                    .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("110")).count());
-            //车队
-            reportFlowInfo.setFleet((int)tbStateExitList.stream()
-                    .filter(i -> getBinaryFromInt(i.getDealStatus()).equals("111")).count());
-            //总计
-            BigDecimal allAmount = tbStateExitList.stream()
-                    .map(i -> new BigDecimal(i.getCarNum())).reduce(BigDecimal.ZERO, BigDecimal::add);
-            reportFlowInfo.setAllAmount(allAmount.intValue());
-        }
-
-    }
-
-
-    public void mockTbEntryData() {
-        List<TbStateEntry> tbStateEntryList = new ArrayList<>();
-        //随机生成1000条数据
-        Random random = new Random();
-        List<StationCode> allStationCode = reportFlowMapper.getAllStationCode();
-        List<VehicleClass> allVehicleClass = reportFlowMapper.getAllVehicleClass();
-        int size = allStationCode.size();
-        //动态表名
-        Map<String, Object> map = new HashMap<>();
-        map.put(MybatisPlusTableNameHelper.TABLE_TIME, "202411");
-        MybatisPlusTableNameHelper.setRequestData(map);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 10; j++) {
-                TbStateEntry tbStateExit = buildTbStateEntry(random,1, random.nextInt(5) + 1, allVehicleClass);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateEntry tbStateExit = buildTbStateEntry(random,2, random.nextInt(5) + 6, allVehicleClass);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateEntry tbStateExit = buildTbStateEntry(random,3, random.nextInt(5) + 11, allVehicleClass);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateEntry tbStateExit = buildTbStateEntry(random, 1,random.nextInt(5) + 1, allVehicleClass);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateEntry tbStateExit = buildTbStateEntry(random, 2,random.nextInt(5) + 6, allVehicleClass);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateEntry tbStateExit = buildTbStateEntry(random, 3,random.nextInt(5) + 11, allVehicleClass);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateEntry tbStateExit = buildTbStateEntry(random, 1, random.nextInt(5) + 1, allVehicleClass);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateEntry tbStateExit = buildTbStateEntry(random, 2, random.nextInt(5) + 6, allVehicleClass);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateEntry tbStateExit = buildTbStateEntry(random, 3, random.nextInt(5) + 11, allVehicleClass);
-                tbStateEntryList.add(tbStateExit);
-            }
-        }
-        try {
-            tbStateEntryList.forEach(i -> reportFlowMapper.insertTbStateEntry(i));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            MybatisPlusTableNameHelper.clear();
-        }
-    }
-
-    public void mockData() {
-        List<TbStateExit> tbStateEntryList = new ArrayList<>();
-        //随机生成1000条数据
-        Random random = new Random();
-        List<StationCode> allStationCode = reportFlowMapper.getAllStationCode();
-        List<VehicleClass> allVehicleClass = reportFlowMapper.getAllVehicleClass();
-        int size = allStationCode.size();
-        //动态表名
-        String formatDateTime = DateUtil.format(new Date(), DatePattern.SIMPLE_MONTH_PATTERN);
-        Map<String, Object> map = new HashMap<>();
-//        map.put(MybatisPlusTableNameHelper.TABLE_TIME, formatDateTime);
-        map.put(MybatisPlusTableNameHelper.TABLE_TIME, "202411");
-        MybatisPlusTableNameHelper.setRequestData(map);
-        for (int i = 0; i < 3; i++) {
-            StationCode stationCode = allStationCode.get(random.nextInt(size - 1));
-            for (int j = 0; j < 10; j++) {
-                TbStateExit tbStateExit = buildTbStateExit(random,1, random.nextInt(5) + 1, allVehicleClass);
-                //生成移动支付收费数据 早班
-                tbStateExit.setPayType(16);
-                int i1 = random.nextInt(100);
-                tbStateExit.setTotalToll(i1);
-                tbStateExit.setTotalFee(i1);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateExit tbStateExit = buildTbStateExit(random,2, random.nextInt(5) + 6, allVehicleClass);
-                //生成移动支付收费数据 中班
-                tbStateExit.setPayType(16);
-                int i1 = random.nextInt(100);
-                tbStateExit.setTotalToll(i1);
-                tbStateExit.setTotalFee(i1);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateExit tbStateExit = buildTbStateExit(random,3, random.nextInt(5) + 11, allVehicleClass);
-                //生成移动支付收费数据 晚班
-                tbStateExit.setPayType(16);
-                int i1 = random.nextInt(100);
-                tbStateExit.setTotalToll(i1);
-                tbStateExit.setTotalFee(i1);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateExit tbStateExit = buildTbStateExit(random, 1,random.nextInt(5) + 1, allVehicleClass);
-                //生成现金收费数据 早班
-                tbStateExit.setPayType(0);
-                int i1 = random.nextInt(100);
-                tbStateExit.setTotalToll(i1);
-                tbStateExit.setTotalFee(i1);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateExit tbStateExit = buildTbStateExit(random, 2,random.nextInt(5) + 6, allVehicleClass);
-                //生成现金收费数据 中班
-                tbStateExit.setPayType(0);
-                int i1 = random.nextInt(100);
-                tbStateExit.setTotalToll(i1);
-                tbStateExit.setTotalFee(i1);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateExit tbStateExit = buildTbStateExit(random, 3,random.nextInt(5) + 11, allVehicleClass);
-                //生成现金收费数据 晚班
-                tbStateExit.setPayType(0);
-                int i1 = random.nextInt(100);
-                tbStateExit.setTotalToll(i1);
-                tbStateExit.setTotalFee(i1);
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateExit tbStateExit = buildTbStateExit(random, 1, random.nextInt(5) + 1, allVehicleClass);
-                //生成非现金收费数据 早班
-                tbStateExit.setPayType(2);
-//                int cardType = random.nextInt(23 - 22 + 1) + 22;
-//                tbStateExit.setCardType(cardType);
-//                Double generateDouble = generateDouble();
-                tbStateExit.setTotalToll(random.nextInt(100));
-                tbStateExit.setTotalFee(random.nextInt(100));
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateExit tbStateExit = buildTbStateExit(random, 2, random.nextInt(5) + 6, allVehicleClass);
-                //生成非现金收费数据 中班
-                tbStateExit.setPayType(2);
-//                int cardType = random.nextInt(23 - 22 + 1) + 22;
-//                tbStateExit.setCardType(cardType);
-//                Double generateDouble = generateDouble();
-                tbStateExit.setTotalToll(random.nextInt(100));
-                tbStateExit.setTotalFee(random.nextInt(100));
-                tbStateEntryList.add(tbStateExit);
-            }
-            for (int j = 0; j < 10; j++) {
-                TbStateExit tbStateExit = buildTbStateExit(random, 3, random.nextInt(5) + 11, allVehicleClass);
-                //生成非现金收费数据 晚班
-                tbStateExit.setPayType(2);
-//                int cardType = random.nextInt(23 - 22 + 1) + 22;
-//                tbStateExit.setCardType(cardType);
-//                Double generateDouble = generateDouble();
-                tbStateExit.setTotalToll(random.nextInt(100));
-                tbStateExit.setTotalFee(random.nextInt(100));
-                tbStateEntryList.add(tbStateExit);
-            }
-        }
-        try {
-            tbStateEntryList.forEach(i -> reportFlowMapper.insertTbStateExit(i));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            MybatisPlusTableNameHelper.clear();
-        }
     }
 
     private TbStateEntry buildTbStateEntry(Random random, Integer shiftId, Integer operatorId, List<VehicleClass> allVehicleClass) {
@@ -613,35 +249,6 @@ public class ReportFlowService {
             }
         }
         return binary.substring(1, 4);
-    }
-
-    /**
-     * 随机生成带两位小数的浮点类型数字
-     */
-    private Double generateDouble() {
-        Random random = new Random();
-        DecimalFormat df = new DecimalFormat("#.00");
-        int randomInt = random.nextInt(100); // 随机生成0到99之间的整数
-        String randomDecimal = df.format(randomInt / 100.0);
-        return Double.parseDouble(randomDecimal);
-    }
-
-    public static void main(String[] args) {
-//        String s = generateBinary();// 生成和打印所有组合
-//        BigInteger i = new BigInteger(s, 2);
-//        String binaryFromInt = getBinaryFromInt(i.intValue());
-//        System.out.println(binaryFromInt);
-//        //获取123位
-//        String s2 = Integer.toBinaryString(i.intValue());
-//        String s1 = i.toString(2);
-//        String substring = s1.substring(1, 4);
-//        System.out.println(s);
-//        System.out.println(i);
-//        System.out.println(s2);
-//        System.out.println(s1);
-//        System.out.println(substring);
-//        String date = DateUtils.getDate();
-//        System.out.println(date);
     }
 
     /**
@@ -869,5 +476,247 @@ public class ReportFlowService {
         } finally {
             MybatisPlusTableNameHelper.clear();
         }
+    }
+
+    public List<FlowYhVo> getFlowYh(FlowStatisticsDto dto) {
+        //获取收费站ID列表
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
+        }
+        dto.setTableNameList(
+                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatexit",
+                        DatePattern.SIMPLE_MONTH_PATTERN));
+        if (CollectionUtils.isEmpty(dto.getTableNameList())) {
+            return new ArrayList<>();
+        }
+        //时间传参格式化
+        dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
+        dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
+        List<FlowYhVo> result = reportFlowMapper.getFlowYh(dto);
+        //设置统计方式
+        result.forEach(r -> {
+            if (dto.getStatisticsType().equals("0")) {
+                r.setStatType(r.getStaDate().toString());
+            } else if (dto.getStatisticsType().equals("1")) {
+                r.setStatType(r.getMonthDate());
+            } else if (dto.getStatisticsType().equals("2")) {
+                r.setStatType(r.getStationName());
+            }
+        });
+        FlowYhVo totalRow = new FlowYhVo();
+        totalRow.setJzx(result.stream().map(i -> new BigDecimal(i.getJzx())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setYz(result.stream().map(i -> new BigDecimal(i.getYz())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setLs(result.stream().map(i -> new BigDecimal(i.getLs())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setKz(result.stream().map(i -> new BigDecimal(i.getKz())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setJg(result.stream().map(i -> new BigDecimal(i.getJg())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setYg(result.stream().map(i -> new BigDecimal(i.getYg())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setJc(result.stream().map(i -> new BigDecimal(i.getJc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZy(result.stream().map(i -> new BigDecimal(i.getZy())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setSgj(result.stream().map(i -> new BigDecimal(i.getSgj())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZobl(result.stream().map(i -> new BigDecimal(i.getZobl())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setYj(result.stream().map(i -> new BigDecimal(i.getYj())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setDjys(result.stream().map(i -> new BigDecimal(i.getDjys())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setStatType("合计");
+        totalRow.setTotalRow(true);
+        result.add(totalRow);
+        return result;
+    }
+
+    /**
+     * RJ、CJ
+     * RJ入口(MTC)交通流量统计表 + CJ出口(MTC)交通流量统计表
+     * @param dto
+     * @return
+     */
+    public List<CRJFlowVo> getCRJFlow(FlowStatisticsDto dto) {
+        //获取收费站ID列表
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
+        }
+        if (dto.getFlag() == ENTRY) {
+            dto.setTableNameList(
+                    TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatentry",
+                            DatePattern.SIMPLE_MONTH_PATTERN));
+        } else if (dto.getFlag() == EXIT){
+            dto.setTableNameList(
+                    TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatexit",
+                            DatePattern.SIMPLE_MONTH_PATTERN));
+        }
+
+        if (CollectionUtils.isEmpty(dto.getTableNameList())) {
+            return new ArrayList<>();
+        }
+        //时间传参格式化
+        dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
+        dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
+        List<CRJFlowVo> list = reportFlowMapper.getCRJFlow(dto);
+        //计算比例
+        list.forEach(item -> {
+            //计算sumCount
+            item.setSumCount(item.getHSum() + item.getKSum() + item.getZSum() + item.getGw() + item.getJc() + item.getMf() + item.getYh() + item.getCd());
+            BigDecimal kcbl = divideWithRounding(BigDecimal.valueOf(item.getKSum()), BigDecimal.valueOf(item.getSumCount()), 4);
+            BigDecimal hcbl = divideWithRounding(BigDecimal.valueOf(item.getHSum()), BigDecimal.valueOf(item.getSumCount()), 4);
+            BigDecimal zcbl = divideWithRounding(BigDecimal.valueOf(item.getZSum()), BigDecimal.valueOf(item.getSumCount()), 4);
+            item.setKcbl(kcbl.doubleValue());
+            item.setHcbl(hcbl.doubleValue());
+            item.setZcbl(zcbl.doubleValue());
+            if (dto.getStatisticsType().equals("0")) {
+                item.setStatType(item.getStaDate().toString());
+            } else if (dto.getStatisticsType().equals("1")) {
+                item.setStatType(item.getMonthDate());
+            } else if (dto.getStatisticsType().equals("2")) {
+                item.setStatType(item.getStationName());
+            }
+        });
+        //构建合计行
+        CRJFlowVo totalRow = new CRJFlowVo();
+        totalRow.setStatType("合计");
+        totalRow.setTotalRow(true);
+        totalRow.setK1(list.stream().map(i -> new BigDecimal(i.getK1())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK2(list.stream().map(i -> new BigDecimal(i.getK2())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK3(list.stream().map(i -> new BigDecimal(i.getK3())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK4(list.stream().map(i -> new BigDecimal(i.getK4())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setKSum(list.stream().map(i -> new BigDecimal(i.getKSum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH1(list.stream().map(i -> new BigDecimal(i.getH1())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH2(list.stream().map(i -> new BigDecimal(i.getH2())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH3(list.stream().map(i -> new BigDecimal(i.getH3())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH4(list.stream().map(i -> new BigDecimal(i.getH4())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH5(list.stream().map(i -> new BigDecimal(i.getH5())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH6(list.stream().map(i -> new BigDecimal(i.getH6())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setHSum(list.stream().map(i -> new BigDecimal(i.getHSum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ1(list.stream().map(i -> new BigDecimal(i.getZ1())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ2(list.stream().map(i -> new BigDecimal(i.getZ2())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ3(list.stream().map(i -> new BigDecimal(i.getZ3())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ4(list.stream().map(i -> new BigDecimal(i.getZ4())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ5(list.stream().map(i -> new BigDecimal(i.getZ5())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ6(list.stream().map(i -> new BigDecimal(i.getZ6())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZSum(list.stream().map(i -> new BigDecimal(i.getZSum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setGw(list.stream().map(i -> new BigDecimal(i.getGw())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setJc(list.stream().map(i -> new BigDecimal(i.getJc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setYh(list.stream().map(i -> new BigDecimal(i.getYh())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setMf(list.stream().map(i -> new BigDecimal(i.getMf())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCd(list.stream().map(i -> new BigDecimal(i.getCd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setSumCount(list.stream().map(i -> new BigDecimal(i.getSumCount())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        BigDecimal kcbl = divideWithRounding(BigDecimal.valueOf(totalRow.getKSum()), BigDecimal.valueOf(totalRow.getSumCount()), 4);
+        BigDecimal hcbl = divideWithRounding(BigDecimal.valueOf(totalRow.getHSum()), BigDecimal.valueOf(totalRow.getSumCount()), 4);
+        BigDecimal zcbl = divideWithRounding(BigDecimal.valueOf(totalRow.getZSum()), BigDecimal.valueOf(totalRow.getSumCount()), 4);
+        totalRow.setKcbl(kcbl.doubleValue());
+        totalRow.setHcbl(hcbl.doubleValue());
+        totalRow.setZcbl(zcbl.doubleValue());
+        list.add(totalRow);
+        return list;
+    }
+
+    private static BigDecimal divideWithRounding(BigDecimal dividend, BigDecimal divisor, int scale) {
+        if (divisor.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+        return dividend.divide(divisor, scale, RoundingMode.HALF_UP).multiply(new BigDecimal("100"));
+    }
+
+    public List<TkFlowVo> tkFlow(FlowStatisticsDto dto) {
+        //获取收费站ID列表
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        //判断用户的corpno
+        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
+            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
+                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
+                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                dto.setStationIdList(stationIdList);
+            }
+        } else {
+            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
+        }
+
+        List<String> tableNameList = new ArrayList<>();
+
+        List<String> entryTableNameList = TableUtil.generateMonthList(dto.getBeginTime(), dto.getEndTime(), DatePattern.SIMPLE_MONTH_PATTERN);
+        if (!CollectionUtils.isEmpty(entryTableNameList)) {
+            tableNameList.addAll(entryTableNameList);
+        }
+        List<String> exitTableNameList = TableUtil.generateMonthList(dto.getBeginTime(), dto.getEndTime(), DatePattern.SIMPLE_MONTH_PATTERN);
+        if (!CollectionUtils.isEmpty(exitTableNameList)) {
+            tableNameList.addAll(exitTableNameList);
+        }
+        if (CollectionUtils.isEmpty(tableNameList)) {
+            return new ArrayList<>();
+        }
+        dto.setTableNameList(tableNameList);
+        //时间传参格式化
+        dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
+        dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
+        List<TkFlowVo> list = reportFlowMapper.getTkFlow(dto);
+        list.forEach(item -> {
+            //小计
+            item.setRsum(item.getRkc() + item.getRhc() + item.getRzc() + item.getRgw() + item.getRjc() + item.getRyh() + item.getRcd());
+            item.setCsum(item.getCkc() + item.getChc() + item.getCzc() + item.getCgw() + item.getCjc() + item.getCyh() + item.getCmf() + item.getCcd());
+            if (dto.getStatisticsType().equals("0")) {
+                item.setStatType(item.getStaDate().toString());
+            } else if (dto.getStatisticsType().equals("1")) {
+                item.setStatType(item.getMonthDate());
+            } else if (dto.getStatisticsType().equals("2")) {
+                item.setStatType(item.getStationName());
+            }
+            //总计
+            item.setSumCount(item.getRsum() + item.getCsum());
+        });
+        //合计
+        TkFlowVo totalRow = new TkFlowVo();
+        totalRow.setTotalRow(true);
+        totalRow.setStatType("统计方式");
+        totalRow.setSumCount(list.stream().map(i -> new BigDecimal(i.getSumCount())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRkc(list.stream().map(i -> new BigDecimal(i.getRkc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRhc(list.stream().map(i -> new BigDecimal(i.getRhc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRzc(list.stream().map(i -> new BigDecimal(i.getRzc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRgw(list.stream().map(i -> new BigDecimal(i.getRgw())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRjc(list.stream().map(i -> new BigDecimal(i.getRjc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRyh(list.stream().map(i -> new BigDecimal(i.getRyh())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRcd(list.stream().map(i -> new BigDecimal(i.getRcd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRsum(list.stream().map(i -> new BigDecimal(i.getRsum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCkc(list.stream().map(i -> new BigDecimal(i.getCkc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setChc(list.stream().map(i -> new BigDecimal(i.getChc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCzc(list.stream().map(i -> new BigDecimal(i.getCzc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCxj(list.stream().map(i -> new BigDecimal(i.getCxj())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCepay(list.stream().map(i -> new BigDecimal(i.getCepay())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCmpay(list.stream().map(i -> new BigDecimal(i.getCmpay())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCgw(list.stream().map(i -> new BigDecimal(i.getCgw())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCjc(list.stream().map(i -> new BigDecimal(i.getCjc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCyh(list.stream().map(i -> new BigDecimal(i.getCyh())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCmf(list.stream().map(i -> new BigDecimal(i.getCmf())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCcd(list.stream().map(i -> new BigDecimal(i.getCcd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCsum(list.stream().map(i -> new BigDecimal(i.getCsum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        list.add(totalRow);
+        return list;
     }
 }

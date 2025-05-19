@@ -7,9 +7,7 @@ import com.itssky.common.utils.poi.ExcelUtil;
 import com.itssky.system.domain.ReportChargeInfo;
 import com.itssky.system.domain.ReportFlowInfo;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
-import com.itssky.system.domain.vo.CCardStatVo;
-import com.itssky.system.domain.vo.ExportVo;
-import com.itssky.system.domain.vo.TableDataVo;
+import com.itssky.system.domain.vo.*;
 import com.itssky.system.service.CardService;
 import com.itssky.system.service.ITollService;
 import com.itssky.system.service.impl.ReportFlowService;
@@ -169,21 +167,6 @@ public class ReportFlowController extends BaseController {
     }
 
     /**
-     * 随机生成测试数据
-     */
-    @PostMapping(value = "/mock/data")
-    public AjaxResult mockData() {
-        reportFlowService.mockData();
-        return AjaxResult.success("OK");
-    }
-
-    @PostMapping(value = "/mock/entry/data")
-    public AjaxResult mockEntryData() {
-        reportFlowService.mockTbEntryData();
-        return AjaxResult.success("OK");
-    }
-
-    /**
      *
      */
     @PostMapping(value = "/mock/tbsh")
@@ -191,6 +174,66 @@ public class ReportFlowController extends BaseController {
         reportFlowService.mockTbsh();
         return AjaxResult.success("OK");
     }
+
+    @PostMapping(value = "/yh")
+    public TableDataVo yh(@RequestBody @Valid FlowStatisticsDto dto) {
+        TableDataVo data = new TableDataVo();
+        data.setRows(reportFlowService.getFlowYh(dto));
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return data;
+    }
+
+    @PostMapping(value = "/export/yh")
+    public AjaxResult exportYh(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
+        List<FlowYhVo> list = reportFlowService.getFlowYh(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<FlowYhVo> util = new ExcelUtil<FlowYhVo>(FlowYhVo.class);
+        return util.exportDynamic(list, "YH优惠流量综合报表", conditionList, 13, reportTitleName);
+    }
+
+    @PostMapping(value = "/crjflow")
+    public TableDataVo crjFlow(@RequestBody @Valid FlowStatisticsDto dto) {
+        TableDataVo data = new TableDataVo();
+        data.setRows(reportFlowService.getCRJFlow(dto));
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return data;
+    }
+
+    @PostMapping(value = "/export/crjflow")
+    public AjaxResult exportCrjFlow(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
+        List<CRJFlowVo> list = reportFlowService.getCRJFlow(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<CRJFlowVo> util = new ExcelUtil<CRJFlowVo>(CRJFlowVo.class);
+        String sheetName = "";
+        if (dto.getFlag() == ReportFlowService.ENTRY) {
+            sheetName = "RJ入口(MTC)交通流量统计表";
+        } else if (dto.getFlag() == ReportFlowService.EXIT) {
+            sheetName = "CJ出口(MTC)交通流量统计表";
+        }
+        return util.exportDynamic(list, sheetName, conditionList, 29, reportTitleName);
+    }
+
+    @PostMapping(value = "/tkflow")
+    public TableDataVo tkFlow(@RequestBody @Valid FlowStatisticsDto dto) {
+        TableDataVo data = new TableDataVo();
+        data.setRows(reportFlowService.tkFlow(dto));
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return data;
+    }
+
+    @PostMapping(value = "/export/tkflow")
+    public AjaxResult exportTkFlow(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
+        List<TkFlowVo> list = reportFlowService.tkFlow(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<TkFlowVo> util = new ExcelUtil<TkFlowVo>(TkFlowVo.class);
+        return util.exportDynamic(list, "TK入出口(MTC)交通流量按车种统计表", conditionList, 22, reportTitleName);
+    }
+
+//    @PostMapping(value = "/od")
+//    public TableDataVo od(@RequestBody @Valid FlowStatisticsDto dto) {
+//        TableDataVo data = new TableDataVo();
+//        data.setRows();
+//    }
 
 //    @GetMapping(value = "/export")
 //    public AjaxResult exportCharge(ReportChargeInfo param) {

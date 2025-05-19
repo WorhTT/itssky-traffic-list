@@ -88,4 +88,9 @@ secure:
       - /common/**
       - /logout
 
+fft:
+  url: http://10.0.96.95
+  binfile-auth: cht@a6165bf5f024f647267fae0b10cdf060
+  corpno: 03
+
 reportTitleName: "南通绕城"

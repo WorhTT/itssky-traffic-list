@@ -110,12 +110,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- velocity?????????????? -->
-      <dependency>
-        <groupId>org.apache.velocity</groupId>
-        <artifactId>velocity-engine-core</artifactId>
-        <version>${velocity.version}</version>
-      </dependency>
       <!-- ????JSON?????? -->
       <dependency>
         <groupId>com.alibaba.fastjson2</groupId>

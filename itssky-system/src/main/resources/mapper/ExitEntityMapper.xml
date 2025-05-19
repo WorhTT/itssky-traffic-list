@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itssky.system.mapper.ExitEntityMapper">
+  <resultMap id="BaseResultMap" type="com.itssky.system.domain.ExitEntity">
+    <!--@mbg.generated-->
+    <!--@Table exit202502-->
+    <result column="TransID" jdbcType="INTEGER" property="transid" />
+    <result column="Network" jdbcType="SMALLINT" property="network" />
+    <result column="StationID" jdbcType="INTEGER" property="stationid" />
+    <result column="LaneID" jdbcType="SMALLINT" property="laneid" />
+    <result column="ExitTime" jdbcType="TIMESTAMP" property="exittime" />
+    <result column="ProgramTime" jdbcType="TIMESTAMP" property="programtime" />
+    <result column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="CardNetwork" jdbcType="SMALLINT" property="cardnetwork" />
+    <result column="CardIssue" jdbcType="VARCHAR" property="cardissue" />
+    <result column="CardMAC" jdbcType="VARCHAR" property="cardmac" />
+    <result column="CardVer" jdbcType="TINYINT" property="cardver" />
+    <result column="CardType" jdbcType="TINYINT" property="cardtype" />
+    <result column="CardID" jdbcType="VARCHAR" property="cardid" />
+    <result column="CardBAT" jdbcType="INTEGER" property="cardbat" />
+    <result column="ICCount" jdbcType="INTEGER" property="iccount" />
+    <result column="CardBoxID" jdbcType="INTEGER" property="cardboxid" />
+    <result column="EntryNetwork" jdbcType="SMALLINT" property="entrynetwork" />
+    <result column="EntryStation" jdbcType="INTEGER" property="entrystation" />
+    <result column="EntryLane" jdbcType="SMALLINT" property="entrylane" />
+    <result column="EntryOperator" jdbcType="INTEGER" property="entryoperator" />
+    <result column="EntryShift" jdbcType="TINYINT" property="entryshift" />
+    <result column="RVehicleClass" jdbcType="TINYINT" property="rvehicleclass" />
+    <result column="RVehicleStatus" jdbcType="INTEGER" property="rvehiclestatus" />
+    <result column="RVehicleLicense" jdbcType="VARCHAR" property="rvehiclelicense" />
+    <result column="EntryTime" jdbcType="TIMESTAMP" property="entrytime" />
+    <result column="StdStationID" jdbcType="VARCHAR" property="stdstationid" />
+    <result column="HexStationID" jdbcType="VARCHAR" property="hexstationid" />
+    <result column="StdLaneID" jdbcType="VARCHAR" property="stdlaneid" />
+    <result column="HexLaneID" jdbcType="VARCHAR" property="hexlaneid" />
+    <result column="ExitDate" jdbcType="INTEGER" property="exitdate" />
+    <result column="OperatorID" jdbcType="INTEGER" property="operatorid" />
+    <result column="ShiftID" jdbcType="TINYINT" property="shiftid" />
+    <result column="TeamID" jdbcType="TINYINT" property="teamid" />
+    <result column="VehicleClass" jdbcType="TINYINT" property="vehicleclass" />
+    <result column="PVehicleClass" jdbcType="TINYINT" property="pvehicleclass" />
+    <result column="VehicleStatus" jdbcType="INTEGER" property="vehiclestatus" />
+    <result column="SpecialType" jdbcType="VARCHAR" property="specialtype" />
+    <result column="DealStatus" jdbcType="INTEGER" property="dealstatus" />
+    <result column="RecordType" jdbcType="INTEGER" property="recordtype" />
+    <result column="DeviceStatus" jdbcType="INTEGER" property="devicestatus" />
+    <result column="VehicleLicense" jdbcType="VARCHAR" property="vehiclelicense" />
+    <result column="LicensePlate" jdbcType="VARCHAR" property="licenseplate" />
+    <result column="Toll" jdbcType="INTEGER" property="toll" />
+    <result column="Arrearage" jdbcType="INTEGER" property="arrearage" />
+    <result column="TollFee" jdbcType="INTEGER" property="tollfee" />
+    <result column="FlagStation" jdbcType="VARCHAR" property="flagstation" />
+    <result column="MidStation" jdbcType="INTEGER" property="midstation" />
+    <result column="InvoiceID" jdbcType="VARCHAR" property="invoiceid" />
+    <result column="PrintTimes" jdbcType="TINYINT" property="printtimes" />
+    <result column="ECardID" jdbcType="VARCHAR" property="ecardid" />
+    <result column="ECardType" jdbcType="TINYINT" property="ecardtype" />
+    <result column="EBBalance" jdbcType="INTEGER" property="ebbalance" />
+    <result column="EABalance" jdbcType="INTEGER" property="eabalance" />
+    <result column="TermCode" jdbcType="VARCHAR" property="termcode" />
+    <result column="OBUID" jdbcType="VARCHAR" property="obuid" />
+    <result column="OBUVersion" jdbcType="TINYINT" property="obuversion" />
+    <result column="TAC" jdbcType="VARCHAR" property="tac" />
+    <result column="ETradNo" jdbcType="VARCHAR" property="etradno" />
+    <result column="TermTradNo" jdbcType="VARCHAR" property="termtradno" />
+    <result column="IdentifyStatus" jdbcType="TINYINT" property="identifystatus" />
+    <result column="ImagePath" jdbcType="VARCHAR" property="imagepath" />
+    <result column="ProgramVer" jdbcType="VARCHAR" property="programver" />
+    <result column="FeeVer" jdbcType="VARCHAR" property="feever" />
+    <result column="VerifyCode" jdbcType="INTEGER" property="verifycode" />
+    <result column="CancelFlag" jdbcType="TINYINT" property="cancelflag" />
+    <result column="AxisType" jdbcType="INTEGER" property="axistype" />
+    <result column="AxisNum" jdbcType="INTEGER" property="axisnum" />
+    <result column="TotalWeight" jdbcType="INTEGER" property="totalweight" />
+    <result column="LimitWeight" jdbcType="INTEGER" property="limitweight" />
+    <result column="OverLoadRate" jdbcType="INTEGER" property="overloadrate" />
+    <result column="AxisInfo" jdbcType="VARCHAR" property="axisinfo" />
+    <result column="OwnerInfo" jdbcType="VARCHAR" property="ownerinfo" />
+    <result column="Transfermark" jdbcType="INTEGER" property="transfermark" />
+    <result column="PSAMID" jdbcType="VARCHAR" property="psamid" />
+    <result column="TransType" jdbcType="INTEGER" property="transtype" />
+    <result column="AlgorithmID" jdbcType="INTEGER" property="algorithmid" />
+    <result column="DurationSec" jdbcType="INTEGER" property="durationsec" />
+    <result column="CEntryNet" jdbcType="INTEGER" property="centrynet" />
+    <result column="CEntryID" jdbcType="VARCHAR" property="centryid" />
+    <result column="CEntryTime" jdbcType="TIMESTAMP" property="centrytime" />
+    <result column="RAxisType" jdbcType="INTEGER" property="raxistype" />
+    <result column="RTotalWeight" jdbcType="INTEGER" property="rtotalweight" />
+    <result column="RLimitWeight" jdbcType="INTEGER" property="rlimitweight" />
+    <result column="CFlagID" jdbcType="VARCHAR" property="cflagid" />
+    <result column="CCalcFeeInfo" jdbcType="VARCHAR" property="ccalcfeeinfo" />
+    <result column="CPCCalcInfo" jdbcType="VARCHAR" property="cpccalcinfo" />
+    <result column="StdRStationID" jdbcType="VARCHAR" property="stdrstationid" />
+    <result column="HexRtationID" jdbcType="VARCHAR" property="hexrtationid" />
+    <result column="HexRLaneID" jdbcType="VARCHAR" property="hexrlaneid" />
+    <result column="StdEStationID" jdbcType="VARCHAR" property="stdestationid" />
+    <result column="AssignPFFee" jdbcType="VARCHAR" property="assignpffee" />
+    <result column="AssignPDFee" jdbcType="VARCHAR" property="assignpdfee" />
+    <result column="POwnerInfo" jdbcType="VARCHAR" property="pownerinfo" />
+    <result column="CalcFeeVer" jdbcType="VARCHAR" property="calcfeever" />
+    <result column="PBStationID" jdbcType="VARCHAR" property="pbstationid" />
+    <result column="CalcMode" jdbcType="VARCHAR" property="calcmode" />
+    <result column="Spare1" jdbcType="INTEGER" property="spare1" />
+    <result column="Spare2" jdbcType="INTEGER" property="spare2" />
+    <result column="Spare3" jdbcType="VARCHAR" property="spare3" />
+    <result column="Spare4" jdbcType="INTEGER" property="spare4" />
+    <result column="Spare5" jdbcType="VARCHAR" property="spare5" />
+    <result column="Spare6" jdbcType="VARCHAR" property="spare6" />
+    <result column="LoadWeight" jdbcType="INTEGER" property="loadweight" />
+    <result column="OBUVehicleDim" jdbcType="VARCHAR" property="obuvehicledim" />
+    <result column="OBUType" jdbcType="BOOLEAN" property="obutype" />
+    <result column="GantryHex" jdbcType="VARCHAR" property="gantryhex" />
+    <result column="OBUIssue" jdbcType="VARCHAR" property="obuissue" />
+    <result column="OBUVehicleClass" jdbcType="INTEGER" property="obuvehicleclass" />
+    <result column="OBUVehiclePlate" jdbcType="VARCHAR" property="obuvehicleplate" />
+    <result column="OBUSerialID" jdbcType="VARCHAR" property="obuserialid" />
+    <result column="KeyVersion" jdbcType="VARCHAR" property="keyversion" />
+    <result column="mobTermNo" jdbcType="VARCHAR" property="mobtermno" />
+    <result column="PayIdentifier" jdbcType="VARCHAR" property="payidentifier" />
+    <result column="ReplayTime" jdbcType="VARCHAR" property="replaytime" />
+    <result column="SettleDate" jdbcType="VARCHAR" property="settledate" />
+    <result column="MobFee" jdbcType="INTEGER" property="mobfee" />
+    <result column="MblPayPlatNumber" jdbcType="VARCHAR" property="mblpayplatnumber" />
+    <result column="PayType" jdbcType="INTEGER" property="paytype" />
+    <result column="RecordClass" jdbcType="INTEGER" property="recordclass" />
+    <result column="CardFee" jdbcType="INTEGER" property="cardfee" />
+    <result column="OBUFee" jdbcType="INTEGER" property="obufee" />
+    <result column="minProvFee" jdbcType="INTEGER" property="minprovfee" />
+    <result column="selfFee" jdbcType="INTEGER" property="selffee" />
+    <result column="minFeeVer" jdbcType="VARCHAR" property="minfeever" />
+    <result column="OBUDiscount" jdbcType="INTEGER" property="obudiscount" />
+    <result column="GantPayFee" jdbcType="INTEGER" property="gantpayfee" />
+    <result column="GantDiscount" jdbcType="INTEGER" property="gantdiscount" />
+    <result column="StatsFlag" jdbcType="INTEGER" property="statsflag" />
+    <result column="OBUDistance" jdbcType="INTEGER" property="obudistance" />
+    <result column="FeeRate" jdbcType="INTEGER" property="feerate" />
+    <result column="CollDistance" jdbcType="INTEGER" property="colldistance" />
+    <result column="minProvVMT" jdbcType="INTEGER" property="minprovvmt" />
+    <result column="tradeGroup" jdbcType="VARCHAR" property="tradegroup" />
+    <result column="selfTollFee" jdbcType="INTEGER" property="selftollfee" />
+    <result column="seflSumFee" jdbcType="INTEGER" property="seflsumfee" />
+    <result column="selfSumPayFee" jdbcType="INTEGER" property="selfsumpayfee" />
+    <result column="specialCode" jdbcType="VARCHAR" property="specialcode" />
+    <result column="AVehicleClass" jdbcType="INTEGER" property="avehicleclass" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    TransID, Network, StationID, LaneID, ExitTime, ProgramTime, ID, CardNetwork, CardIssue, 
+    CardMAC, CardVer, CardType, CardID, CardBAT, ICCount, CardBoxID, EntryNetwork, EntryStation, 
+    EntryLane, EntryOperator, EntryShift, RVehicleClass, RVehicleStatus, RVehicleLicense, 
+    EntryTime, StdStationID, HexStationID, StdLaneID, HexLaneID, ExitDate, OperatorID, 
+    ShiftID, TeamID, VehicleClass, PVehicleClass, VehicleStatus, SpecialType, DealStatus, 
+    RecordType, DeviceStatus, VehicleLicense, LicensePlate, Toll, Arrearage, TollFee, 
+    FlagStation, MidStation, InvoiceID, PrintTimes, ECardID, ECardType, EBBalance, EABalance, 
+    TermCode, OBUID, OBUVersion, TAC, ETradNo, TermTradNo, IdentifyStatus, ImagePath, 
+    ProgramVer, FeeVer, VerifyCode, CancelFlag, AxisType, AxisNum, TotalWeight, LimitWeight, 
+    OverLoadRate, AxisInfo, OwnerInfo, Transfermark, PSAMID, TransType, AlgorithmID, 
+    DurationSec, CEntryNet, CEntryID, CEntryTime, RAxisType, RTotalWeight, RLimitWeight, 
+    CFlagID, CCalcFeeInfo, CPCCalcInfo, StdRStationID, HexRtationID, HexRLaneID, StdEStationID, 
+    AssignPFFee, AssignPDFee, POwnerInfo, CalcFeeVer, PBStationID, CalcMode, Spare1, 
+    Spare2, Spare3, Spare4, Spare5, Spare6, LoadWeight, OBUVehicleDim, OBUType, GantryHex, 
+    OBUIssue, OBUVehicleClass, OBUVehiclePlate, OBUSerialID, KeyVersion, mobTermNo, PayIdentifier, 
+    ReplayTime, SettleDate, MobFee, MblPayPlatNumber, PayType, RecordClass, CardFee, 
+    OBUFee, minProvFee, selfFee, minFeeVer, OBUDiscount, GantPayFee, GantDiscount, StatsFlag, 
+    OBUDistance, FeeRate, CollDistance, minProvVMT, tradeGroup, selfTollFee, seflSumFee, 
+    selfSumPayFee, specialCode, AVehicleClass
+  </sql>
+
+  <select id="selectGpExitList" parameterType="com.itssky.system.domain.ExitEntity" resultType="com.itssky.system.domain.ExitEntity">
+        SELECT VehicleLicense,ExitDate,ExitTime,HexStationID,StationID,OperatorID,ShiftID,LaneID FROM ${tableName}
+        <where>
+            <if test="ExitDate != null and ExitDate != ''">
+                AND ExitDate = #{ExitDate}
+            </if>
+            AND DealStatus &amp;8388608 = 8388608
+        </where>
+        GROUP BY VehicleLicense
+  </select>
+</mapper>

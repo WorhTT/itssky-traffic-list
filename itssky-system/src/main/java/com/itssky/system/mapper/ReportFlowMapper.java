@@ -4,7 +4,7 @@ import com.itssky.db.Dbstats;
 import com.itssky.system.domain.*;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
 import com.itssky.system.domain.dto.StationShiftDto;
-import com.itssky.system.domain.vo.StationShiftVo;
+import com.itssky.system.domain.vo.*;
 
 import java.util.List;
 import java.util.Map;
@@ -33,4 +33,12 @@ public interface ReportFlowMapper {
     public int insertTbStateExit(TbStateExit tbStateExit);
 
     public List<ReportFlowInfo> csjFlow(FlowStatisticsDto dto);
+
+    public List<FlowYhVo> getFlowYh(FlowStatisticsDto dto);
+
+    public List<CRJFlowVo> getCRJFlow(FlowStatisticsDto dto);
+
+//    public List<ODFlowVo> getFlowOd(FlowStatisticsDto dto);
+
+    public List<TkFlowVo>  getTkFlow(FlowStatisticsDto dto);
 }

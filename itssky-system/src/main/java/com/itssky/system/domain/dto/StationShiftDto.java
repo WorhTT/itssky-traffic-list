@@ -33,5 +33,6 @@ public class StationShiftDto {
 
     private Integer timeFormat;
 
+    private String tableName;
 
 }

@@ -63,3 +63,51 @@ export function exportCsjRobot(data) {
     data: data
   })
 }
+
+export function getYh(data) {
+  return request({
+    url: '/report/yh',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportYh(data) {
+  return request({
+    url: '/report/export/yh',
+    method: 'post',
+    data: data
+  })
+}
+
+export function crjFlow(data) {
+  return request({
+    url: '/report/crjflow',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportCrjFlow(data) {
+  return request({
+    url: '/report/export/crjflow',
+    method: 'post',
+    data: data
+  })
+}
+
+export function tkFlow(data) {
+  return request({
+    url: '/report/tkflow',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportTkFlow(data) {
+  return request({
+    url: '/report/export/tkflow',
+    method: 'post',
+    data: data
+  })
+}

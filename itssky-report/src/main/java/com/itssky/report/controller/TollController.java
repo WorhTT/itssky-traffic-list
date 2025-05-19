@@ -174,4 +174,36 @@ public class TollController extends BaseController {
         AjaxResult ajaxResult = util.exportDynamic(list, "EEF电子支付通行费MTC、ETC统计表", conditionList, 61, reportTitleName);
         return ajaxResult;
     }
+
+    @PostMapping(value = "/f6toll")
+    public TableDataVo getF6Toll(@RequestBody @Valid StationShiftDto dto) {
+        TableDataVo data = new TableDataVo();
+        data.setRows(tollService.f6Toll(dto));
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
+        return data;
+    }
+
+    @PostMapping(value = "/export/f6toll")
+    public AjaxResult exportF6Toll(@RequestBody @Valid StationShiftDto dto) throws IOException {
+        List<F6TollVo> list = tollService.f6Toll(dto);
+        ExcelUtil<F6TollVo> util = new ExcelUtil<F6TollVo>(F6TollVo.class);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
+        return util.exportDynamic(list, "F6收费站通行费收入班对账表", conditionList, 6, reportTitleName);
+    }
+
+    @PostMapping(value = "/cf1toll")
+    public TableDataVo getCf1Toll(@RequestBody @Valid StationShiftDto dto) {
+        TableDataVo data = new TableDataVo();
+        data.setRows(tollService.cf1Toll(dto));
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
+        return data;
+    }
+
+    @PostMapping(value = "/export/cf1toll")
+    public AjaxResult exportCf1Toll(@RequestBody @Valid StationShiftDto dto) throws IOException {
+        List<Cf1Vo> list = tollService.cf1Toll(dto);
+        ExcelUtil<Cf1Vo> util = new ExcelUtil<Cf1Vo>(Cf1Vo.class);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
+        return util.exportDynamic(list, "CF1收费中心通行费收入班统计表", conditionList, 14, reportTitleName);
+    }
 }

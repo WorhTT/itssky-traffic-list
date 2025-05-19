@@ -47,4 +47,28 @@ public class TableUtil {
         }
         return tableNamesList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
     }
+
+    public static List<String> generateMonthList(Date startDate, Date endDate, String pattern) {
+        List<String> tableNamesList = new ArrayList<>();
+        if (startDate.after(endDate)) {
+            log.error("开始时间不能大于结束时间");
+            return tableNamesList;
+        }
+        //获取开始时间00：00：00
+        DateTime startDateBegin = DateUtil.beginOfMonth(startDate);
+        DateTime endDateBegin = DateUtil.beginOfMonth(endDate);
+        DateTime endDateBeginNext = DateUtil.offsetDay(endDateBegin, 1);
+        int index = 1;
+        while (startDateBegin.before(endDateBeginNext) && index <= 2000) {
+            tableNamesList.add(DateUtil.format(startDateBegin, pattern));
+            //暂时先添加年的判断
+            if (pattern.endsWith("yyyy")) {
+                startDateBegin = DateUtil.offsetMonth(startDateBegin, 12);
+            } else {
+                startDateBegin = DateUtil.offsetMonth(startDateBegin, 1);
+            }
+            index++;
+        }
+        return tableNamesList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
+    }
 }
