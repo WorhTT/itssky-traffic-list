@@ -7,11 +7,14 @@ import lombok.Data;
 public class FD06Vo {
 
     @Excel(name = "收费员工号")
-    private Integer operateId;
+    private String operateId = "";
 
     @Excel(name = "收费员姓名")
-    private String operateName;
+    private String operateName = "";
+
+    @Excel(name = "车道")
+    private String laneName = "";
 
     @Excel(name = "发卡数")
-    private int cardNum;
+    private int cardNum = 0;
 }

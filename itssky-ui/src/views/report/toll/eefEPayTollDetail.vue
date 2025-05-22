@@ -36,119 +36,7 @@
       </el-row>
     </div>
 
-<!--      <el-table v-loading="loading" :data="dataList" border style="width: 100%" :fit="true" ref="myTable"-->
-<!--                :header-cell-style="{ padding: '4px', fontSize: '12px' }"-->
-<!--                :cell-style="{ padding: '4px', fontSize: '12px' }">-->
-<!--        <el-table-column label="统计方式" align="center" prop="statType" min-width="45"/>-->
-<!--        <el-table-column label="客车" align="center">-->
-<!--          <el-table-column label="客一" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="cust1C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="cust1D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="cust1Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="客二" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="cust2C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="cust2D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="cust2Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="客三" align="center" width="130">-->
-<!--            <el-table-column label="C卡" align="center" prop="cust3C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="cust3D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="cust3Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="客四" align="center" prop="k4Count" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="cust4C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="cust4D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="cust4Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="小计" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="custCSubTotal" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="custDSubTotal" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="custSubSum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--        </el-table-column>-->
-<!--        <el-table-column label="货车" align="center">-->
-<!--          <el-table-column label="货一" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="trust1C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="trust1D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="trust1Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="货二" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="trust2C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="trust2D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="trust2Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="货三" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="trust3C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="trust3D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="trust3Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="货四" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="trust4C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="trust4D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="trust4Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="货五" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="trust5C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="trust5D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="trust5Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="货六" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="trust6C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="trust6D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="trust6Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="小计" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="trustCSubTotal" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="trustDSubTotal" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="trustSubSum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--        </el-table-column>-->
-<!--        <el-table-column label="专车" align="center">-->
-<!--          <el-table-column label="专一" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="spec1C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="spec1D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="spec1Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="专二" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="spec2C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="spec2D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="spec2Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="专三" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="spec3C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="spec3D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="spec3Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="专四" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="spec4C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="spec4D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="spec4Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="专五" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="spec5C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="spec5D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="spec5Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="专六" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="spec6C" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="spec6D" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="spec6Sum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="小计" align="center" width="135">-->
-<!--            <el-table-column label="C卡" align="center" prop="specCSubTotal" width="45"/>-->
-<!--            <el-table-column label="D卡" align="center" prop="specDSubTotal" width="45"/>-->
-<!--            <el-table-column label="合计" align="center" prop="specSubSum" width="45"/>-->
-<!--          </el-table-column>-->
-<!--        </el-table-column>-->
-<!--        <el-table-column label="总计" align="center" width="135">-->
-<!--          <el-table-column label="C卡" align="center" prop="ctotal" width="45"/>-->
-<!--          <el-table-column label="D卡" align="center" prop="dtotal" width="45"/>-->
-<!--          <el-table-column label="合计" align="center" prop="totalSum" width="45"/>-->
-<!--        </el-table-column>-->
-<!--      </el-table>-->
-
-    <el-table v-loading="loading" :data="dataList" border style="width: 100%" fit ref="myTable">
+    <el-table v-loading="loading" :data="dataList" border style="width: 100%" fit ref="myTable" >
       <el-table-column label="统计方式" align="center" prop="statType" width="100"/>
       <el-table-column label="客车" align="center">
         <el-table-column label="客一" align="center">
@@ -332,6 +220,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
+      this.loading = true;
       const queryParams = this.queryParams;
       this.$confirm('是否确认导出EEF电子支付通行费(MTC+ETC)统计表?', "警告", {
         confirmButtonText: "确定",
@@ -341,6 +230,8 @@ export default {
         return exportEefepay(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
+      }).finally(() => {
+        this.loading = false;
       })
     },
 
@@ -416,6 +307,22 @@ export default {
             width: 100vw !important; /* 强制占据全部视口宽度 */
             /*transform: scale(0.8);  !* 初始缩放系数 *!*/
             transform-origin: top left;
+          }
+          .el-table {
+               width: 100% !important;
+               min-width: auto !important;
+          }
+
+          .el-table__header-wrapper,
+          .el-table__body-wrapper {
+            overflow: visible !important;
+            width: 100% !important;
+          }
+
+          .el-table__header,
+          .el-table__body {
+            width: 100% !important;
+            transform: translateZ(0); /* 修复部分浏览器渲染问题 */
           }
         }
         @page {

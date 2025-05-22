@@ -2040,7 +2040,7 @@ public class ExcelUtil<T>
         XSSFWorkbook workbook = new XSSFWorkbook();
         // 创建工作表
         XSSFSheet sheet = workbook.createSheet("Sheet1");
-        sheet.setDefaultColumnWidth(20);
+        sheet.setDefaultColumnWidth(25);
 
         int currentRowIndex = 0;
         // 创建第一页的第一行，索引从0开始

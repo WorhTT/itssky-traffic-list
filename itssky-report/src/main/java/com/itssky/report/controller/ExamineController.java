@@ -56,7 +56,7 @@ public class ExamineController extends BaseController {
         List<FD06Vo> list = examineService.getFd06(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<FD06Vo> util = new ExcelUtil<FD06Vo>(FD06Vo.class);
-        return util.exportDynamic(list, "FD06收费员发卡统计表", conditionList, 3, reportTitleName);
+        return util.exportDynamic(list, "FD06收费员发卡统计表", conditionList, 4, reportTitleName);
     }
 
     @PostMapping(value = "/fd07")

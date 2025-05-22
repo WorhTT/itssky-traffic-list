@@ -44,14 +44,15 @@ public class ExamineServiceImpl {
         dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
         List<FD06Vo> list = examineMapper.getFd06(dto);
         if (!CollectionUtils.isEmpty(list)) {
-            Set<Integer> operatorIdSet = list.stream().map(FD06Vo::getOperateId).collect(Collectors.toSet());
-            List<Map> map = specialMapper.buildOperatorName(operatorIdSet);
+            Set<String> operatorIdSet = list.stream().map(FD06Vo::getOperateId).collect(Collectors.toSet());
+            Set<Integer> operatorIds = operatorIdSet.stream().map(Integer::parseInt).collect(Collectors.toSet());
+            List<Map> map = specialMapper.buildOperatorName(operatorIds);
             Map<Integer, String> operatorMap = new HashMap<>();
             map.forEach(m -> operatorMap.put(Integer.valueOf(m.get("operatorId").toString()),
                     m.get("operatorName").toString()));
             list.forEach(item -> {
-                if (Objects.nonNull(operatorMap.get(item.getOperateId()))) {
-                    item.setOperateName(operatorMap.get(item.getOperateId()));
+                if (Objects.nonNull(operatorMap.get(Integer.parseInt(item.getOperateId())))) {
+                    item.setOperateName(operatorMap.get(Integer.parseInt(item.getOperateId())));
                 }
             });
         }

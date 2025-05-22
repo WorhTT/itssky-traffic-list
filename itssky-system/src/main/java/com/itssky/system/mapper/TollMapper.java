@@ -55,5 +55,8 @@ public interface TollMapper {
 
     @Dbstats
     public List<Cf1Vo> getCf1Vo(StationShiftDto dto);
+
+    @Dbstats
+    public List<MOBTollVo> getMOBToll(FtStationDto dto);
 }
 

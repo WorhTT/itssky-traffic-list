@@ -82,6 +82,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
+      this.loading = true;
       const queryParams = this.queryParams;
       this.$confirm('是否确认导出FD27变档明细统计表?', "警告", {
         confirmButtonText: "确定",
@@ -91,6 +92,8 @@ export default {
         return exportFd26(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
+      }).finally(() => {
+        this.loading = false;
       })
     },
     printTable() {
@@ -141,6 +144,7 @@ export default {
         }
         .el-table__body-wrapper {
           border: 1px solid #ebeef5 !important;
+          overflow: hidden !important;
         }
         .el-table td {
           border: 1px solid #000000 !important;
@@ -149,6 +153,8 @@ export default {
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
+          word-break: break-all;
+          hyphens: auto;
         }
         .el-table th {
           border: 1px solid #000000 !important;
@@ -167,6 +173,22 @@ export default {
             width: 100vw !important; /* 强制占据全部视口宽度 */
             /*transform: scale(0.85);  !* 初始缩放系数 *!*/
             transform-origin: top left;
+          }
+          .el-table {
+               width: 100% !important;
+               min-width: auto !important;
+          }
+
+          .el-table__header-wrapper,
+          .el-table__body-wrapper {
+            overflow: visible !important;
+            width: 100% !important;
+          }
+
+          .el-table__header,
+          .el-table__body {
+            width: 100% !important;
+            transform: translateZ(0); /* 修复部分浏览器渲染问题 */
           }
         }
         @page {
@@ -237,7 +259,7 @@ export default {
       <el-table-column label="收费员姓名" align="center" prop="operatorName"/>
       <el-table-column label="车道" align="center" prop="laneId" min-width="50px"/>
       <el-table-column label="卡号" align="center" prop="cardId" min-width="140px"/>
-      <el-table-column label="车牌" align="center" prop="licensePlate"/>
+      <el-table-column label="车牌" align="center" prop="licensePlate" min-width="120px"/>
       <el-table-column label="收费时间" align="center" prop="tradeTimeStr" min-width="140px"/>
       <el-table-column label="改前车型" align="center" prop="beginVehicleClass" min-width="60px"/>
       <el-table-column label="入口车型" align="center" prop="entryVehicleClass" min-width="60px"/>

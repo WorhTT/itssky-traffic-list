@@ -219,6 +219,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/mobTollDetail',
+    component: () => import("@/views/report/toll/mobTollDetail.vue"),
+    hidden: true
+  },
+  {
     path: '/',
     redirect: '/f1StationShift'
   },
@@ -280,6 +285,12 @@ export const constantRoutes = [
         name: 'CF1收费中心通行费收入班统计表',
         meta: {title: 'CF1收费中心通行费收入班统计表', icon: 'chart'},
         component: () => import('@/views/report/toll/cf1Toll.vue'),
+      },
+      {
+        path: '/mobtoll',
+        name: 'MOB移动支付收费统计报表',
+        meta: {title: 'MOB移动支付收费统计报表', icon: 'chart'},
+        component: () => import('@/views/report/toll/mobToll.vue'),
       }
     ],
   },

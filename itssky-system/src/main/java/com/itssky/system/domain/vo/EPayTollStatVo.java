@@ -17,16 +17,16 @@ public class EPayTollStatVo {
 
     private String stationName;
 
-    private Integer stationId;
+    private String stationId;
 
-    private Integer operatorId;
+    private String operatorId;
 
     private String monthDate;
 
-    private Integer staDate;
+    private String staDate;
 
     @Excel(name = "统计方式", mergeRow = 3, mergeColumn = 1, headerRow = 2)
-    private String statType;
+    private String statType = "";
 
     @Excel(name = "客车", onlyHeader = true, mergeRow = 1, mergeColumn = 15, headerRow = 2)
     private String vehicle;
@@ -35,61 +35,61 @@ public class EPayTollStatVo {
     private String cust1;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 2)
-    private Integer cust1C;
+    private String cust1C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 3)
-    private Integer cust1D;
+    private String cust1D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 4)
-    private Integer cust1Sum;
+    private String cust1Sum = "0";
 
     @Excel(name = "客二", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 5)
     private String cust2;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 5)
-    private Integer cust2C;
+    private String cust2C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 6)
-    private Integer cust2D;
+    private String cust2D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 7)
-    private Integer cust2Sum;
+    private String cust2Sum = "0";
 
     @Excel(name = "客三", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 8)
     private String cust3;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 8)
-    private Integer cust3C;
+    private String cust3C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 9)
-    private Integer cust3D;
+    private String cust3D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 10)
-    private Integer cust3Sum;
+    private String cust3Sum = "0";
 
     @Excel(name = "客四", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 11)
     private String cust4;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 11)
-    private Integer cust4C;
+    private String cust4C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 12)
-    private Integer cust4D;
+    private String cust4D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 13)
-    private Integer cust4Sum;
+    private String cust4Sum = "0";
 
     @Excel(name = "小计", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 14)
     private String custSubTotal;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 14)
-    private Integer custCSubTotal;
+    private String custCSubTotal = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 15)
-    private Integer custDSubTotal;
+    private String custDSubTotal = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 16)
-    private Integer custSubSum;
+    private String custSubSum = "0";
 
     @Excel(name = "货车", onlyHeader = true, mergeRow = 1, mergeColumn = 21, headerRow = 2)
     private String trust;
@@ -98,85 +98,85 @@ public class EPayTollStatVo {
     private String trust1;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 17)
-    private Integer trust1C;
+    private String trust1C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 18)
-    private Integer trust1D;
+    private String trust1D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 19)
-    private Integer trust1Sum;
+    private String trust1Sum = "0";
 
     @Excel(name = "货二", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 20)
     private String trust2;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 20)
-    private Integer trust2C;
+    private String trust2C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 21)
-    private Integer trust2D;
+    private String trust2D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 22)
-    private Integer trust2Sum;
+    private String trust2Sum = "0";
 
     @Excel(name = "货三", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 23)
     private String trust3;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 23)
-    private Integer trust3C;
+    private String trust3C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 24)
-    private Integer trust3D;
+    private String trust3D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 25)
-    private Integer trust3Sum;
+    private String trust3Sum = "0";
 
     @Excel(name = "货四", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 26)
     private String trust4;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 26)
-    private Integer trust4C;
+    private String trust4C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 27)
-    private Integer trust4D;
+    private String trust4D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 28)
-    private Integer trust4Sum;
+    private String trust4Sum = "0";
 
     @Excel(name = "货五", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 29)
     private String trust5;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 29)
-    private Integer trust5C;
+    private String trust5C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 30)
-    private Integer trust5D;
+    private String trust5D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 31)
-    private Integer trust5Sum;
+    private String trust5Sum = "0";
 
     @Excel(name = "货六", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 32)
     private String trust6;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 32)
-    private Integer trust6C;
+    private String trust6C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 33)
-    private Integer trust6D;
+    private String trust6D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 34)
-    private Integer trust6Sum;
+    private String trust6Sum = "0";
 
     @Excel(name = "小计", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 35)
     private String trustSubTotal;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 35)
-    private Integer trustCSubTotal;
+    private String trustCSubTotal = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 36)
-    private Integer trustDSubTotal;
+    private String trustDSubTotal = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 37)
-    private Integer trustSubSum;
+    private String trustSubSum = "0";
 
     @Excel(name = "专车", onlyHeader = true, mergeRow = 1, mergeColumn = 21, headerRow = 2)
     private String spec;
@@ -185,95 +185,95 @@ public class EPayTollStatVo {
     private String spec1;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 38)
-    private Integer spec1C;
+    private String spec1C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 39)
-    private Integer spec1D;
+    private String spec1D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 40)
-    private Integer spec1Sum;
+    private String spec1Sum = "0";
 
     @Excel(name = "专二", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 41)
     private String spec2;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 41)
-    private Integer spec2C;
+    private String spec2C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 42)
-    private Integer spec2D;
+    private String spec2D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 43)
-    private Integer spec2Sum;
+    private String spec2Sum = "0";
 
     @Excel(name = "专三", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 44)
     private String spec3;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 44)
-    private Integer spec3C;
+    private String spec3C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 45)
-    private Integer spec3D;
+    private String spec3D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 46)
-    private Integer spec3Sum;
+    private String spec3Sum = "0";
 
     @Excel(name = "专四", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 47)
     private String spec4;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 47)
-    private Integer spec4C;
+    private String spec4C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 48)
-    private Integer spec4D;
+    private String spec4D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 49)
-    private Integer spec4Sum;
+    private String spec4Sum = "0";
 
     @Excel(name = "专五", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 50)
     private String spec5;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 50)
-    private Integer spec5C;
+    private String spec5C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 51)
-    private Integer spec5D;
+    private String spec5D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 52)
-    private Integer spec5Sum;
+    private String spec5Sum = "0";
 
     @Excel(name = "专六", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 53)
-    private String spec6;
+    private String spec6 = "0";
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 53)
-    private Integer spec6C;
+    private String spec6C = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 54)
-    private Integer spec6D;
+    private String spec6D = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 55)
-    private Integer spec6Sum;
+    private String spec6Sum = "0";
 
     @Excel(name = "小计", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 3, startColumn = 56)
     private String specSubTotal;
 
     @Excel(name = "C卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 56)
-    private Integer specCSubTotal;
+    private String specCSubTotal = "0";
 
     @Excel(name = "D卡", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 57)
-    private Integer specDSubTotal;
+    private String specDSubTotal = "0";
 
     @Excel(name = "合计", mergeRow = 1, mergeColumn = 1, headerRow = 4, startColumn = 58)
-    private Integer specSubSum;
+    private String specSubSum = "0";
 
     @Excel(name = "总计", onlyHeader = true, mergeRow = 1, mergeColumn = 3, headerRow = 2)
     private String total;
 
     @Excel(name = "C卡", mergeRow = 2, mergeColumn = 1, startColumn = 59, headerRow = 3)
-    private Integer cTotal;
+    private String cTotal = "0";
 
     @Excel(name = "D卡", mergeRow = 2, mergeColumn = 1, startColumn = 60, headerRow = 3)
-    private Integer dTotal;
+    private String dTotal = "0";
 
     @Excel(name = "合计", mergeRow = 2, mergeColumn = 1, startColumn = 61, headerRow = 3)
-    private Integer totalSum;
+    private String totalSum = "0";
 }

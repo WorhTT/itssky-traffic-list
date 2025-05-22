@@ -5,9 +5,10 @@
 <mapper namespace="com.itssky.system.mapper.ExamineMapper">
     <select id="getFd06" resultType="com.itssky.system.domain.vo.FD06Vo" parameterType="com.itssky.system.domain.dto.FD06Dto">
         SELECT
-            OperatorID AS operateId,
-            SUM(CardNum) as cardNum
-        FROM tbstatEntry
+            a.OperatorID AS operateId,
+            SUM(a.CardNum) as cardNum,
+            (SELECT LaneName FROM dbtoms.tblaneinfo WHERE a.LaneID = LaneID AND a.StationID = StationID limit 1) AS laneName
+        FROM tbstatEntry a
         <where>
             <if test="stationId != null and stationId != ''">
                 AND StationID = #{stationId}

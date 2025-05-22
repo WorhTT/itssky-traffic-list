@@ -25,7 +25,7 @@
           type="date"
           value-format="yyyy-MM-dd"
           :picker-options="pickOptions"
-          style="width:  160px;"
+          style="width: 160px;"
         >
         </el-date-picker>
       </el-form-item>
@@ -59,7 +59,7 @@ import Router from "vue-router";
 import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
 
 export default {
-  name: "EEFEPayToll",
+  name: "MOBToll",
   components: {
     eefEPayTollDetail,
     Router
@@ -124,7 +124,7 @@ export default {
     openChildPage() {
       console.log('queryparams1', this.queryParams);
       const route = {
-        path: '/eefEPayTollDetail',
+        path: '/mobTollDetail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);

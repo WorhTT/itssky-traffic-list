@@ -31,4 +31,6 @@ public interface ITollService {
 
     public List<Cf1Vo> cf1Toll(StationShiftDto dto);
 
+    public List<MOBTollVo> mobToll(FtStationDto dto);
+
 }

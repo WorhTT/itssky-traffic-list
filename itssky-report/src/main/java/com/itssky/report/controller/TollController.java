@@ -168,11 +168,8 @@ public class TollController extends BaseController {
     public AjaxResult exportEefEPay(@RequestBody @Valid VehicleClassStatDto dto) throws IOException {
         List<EPayTollStatVo> list = tollService.eefEPay(dto);
         ExcelUtil<EPayTollStatVo> util = new ExcelUtil<EPayTollStatVo>(EPayTollStatVo.class);
-        List<String> conditionList = new ArrayList<>();
-        conditionList.add("收费站：中心");
-        conditionList.add("统计日期：2024-11-30至2024-12-04");
-        AjaxResult ajaxResult = util.exportDynamic(list, "EEF电子支付通行费MTC、ETC统计表", conditionList, 61, reportTitleName);
-        return ajaxResult;
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        return util.exportDynamic(list, "EEF电子支付通行费MTC、ETC统计表", conditionList, 61, reportTitleName);
     }
 
     @PostMapping(value = "/f6toll")
@@ -205,5 +202,21 @@ public class TollController extends BaseController {
         ExcelUtil<Cf1Vo> util = new ExcelUtil<Cf1Vo>(Cf1Vo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
         return util.exportDynamic(list, "CF1收费中心通行费收入班统计表", conditionList, 14, reportTitleName);
+    }
+
+    @PostMapping(value = "/mobtoll")
+    public TableDataVo getMobToll(@RequestBody @Valid FtStationDto dto) {
+        TableDataVo data = new TableDataVo();
+        data.setRows(tollService.mobToll(dto));
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return data;
+    }
+
+    @PostMapping(value = "/export/mobtoll")
+    public AjaxResult exportMobToll(@RequestBody @Valid FtStationDto dto) throws IOException {
+        List<MOBTollVo> list = tollService.mobToll(dto);
+        ExcelUtil<MOBTollVo> util = new ExcelUtil<>(MOBTollVo.class);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        return util.exportDynamic(list, "MOB移动支付收费统计报表", conditionList, 19, reportTitleName);
     }
 }

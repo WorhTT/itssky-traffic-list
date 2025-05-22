@@ -37,7 +37,7 @@
       </el-row>
     </div>
 
-    <el-table v-loading="loading" :data="dataList" border ref="myTable">
+    <el-table v-loading="loading" :data="dataList" border ref="myTable" >
       <el-table-column label="班次" align="center" prop="shiftId"/>
       <el-table-column label="班组" align="center" prop="teamId"/>
       <el-table-column label="工号" align="center" prop="operatorId"/>
@@ -150,6 +150,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
+      this.loading = true;
       const queryParams = this.queryParams;
       this.$confirm('是否确认导出C2收费站通行卡回收日统计表?', "警告", {
         confirmButtonText: "确定",
@@ -159,6 +160,8 @@ export default {
         return exportC2StationShift(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
+      }).finally(() => {
+        this.loading = false;
       })
     },
     printTable() {
@@ -234,6 +237,22 @@ export default {
             width: 100vw !important; /* 强制占据全部视口宽度 */
             /*transform: scale(0.85);  !* 初始缩放系数 *!*/
             transform-origin: top left;
+          }
+          .el-table {
+               width: 100% !important;
+               min-width: auto !important;
+          }
+
+          .el-table__header-wrapper,
+          .el-table__body-wrapper {
+            overflow: visible !important;
+            width: 100% !important;
+          }
+
+          .el-table__header,
+          .el-table__body {
+            width: 100% !important;
+            transform: translateZ(0); /* 修复部分浏览器渲染问题 */
           }
         }
         @page {

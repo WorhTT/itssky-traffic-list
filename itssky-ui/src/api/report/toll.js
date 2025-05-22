@@ -111,3 +111,19 @@ export function exportCf1Toll(data) {
     data: data
   })
 }
+
+export function mobToll(data) {
+  return request({
+    url: '/toll/mobtoll',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportMobToll(data) {
+  return request({
+    url: '/toll/export/mobtoll',
+    method: 'post',
+    data: data
+  })
+}

@@ -191,6 +191,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
+      this.loading = true;
       const queryParams = this.queryParams;
       this.$confirm('是否确认导出高速CSJ出口交通流量统计表?', "警告", {
         confirmButtonText: "确定",
@@ -200,6 +201,8 @@ export default {
         return exportExitFlow(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
+      }).finally(() => {
+        this.loading = false;
       })
     },
     // 取消按钮
