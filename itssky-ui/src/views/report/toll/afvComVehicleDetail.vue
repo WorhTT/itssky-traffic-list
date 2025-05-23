@@ -38,8 +38,8 @@
     <el-table v-loading="loading" :data="dataList" border ref="myTable" :cell-style="cellStyle" >
       <el-table-column label="统计方式" align="center" prop="statType" width="100"/>
       <el-table-column label="客一" align="center" prop="cust1" min-width="120"/>
-      <el-table-column label="客二" align="center" prop="cust2"/>
-      <el-table-column label="客三" align="center" prop="cust3"/>
+      <el-table-column label="客二" align="center" prop="cust2" min-width="100"/>
+      <el-table-column label="客三" align="center" prop="cust3" min-width="100"/>
       <el-table-column label="客四" align="center" prop="cust4" width="100"/>
       <el-table-column label="客车小计" align="center" prop="custSubTotal" min-width="120"/>
       <el-table-column label="货一" align="center" prop="truck1" min-width="120"/>
@@ -49,7 +49,7 @@
       <el-table-column label="货五" align="center" prop="truck5" min-width="120"/>
       <el-table-column label="货六" align="center" prop="truck6" min-width="120"/>
       <el-table-column label="货车小计" align="center" prop="truckSubTotal" min-width="120"/>
-      <el-table-column label="专一" align="center" prop="spec1"/>
+      <el-table-column label="专一" align="center" prop="spec1" min-width="100"/>
       <el-table-column label="专二" align="center" prop="spec2"/>
       <el-table-column label="专三" align="center" prop="spec3"/>
       <el-table-column label="专四" align="center" prop="spec4"/>
@@ -169,7 +169,7 @@ export default {
         <title>Print</title>
         <style>
          .table-container {
-          zoom: 0.5;
+          zoom: 0.48;
           margin-top: 20px;
         }
         .print-title {
@@ -206,11 +206,12 @@ export default {
         }
         .el-table td {
           border: 1px solid #000000 !important;
-          font-size: 16px;
+          font-size: 18px;
           padding: 1px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
+          line-height: 2.5;
         }
         .el-table th {
           border: 1px solid #000000 !important;
@@ -229,22 +230,6 @@ export default {
             width: 100vw !important; /* 强制占据全部视口宽度 */
             /*transform: scale(0.85);  !* 初始缩放系数 *!*/
             transform-origin: top left;
-          }
-          .el-table {
-               width: 100% !important;
-               min-width: auto !important;
-          }
-
-          .el-table__header-wrapper,
-          .el-table__body-wrapper {
-            overflow: visible !important;
-            width: 100% !important;
-          }
-
-          .el-table__header,
-          .el-table__body {
-            width: 100% !important;
-            transform: translateZ(0); /* 修复部分浏览器渲染问题 */
           }
         }
         @page {

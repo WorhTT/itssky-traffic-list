@@ -178,7 +178,7 @@ export default {
         <title>Print</title>
         <style>
         .table-container {
-          zoom: 0.6
+          zoom: 0.53
         }
         .print-title {
           text-align: center;
@@ -237,22 +237,6 @@ export default {
             width: 100vw !important; /* 强制占据全部视口宽度 */
             /*transform: scale(0.8);  !* 初始缩放系数 *!*/
             transform-origin: top left;
-          }
-          .el-table {
-               width: 100% !important;
-               min-width: auto !important;
-          }
-
-          .el-table__header-wrapper,
-          .el-table__body-wrapper {
-            overflow: visible !important;
-            width: 100% !important;
-          }
-
-          .el-table__header,
-          .el-table__body {
-            width: 100% !important;
-            transform: translateZ(0); /* 修复部分浏览器渲染问题 */
           }
         }
         @page {

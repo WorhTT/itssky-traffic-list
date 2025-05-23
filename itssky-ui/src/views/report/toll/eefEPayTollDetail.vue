@@ -37,32 +37,32 @@
     </div>
 
     <el-table v-loading="loading" :data="dataList" border style="width: 100%" fit ref="myTable" >
-      <el-table-column label="统计方式" align="center" prop="statType" width="100"/>
+      <el-table-column label="统计方式" align="center" prop="statType" min-width="100"/>
       <el-table-column label="客车" align="center">
         <el-table-column label="客一" align="center">
-          <el-table-column label="C卡" align="center" prop="cust1C" width="100"/>
-          <el-table-column label="D卡" align="center" prop="cust1D" width="100"/>
-          <el-table-column label="合计" align="center" prop="cust1Sum" width="100"/>
+          <el-table-column label="C卡" align="center" prop="cust1C" min-width="120"/>
+          <el-table-column label="D卡" align="center" prop="cust1D" min-width="120"/>
+          <el-table-column label="合计" align="center" prop="cust1Sum" min-width="120"/>
         </el-table-column>
         <el-table-column label="客二" align="center">
-          <el-table-column label="C卡" align="center" prop="cust2C" />
-          <el-table-column label="D卡" align="center" prop="cust2D" />
-          <el-table-column label="合计" align="center" prop="cust2Sum" width="100"/>
+          <el-table-column label="C卡" align="center" prop="cust2C" min-width="120"/>
+          <el-table-column label="D卡" align="center" prop="cust2D" min-width="120"/>
+          <el-table-column label="合计" align="center" prop="cust2Sum" min-width="120"/>
         </el-table-column>
         <el-table-column label="客三" align="center">
-          <el-table-column label="C卡" align="center" prop="cust3C" />
-          <el-table-column label="D卡" align="center" prop="cust3D" />
-          <el-table-column label="合计" align="center" prop="cust3Sum" width="100"/>
+          <el-table-column label="C卡" align="center" prop="cust3C" min-width="120"/>
+          <el-table-column label="D卡" align="center" prop="cust3D" min-width="120"/>
+          <el-table-column label="合计" align="center" prop="cust3Sum" min-width="120"/>
         </el-table-column>
         <el-table-column label="客四" align="center" prop="k4Count">
-          <el-table-column label="C卡" align="center" prop="cust4C" />
-          <el-table-column label="D卡" align="center" prop="cust4D" />
-          <el-table-column label="合计" align="center" prop="cust4Sum" width="100"/>
+          <el-table-column label="C卡" align="center" prop="cust4C" min-width="120"/>
+          <el-table-column label="D卡" align="center" prop="cust4D" min-width="120"/>
+          <el-table-column label="合计" align="center" prop="cust4Sum" min-width="120"/>
         </el-table-column>
         <el-table-column label="小计" align="center">
-          <el-table-column label="C卡" align="center" prop="custCSubTotal" width="100"/>
-          <el-table-column label="D卡" align="center" prop="custDSubTotal" width="100"/>
-          <el-table-column label="合计" align="center" prop="custSubSum" width="100"/>
+          <el-table-column label="C卡" align="center" prop="custCSubTotal" min-width="120"/>
+          <el-table-column label="D卡" align="center" prop="custDSubTotal" min-width="120"/>
+          <el-table-column label="合计" align="center" prop="custSubSum" min-width="120"/>
         </el-table-column>
       </el-table-column>
       <el-table-column label="货车" align="center">
@@ -248,7 +248,7 @@ export default {
         <title>Print</title>
         <style>
         .table-container {
-          zoom: 0.2
+          zoom: 0.18
         }
         .print-title {
           text-align: center;
@@ -284,15 +284,16 @@ export default {
         }
         .el-table td {
           border: 1px solid #000000 !important;
-          font-size: 16px;
+          font-size: 20px;
           padding: 0 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
+          line-height: 2;
         }
         .el-table th {
           border: 1px solid #000000 !important;
-          font-size: 16px;
+          font-size: 22px;
           padding: 4px; /* Reduce padding to make cells more compact */
           text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */
@@ -307,22 +308,6 @@ export default {
             width: 100vw !important; /* 强制占据全部视口宽度 */
             /*transform: scale(0.8);  !* 初始缩放系数 *!*/
             transform-origin: top left;
-          }
-          .el-table {
-               width: 100% !important;
-               min-width: auto !important;
-          }
-
-          .el-table__header-wrapper,
-          .el-table__body-wrapper {
-            overflow: visible !important;
-            width: 100% !important;
-          }
-
-          .el-table__header,
-          .el-table__body {
-            width: 100% !important;
-            transform: translateZ(0); /* 修复部分浏览器渲染问题 */
           }
         }
         @page {

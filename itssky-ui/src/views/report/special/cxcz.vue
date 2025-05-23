@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="收费站:" prop="stationId">
-        <el-select v-model="queryParams.stationId" placeholder="请选择收费站" clearable class="custom-input">
+        <el-select v-model="queryParams.stationId" placeholder="请选择收费站" clearable class="custom-input" style="width: 160px;">
           <el-option v-for="item in stationOptions" :key="item.label" :label="item.label"
                      :value="item.value"></el-option>
         </el-select>
@@ -14,6 +14,7 @@
           type="date"
           value-format="yyyy-MM-dd"
           :picker-options="pickOptions"
+          style="width: 160px;"
         >
         </el-date-picker>
       </el-form-item>
@@ -24,6 +25,7 @@
           type="date"
           value-format="yyyy-MM-dd"
           :picker-options="pickOptions"
+          style="width: 160px;"
         >
         </el-date-picker>
       </el-form-item>
@@ -33,7 +35,7 @@
           class="custom-input"
           placeholder="请选择"
           clearable
-          style="width: 240px"
+          style="width: 120px"
           filterable
         >
           <el-option value="0" label="全部" key="0"/>

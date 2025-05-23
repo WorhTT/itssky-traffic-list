@@ -208,11 +208,12 @@ export default {
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
+          line-height: 3;
         }
         .el-table th {
           border: 1px solid #000000 !important;
-          font-size: 30px;
-          padding: 10px; /* Reduce padding to make cells more compact */
+          font-size: 32px;
+          padding: 4px; /* Reduce padding to make cells more compact */
           text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */
           white-space: normal; /* Allow text to wrap */
@@ -226,22 +227,6 @@ export default {
             width: 100vw !important; /* 强制占据全部视口宽度 */
             /*transform: scale(0.85);  !* 初始缩放系数 *!*/
             transform-origin: top left;
-          }
-          .el-table {
-               width: 100% !important;
-               min-width: auto !important;
-          }
-
-          .el-table__header-wrapper,
-          .el-table__body-wrapper {
-            overflow: visible !important;
-            width: 100% !important;
-          }
-
-          .el-table__header,
-          .el-table__body {
-            width: 100% !important;
-            transform: translateZ(0); /* 修复部分浏览器渲染问题 */
           }
         }
         @page {

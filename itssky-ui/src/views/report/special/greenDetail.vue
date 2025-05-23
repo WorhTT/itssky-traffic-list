@@ -162,9 +162,9 @@ export default {
         <head>
         <title>Print</title>
         <style>
-            /* 在这里添加你的样式 */
+        /* 在这里添加你的样式 */
         .table-container {
-          zoom: 0.8;
+          zoom: 0.75;
           margin-top: 20px;
         }
         .print-title {
@@ -192,6 +192,7 @@ export default {
           width: 100%;
           border-collapse: collapse;
           table-layout: fixed; /* Ensure fixed layout */
+          margin-top: 20px;
         }
         .el-table__header-wrapper {
           border: 1px solid #ebeef5 !important;
@@ -200,16 +201,17 @@ export default {
           border: 1px solid #ebeef5 !important;
         }
         .el-table td {
-          border: 1px solid #ebeef5 !important;
-          font-size: 16px;
+          border: 1px solid #000000 !important;
+          font-size: 20px;
           padding: 1px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
+          line-height: 2;
         }
         .el-table th {
-          border: 1px solid #ebeef5 !important;
-          font-size: 18px;
+          border: 1px solid #000000 !important;
+          font-size: 22px;
           padding: 4px; /* Reduce padding to make cells more compact */
           text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */
@@ -217,25 +219,13 @@ export default {
         }
         @media print {
           body {
-            padding: 0;
-            -webkit-print-color-adjust: exact; /* Chrome, Safari */
-            color-adjust: exact; /* Firefox */
-          }
-          .el-table {
-               width: 100% !important;
-               min-width: auto !important;
-          }
-
-          .el-table__header-wrapper,
-          .el-table__body-wrapper {
-            overflow: visible !important;
-            width: 100% !important;
-          }
-
-          .el-table__header,
-          .el-table__body {
-            width: 100% !important;
-            transform: translateZ(0); /* 修复部分浏览器渲染问题 */
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100vw !important; /* 强制占据全部视口宽度 */
+            /*transform: scale(0.85);  !* 初始缩放系数 *!*/
+            transform-origin: top left;
           }
         }
         @page {
