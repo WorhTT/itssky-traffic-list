@@ -71,7 +71,11 @@
       <el-table-column label="卡损" align="center" prop="badNum"/>
       <el-table-column label="总流量" align="center" prop="totalFlow"/>
     </el-table>
-
+    <!-- 添加底部信息区域 -->
+    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+      <span>操作人：{{ operatorName }}</span>
+      <span>打印时间：{{ currentDateTime }}</span>
+    </div>
     <iframe id="printFrame" style="display: none;"></iframe>
   </div>
 </template>
@@ -79,7 +83,7 @@
 <script>
 
 import {s1StationShift, exportC1StationShift} from "@/api/report/card"
-
+import {getLoginUser} from "@/api/login";
 
 export default {
   name: "C1StationShiftDetail",
@@ -123,11 +127,15 @@ export default {
           return time.getTime() > Date.now();
         },
       },
+      operatorName: '',
     };
   },
   computed: {
     corpName() {
       return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    },
+    currentDateTime() {
+      return this.getCurrentDateTime();
     },
   },
   created() {
@@ -135,9 +143,24 @@ export default {
     if (this.queryParams) {
       this.getList();
     }
+    getLoginUser().then(res => {
+      if (res.data) {
+        this.operatorName = res.data.username;
+      }
+    })
   },
   watch: {},
   methods: {
+    getCurrentDateTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    },
     getList() {
       this.loading = true;
       s1StationShift(this.queryParams).then(response => {
@@ -171,6 +194,16 @@ export default {
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
       let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
+      // 获取操作人信息（这里假设您有存储操作人的方式）
+      const operator = this.operatorName;
+      const printTime = this.getCurrentDateTime();
+      // 添加底部信息行
+      const footerHtml = `
+    <div class="footer-info">
+      <span class="operator">操作人：${operator}</span>
+      <span class="print-time">打印时间：${printTime}</span>
+    </div>
+  `;
       let htmlContent = `
       <!DOCTYPE html>
         <html>
@@ -203,34 +236,47 @@ export default {
             align-items: center;
         }
         .el-table {
-          width: 100%;
-          border-collapse: collapse;
-          table-layout: fixed; /* Ensure fixed layout */
-          margin-top: 20px;
+            width: max-content !important; /* 允许表格根据内容扩展 */
+            min-width: 100% !important;
+            table-layout: auto !important; /* 自动列宽模式 */
+            font-size: 12px !important;     /* 基础字号缩小 */
+            margin-top: 20px;
         }
-        .el-table__header-wrapper {
-          border: 1px solid #ebeef5 !important;
+        .el-table__body-wrapper, .el-table__header-wrapper {
+        border: none !important; /* 移除容器边框 */
         }
-        .el-table__body-wrapper {
-          border: 1px solid #ebeef5 !important;
+
+        .el-table td, .el-table th {
+        border: 1px solid #000 !important; /* 保留单元格边框 */
         }
         .el-table td {
-          border: 1px solid #000000 !important;
+          border: 1px solid #000 !important;
           font-size: 20px;
-          padding: 0 0;
+          padding: 1px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
           line-height: 2;
         }
         .el-table th {
-          border: 1px solid #000000 !important;
+          border: 1px solid #000 !important;
           font-size: 22px;
           padding: 4px; /* Reduce padding to make cells more compact */
-          text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */
-          white-space: normal; /* Allow text to wrap */
+          white-space: pre-wrap; /* Allow text to wrap */
         }
+.footer-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-size: 14px;
+}
+.operator {
+    text-align: left;
+}
+.print-time {
+    text-align: right;
+}
         @media print {
           body {
             -webkit-print-color-adjust: exact;
@@ -244,7 +290,7 @@ export default {
         }
         @page {
           size: auto;
-          margin: 0mm;
+          margin: 2mm 2mm;
         }
         </style>
         </head>
@@ -253,6 +299,7 @@ export default {
             <div class="print-title">C1收费站通行卡回收班统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
+            ${footerHtml}
         </body>
         </html>
       `

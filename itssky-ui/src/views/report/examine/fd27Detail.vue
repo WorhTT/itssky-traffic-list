@@ -1,6 +1,7 @@
 <script>
 
 import {getFd27, exportFd27} from "@/api/report/examine";
+import {getLoginUser} from "@/api/login";
 
 export default {
   name: "Fd27Detail",
@@ -40,7 +41,8 @@ export default {
           return time.getTime() > Date.now();
         },
       },
-      conditionList:[]
+      conditionList:[],
+      operatorName: '',
     };
   },
   created() {
@@ -48,13 +50,31 @@ export default {
     if (this.queryParams) {
       this.getList();
     }
+    getLoginUser().then(res => {
+      if (res.data) {
+        this.operatorName = res.data.username;
+      }
+    })
   },
   computed: {
     corpName() {
       return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
     },
+    currentDateTime() {
+      return this.getCurrentDateTime();
+    },
   },
   methods: {
+    getCurrentDateTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    },
     cellStyle({row, column, rowIndex, columnIndex}) {
       if (row.totalRow === true) {
         return 'background:	#C0C0C0';
@@ -102,6 +122,16 @@ export default {
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
       let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
+      // 获取操作人信息（这里假设您有存储操作人的方式）
+      const operator = this.operatorName;
+      const printTime = this.getCurrentDateTime();
+      // 添加底部信息行
+      const footerHtml = `
+    <div class="footer-info">
+      <span class="operator">操作人：${operator}</span>
+      <span class="print-time">打印时间：${printTime}</span>
+    </div>
+  `;
       let htmlContent = `
       <!DOCTYPE html>
         <html>
@@ -139,11 +169,24 @@ export default {
           border-collapse: collapse;
           table-layout: fixed; /* Ensure fixed layout */
         }
-        .el-table__header-wrapper {
-          border: 1px solid #ebeef5 !important;
+        .el-table__body-wrapper, .el-table__header-wrapper {
+            border: none !important; /* 移除容器边框 */
         }
-        .el-table__body-wrapper {
-          border: 1px solid #ebeef5 !important;
+
+        .el-table td, .el-table th {
+            border: 1px solid #000 !important; /* 保留单元格边框 */
+        }
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .operator {
+            text-align: left;
+        }
+        .print-time {
+            text-align: right;
         }
         .el-table td {
           border: 1px solid #000000 !important;
@@ -184,6 +227,7 @@ export default {
             <div class="print-title">FD27变档明细统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
+            ${footerHtml}
         </body>
         </html>
       `
@@ -235,19 +279,23 @@ export default {
 
     <el-table v-loading="loading" :data="dataList" border ref="myTable" :span-method="arraySpanMethod" :cell-style="cellStyle" >
       <el-table-column label="统计日期" align="center" prop="statDate"/>
-      <el-table-column label="班次" align="center" prop="shiftId" min-width="40px"/>
-      <el-table-column label="收费员工号" align="center" prop="operatorId"/>
-      <el-table-column label="收费员姓名" align="center" prop="operatorName"/>
+      <el-table-column label="班次" align="center" prop="shiftId" min-width="50px"/>
+      <el-table-column label="收费员工号" align="center" prop="operatorId" min-width="120px"/>
+      <el-table-column label="收费员姓名" align="center" prop="operatorName" min-width="120px"/>
       <el-table-column label="车道" align="center" prop="laneId" min-width="50px"/>
       <el-table-column label="卡号" align="center" prop="cardId" min-width="140px"/>
       <el-table-column label="车牌" align="center" prop="licensePlate"/>
       <el-table-column label="收费时间" align="center" prop="tradeTimeStr" min-width="140px"/>
-      <el-table-column label="改前车型" align="center" prop="beginVehicleClass" min-width="60px"/>
-      <el-table-column label="入口车型" align="center" prop="entryVehicleClass" min-width="60px"/>
-      <el-table-column label="收费车型" align="center" prop="tradeVehicleClass" min-width="60px"/>
+      <el-table-column label="改前车型" align="center" prop="beginVehicleClass" min-width="80px"/>
+      <el-table-column label="入口车型" align="center" prop="entryVehicleClass" min-width="80px"/>
+      <el-table-column label="收费车型" align="center" prop="tradeVehicleClass" min-width="80px"/>
       <el-table-column label="收费金额" align="center" prop="toll"/>
     </el-table>
-
+    <!-- 添加底部信息区域 -->
+    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+      <span>操作人：{{ operatorName }}</span>
+      <span>打印时间：{{ currentDateTime }}</span>
+    </div>
     <iframe id="printFrame" style="display: none;"></iframe>
   </div>
 </template>

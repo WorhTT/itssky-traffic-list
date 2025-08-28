@@ -54,6 +54,11 @@
       <el-table-column label="免费IC卡" align="center" prop="freeIcCardCount"/>
       <el-table-column label="应缴IC卡" align="center" prop="dueIcCardCount"/>
     </el-table>
+    <!-- 添加底部信息区域 -->
+    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+      <span>操作人：{{ operatorName }}</span>
+      <span>打印时间：{{ currentDateTime }}</span>
+    </div>
     <!-- Hidden iframe for printing -->
     <iframe id="printFrame" style="display: none;"></iframe>
   </div>
@@ -62,6 +67,7 @@
 <script>
 
 import {cf1Toll, exportCf1Toll} from "@/api/report/toll"
+import {getLoginUser} from "@/api/login";
 
 export default {
   name: "F1StationShiftDetail",
@@ -104,12 +110,16 @@ export default {
           return time.getTime() > Date.now();
         },
       },
-      conditionList: []
+      conditionList: [],
+      operatorName: '',
     };
   },
   computed: {
     corpName() {
       return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    },
+    currentDateTime() {
+      return this.getCurrentDateTime();
     },
   },
   created() {
@@ -117,11 +127,26 @@ export default {
     if (this.queryParams) {
       this.getList();
     }
+    getLoginUser().then(res => {
+      if (res.data) {
+        this.operatorName = res.data.username;
+      }
+    })
   },
   mounted() {
     console.log('当前公司:', process.env.VUE_APP_CORP_NAME)
   },
   methods: {
+    getCurrentDateTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    },
     /** 查询公告列表 */
     getList() {
       this.loading = true;
@@ -155,6 +180,16 @@ export default {
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
       let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
+      // 获取操作人信息（这里假设您有存储操作人的方式）
+      const operator = this.operatorName;
+      const printTime = this.getCurrentDateTime();
+      // 添加底部信息行
+      const footerHtml = `
+    <div class="footer-info">
+      <span class="operator">操作人：${operator}</span>
+      <span class="print-time">打印时间：${printTime}</span>
+    </div>
+  `;
       let htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -195,12 +230,12 @@ export default {
             font-size: 12px !important;     /* 基础字号缩小 */
             margin-top: 20px;
         }
-        .el-table__header-wrapper {
-          border: 1px solid #ebeef5 !important;
+        .el-table__body-wrapper, .el-table__header-wrapper {
+        border: none !important; /* 移除容器边框 */
         }
-        .el-table__body-wrapper {
-            overflow: visible !important;
-            max-width: none !important;
+
+        .el-table td, .el-table th {
+        border: 1px solid #000 !important; /* 保留单元格边框 */
         }
         .el-table td {
           border: 1px solid #000 !important;
@@ -210,11 +245,6 @@ export default {
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
         }
-        /* 强制列宽生效 */
-/*.el-table__header colgroup col {*/
-/*  width: 10px !important;*/
-/*  min-width: 10px !important;*/
-/*}*/
         .el-table th {
           border: 1px solid #000 !important;
           font-size: 22px;
@@ -224,6 +254,18 @@ export default {
           white-space: pre-wrap; /* Allow text to wrap */
           /*writing-mode: vertical-rl;*/
         }
+.footer-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-size: 14px;
+}
+.operator {
+    text-align: left;
+}
+.print-time {
+    text-align: right;
+}
         @media print {
           body {
             -webkit-print-color-adjust: exact;
@@ -246,6 +288,7 @@ export default {
             <div class="print-title">CF1收费中心通行费收入班统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
+            ${footerHtml}
         </body>
         </html>
         `

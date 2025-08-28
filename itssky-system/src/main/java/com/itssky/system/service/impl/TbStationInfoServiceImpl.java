@@ -155,7 +155,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
         }
         List<TbStationInfo> tbStationInfoList = baseMapper.selectList(tbStationInfoLambdaQueryWrapper);
         List<Map<String, Object>> result = new ArrayList<>();
-        if (needCenter && corpNo.length() == 2) {
+        if (needCenter && corpNo.length() != 6) {
             Map<String, Object> center = new HashMap<>();
             center.put("value", -1);
             center.put("label", "中心");

@@ -8,6 +8,9 @@
     "dev": "vue-cli-service serve",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
+    "build:hsz": "vue-cli-service build --mode hsz",
+    "build:nh": "vue-cli-service build --mode nh",
+    "build:ntrc": "vue-cli-service build --mode ntrc",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src"
   },

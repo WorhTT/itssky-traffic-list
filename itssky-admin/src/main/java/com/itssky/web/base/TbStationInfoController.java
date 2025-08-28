@@ -51,7 +51,7 @@ public class TbStationInfoController {
         tempMap.put("array", tempList);
         if (Objects.nonNull(loginUser.getStationId())) {
             if (loginUser.getStationId() == 0) {
-                if (needCenter) {
+                if (needCenter && loginUser.getCorpNo().length() != 6) {
                     tempMap.put("defaultValue", -1);
                 } else {
                     tempMap.put("defaultValue", tempList.get(0).get("value"));

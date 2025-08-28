@@ -184,6 +184,16 @@ export default {
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
       let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
+      // 获取操作人信息（这里假设您有存储操作人的方式）
+      const operator = this.operatorName;
+      const printTime = this.getCurrentDateTime();
+      // 添加底部信息行
+      const footerHtml = `
+    <div class="footer-info">
+      <span class="operator">操作人：${operator}</span>
+      <span class="print-time">打印时间：${printTime}</span>
+    </div>
+  `;
       let htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -224,12 +234,12 @@ export default {
             font-size: 12px !important;     /* 基础字号缩小 */
             margin-top: 20px;
         }
-        .el-table__header-wrapper {
-          border: 1px solid #ebeef5 !important;
+        .el-table__body-wrapper, .el-table__header-wrapper {
+        border: none !important; /* 移除容器边框 */
         }
-        .el-table__body-wrapper {
-            overflow: visible !important;
-            max-width: none !important;
+
+        .el-table td, .el-table th {
+        border: 1px solid #000 !important; /* 保留单元格边框 */
         }
         .el-table td {
           border: 1px solid #000 !important;
@@ -244,11 +254,21 @@ export default {
           border: 1px solid #000 !important;
           font-size: 22px;
           padding: 4px; /* Reduce padding to make cells more compact */
-          /*text-align: center; !* Center text *!*/
           word-wrap: break-word; /* Ensure text wraps within cells */
           white-space: pre-wrap; /* Allow text to wrap */
-          /*writing-mode: vertical-rl;*/
         }
+        .footer-info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .operator {
+      text-align: left;
+    }
+    .print-time {
+      text-align: right;
+    }
         @media print {
           body {
             -webkit-print-color-adjust: exact;
@@ -271,6 +291,7 @@ export default {
             <div class="print-title">F1收费站通行费收入班统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
+            ${footerHtml}
         </body>
         </html>
         `
