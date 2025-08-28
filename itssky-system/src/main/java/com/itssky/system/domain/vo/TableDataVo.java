@@ -14,4 +14,9 @@ public class TableDataVo {
     private List<?> rows;
 
     private List<String> conditionList;
+
+    /**
+     * 操作人
+     */
+    private String operatorName;
 }

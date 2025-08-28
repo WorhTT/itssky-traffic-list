@@ -39,6 +39,14 @@ export function getInfo() {
   })
 }
 
+export function getLoginUser() {
+  return request({
+    url: '/get/login/user',
+    method: 'get'
+  })
+}
+
+
 // 退出方法
 export function logout() {
   return request({

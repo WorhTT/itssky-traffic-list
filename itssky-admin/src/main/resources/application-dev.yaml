@@ -3,34 +3,29 @@ spring:
   datasource:
     dynamic:
       # 设置默认的数据源或者数据源组,默认值即为master
-      primary: master
+      primary: dbtoms
       # 设置严格模式,默认false不启动. 启动后在未匹配到指定数据源时候会抛出异常,不启动则使用默认数据源.
       strict: false
       datasource:
-        master:
-          url: jdbc:mysql://localhost:3306/dbtoms?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        dbtoms:
+          url: jdbc:mysql://localhost:3307/dbtomstest?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
-          password: 123456
+          password: 12345678
           driver-class-name: com.mysql.jdbc.Driver
         dbedge:
-          url: jdbc:mysql://localhost:3306/dbedge?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          url: jdbc:mysql://localhost:3307/dbedge?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
-          password: 123456
-          driver-class-name: com.mysql.jdbc.Driver
-        dbtoms:
-          url: jdbc:mysql://localhost:3306/dbtoms?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-          username: root
-          password: 123456
+          password: 12345678
           driver-class-name: com.mysql.jdbc.Driver
         dbstats:
-          url: jdbc:mysql://localhost:3306/dbstats?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          url: jdbc:mysql://localhost:3307/dbstats?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
-          password: 123456
+          password: 12345678
           driver-class-name: com.mysql.jdbc.Driver
         itsdata:
-          url: jdbc:mysql://localhost:3306/itsdata?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          url: jdbc:mysql://localhost:3307/itsdata?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
-          password: 123456
+          password: 12345678
           driver-class-name: com.mysql.jdbc.Driver
 # token配置
 token:
@@ -50,7 +45,7 @@ itssky:
     # 本应用服务相关配置
     client:
       #是否启用单点
-      enabled: true
+      enabled: false
       #即本服务部署的ip地址，要求前端也跟后端在同一台服务器上，不然就要配置前端ip[初版默认同一台服务器，后期增加前端配置]
       base-ip: http://${current-service-ip}
       # 前端端口，nginx代理端口
@@ -93,4 +88,4 @@ fft:
   binfile-auth: cht@a6165bf5f024f647267fae0b10cdf060
   corpno: 03
 
-reportTitleName: "南通绕城"
+reportTitleName: "宁杭高速"

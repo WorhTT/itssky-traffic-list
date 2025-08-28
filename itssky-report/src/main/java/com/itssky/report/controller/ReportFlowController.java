@@ -6,10 +6,12 @@ import com.itssky.common.core.page.TableDataInfo;
 import com.itssky.common.utils.poi.ExcelUtil;
 import com.itssky.system.domain.ReportChargeInfo;
 import com.itssky.system.domain.ReportFlowInfo;
+import com.itssky.system.domain.TbUserInfo;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.service.CardService;
 import com.itssky.system.service.ITollService;
+import com.itssky.system.service.TbUserInfoService;
 import com.itssky.system.service.impl.ReportFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,20 +38,10 @@ public class ReportFlowController extends BaseController {
     private ReportFlowService reportFlowService;
 
     @Autowired
-    private ITollService tollService;
-
-    @Autowired
     private CardService cardService;
 
-
-//    /**
-//     * 获取高速入口流量报表
-//     */
-//    @GetMapping("/entry/flow")
-//    public TableDataInfo getEntryFlow(ReportFlowInfo reportFlowInfo) {
-//        List<ReportFlowInfo> entryFlow = reportFlowService.getEntryFlow(reportFlowInfo);
-//        return getDataTable(entryFlow);
-//    }
+    @Autowired
+    private TbUserInfoService userInfoService;
 
     /**
      * CSJ获取高速出口流量报表
@@ -60,6 +52,8 @@ public class ReportFlowController extends BaseController {
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(exitFlow);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        tableDataVo.setOperatorName(loginUserInfo.getUsername());
         return tableDataVo;
     }
 
@@ -72,6 +66,8 @@ public class ReportFlowController extends BaseController {
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(exitFlow);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        tableDataVo.setOperatorName(loginUserInfo.getUsername());
         return tableDataVo;
     }
 
@@ -84,6 +80,8 @@ public class ReportFlowController extends BaseController {
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(exitFlow);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        tableDataVo.setOperatorName(loginUserInfo.getUsername());
         return tableDataVo;
     }
 
@@ -96,6 +94,8 @@ public class ReportFlowController extends BaseController {
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(exitFlow);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        tableDataVo.setOperatorName(loginUserInfo.getUsername());
         return tableDataVo;
     }
 
@@ -110,7 +110,8 @@ public class ReportFlowController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
-        return util.exportDynamic(result, "CSJ出口MTC、ETC交通流量统计表", conditionList, 26, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(result, "CSJ出口MTC、ETC交通流量统计表", conditionList, 26, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -124,7 +125,8 @@ public class ReportFlowController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
-        return util.exportDynamic(result, "RSJ入口MTC、ETC交通流量统计表", conditionList, 26, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(result, "RSJ入口MTC、ETC交通流量统计表", conditionList, 26, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -138,7 +140,8 @@ public class ReportFlowController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
-        return util.exportDynamic(result, "RSJ入口机器人流量统计表", conditionList, 26, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(result, "RSJ入口机器人流量统计表", conditionList, 26, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -152,7 +155,8 @@ public class ReportFlowController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<ReportFlowInfo> util = new ExcelUtil<ReportFlowInfo>(ReportFlowInfo.class);
-        return util.exportDynamic(result, "CSJ出口机器人流量统计表", conditionList, 26, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(result, "CSJ出口机器人流量统计表", conditionList, 26, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -180,6 +184,8 @@ public class ReportFlowController extends BaseController {
         TableDataVo data = new TableDataVo();
         data.setRows(reportFlowService.getFlowYh(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        data.setOperatorName(loginUserInfo.getUsername());
         return data;
     }
 
@@ -188,7 +194,8 @@ public class ReportFlowController extends BaseController {
         List<FlowYhVo> list = reportFlowService.getFlowYh(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<FlowYhVo> util = new ExcelUtil<FlowYhVo>(FlowYhVo.class);
-        return util.exportDynamic(list, "YH优惠流量综合报表", conditionList, 13, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "YH优惠流量综合报表", conditionList, 13, reportTitleName, loginUserInfo.getUsername());
     }
 
     @PostMapping(value = "/crjflow")
@@ -196,6 +203,8 @@ public class ReportFlowController extends BaseController {
         TableDataVo data = new TableDataVo();
         data.setRows(reportFlowService.getCRJFlow(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        data.setOperatorName(loginUserInfo.getUsername());
         return data;
     }
 
@@ -210,7 +219,8 @@ public class ReportFlowController extends BaseController {
         } else if (dto.getFlag() == ReportFlowService.EXIT) {
             sheetName = "CJ出口(MTC)交通流量统计表";
         }
-        return util.exportDynamic(list, sheetName, conditionList, 29, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, sheetName, conditionList, 29, reportTitleName, loginUserInfo.getUsername());
     }
 
     @PostMapping(value = "/tkflow")
@@ -218,6 +228,8 @@ public class ReportFlowController extends BaseController {
         TableDataVo data = new TableDataVo();
         data.setRows(reportFlowService.tkFlow(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        data.setOperatorName(loginUserInfo.getUsername());
         return data;
     }
 
@@ -226,7 +238,8 @@ public class ReportFlowController extends BaseController {
         List<TkFlowVo> list = reportFlowService.tkFlow(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<TkFlowVo> util = new ExcelUtil<TkFlowVo>(TkFlowVo.class);
-        return util.exportDynamic(list, "TK入出口(MTC)交通流量按车种统计表", conditionList, 22, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "TK入出口(MTC)交通流量按车种统计表", conditionList, 22, reportTitleName, loginUserInfo.getUsername());
     }
 
 //    @PostMapping(value = "/od")

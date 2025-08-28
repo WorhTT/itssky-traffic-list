@@ -8,12 +8,14 @@ import com.itssky.common.exception.biz.BizException;
 import com.itssky.common.utils.SecurityUtils;
 import com.itssky.common.utils.StringUtils;
 import com.itssky.common.utils.poi.ExcelUtil;
+import com.itssky.system.domain.TbUserInfo;
 import com.itssky.system.domain.dto.CardStatisticsDto;
 import com.itssky.system.domain.dto.CardStatisticsDtoV2;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.mapper.CardMapper;
 import com.itssky.system.mapper.TbCorpInfoMapper;
 import com.itssky.system.service.CardService;
+import com.itssky.system.service.TbUserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.loadtime.Aj;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,9 @@ public class CardController extends BaseController {
     @Value(("${reportTitleName}"))
     private String reportTitleName;
 
+    @Autowired
+    private TbUserInfoService userInfoService;
+
 
     /**
      * S1收费站通行卡发放班统计表
@@ -57,6 +62,8 @@ public class CardController extends BaseController {
             TableDataVo tableDataVo = new TableDataVo();
             tableDataVo.setRows(result);
             tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
+            TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+            tableDataVo.setOperatorName(loginUserInfo.getUsername());
             return tableDataVo;
         } catch (Exception e) {
             throw new BizException("查询异常!", e);
@@ -74,7 +81,8 @@ public class CardController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<SCardStatVo> util = new ExcelUtil<SCardStatVo>(SCardStatVo.class);
-        return util.exportDynamic(result, "S1收费站通行卡发放班统计表", conditionList, 31, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(result, "S1收费站通行卡发放班统计表", conditionList, 31, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -88,15 +96,22 @@ public class CardController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<CCardStatVo> util = new ExcelUtil<CCardStatVo>(CCardStatVo.class);
-        return util.exportDynamic(result, "C1收费站通行卡回收班统计表", conditionList, 32, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(result, "C1收费站通行卡回收班统计表", conditionList, 32, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
      * S2收费站通行卡发放日统计表
      */
     @PostMapping(value = "/s2station")
-    public TableDataInfo s2StationShift(@RequestBody @Valid CardStatisticsDto dto) {
-        return getDataTable(cardService.s2StationShift(dto));
+    public TableDataVo s2StationShift(@RequestBody @Valid CardStatisticsDto dto) {
+        List<CardStatisticsVo> result = cardService.s2StationShift(dto);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(result);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        tableDataVo.setOperatorName(loginUserInfo.getUsername());
+        return tableDataVo;
     }
 
     /**
@@ -110,7 +125,8 @@ public class CardController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<SCardStatVo> util = new ExcelUtil<SCardStatVo>(SCardStatVo.class);
-        return util.exportDynamic(result, "S2收费站通行卡发放日统计表", conditionList, 31, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(result, "S2收费站通行卡发放日统计表", conditionList, 31, reportTitleName, loginUserInfo.getUsername());
     }
 
 
@@ -125,7 +141,8 @@ public class CardController extends BaseController {
                 .collect(Collectors.toList());
         List<String> conditionList = exportVo.getConditionList();
         ExcelUtil<CCardStatVo> util = new ExcelUtil<CCardStatVo>(CCardStatVo.class);
-        return util.exportDynamic(result, "C2收费站通行卡回收日统计表", conditionList, 32, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(result, "C2收费站通行卡回收日统计表", conditionList, 32, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -138,6 +155,8 @@ public class CardController extends BaseController {
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(result);
         tableDataVo.setConditionList(conditionList);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        tableDataVo.setOperatorName(loginUserInfo.getUsername());
         return tableDataVo;
     }
 
@@ -151,7 +170,8 @@ public class CardController extends BaseController {
                 .map(i -> (SdtCardStatVo) i)
                 .collect(Collectors.toList());
         ExcelUtil<SdtCardStatVo> util = new ExcelUtil<SdtCardStatVo>(SdtCardStatVo.class);
-        return util.exportDynamic(result, "SDT通行卡发放统计表", exportVo.getConditionList(), 31, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(result, "SDT通行卡发放统计表", exportVo.getConditionList(), 31, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -163,6 +183,8 @@ public class CardController extends BaseController {
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(result);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        tableDataVo.setOperatorName(loginUserInfo.getUsername());
         return tableDataVo;
     }
 
@@ -176,6 +198,7 @@ public class CardController extends BaseController {
                 .map(i -> (CdtCardStatVo) i)
                 .collect(Collectors.toList());
         ExcelUtil<CdtCardStatVo> util = new ExcelUtil<CdtCardStatVo>(CdtCardStatVo.class);
-        return util.exportDynamic(result, "CDT通行卡回收统计表", exportVo.getConditionList(), 32, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(result, "CDT通行卡回收统计表", exportVo.getConditionList(), 32, reportTitleName, loginUserInfo.getUsername());
     }
 }

@@ -1,5 +1,6 @@
 package com.itssky.system.mapper;
 
+import com.itssky.db.Dbtoms;
 import com.itssky.system.domain.TbUserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2024-09-24 17:53:59
 * @Entity com.itssky.system.domain.TbUserInfo
 */
+@Dbtoms
 public interface TbUserInfoMapper extends BaseMapper<TbUserInfo> {
 
 }

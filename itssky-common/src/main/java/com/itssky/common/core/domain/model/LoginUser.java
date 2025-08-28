@@ -73,7 +73,7 @@ public class LoginUser implements UserDetails {
     /**
      * 账号
      */
-    private String userName;
+    private String username;
 
     /**
      * 所属层级
@@ -97,7 +97,7 @@ public class LoginUser implements UserDetails {
         Set<String> permissions) {
         this.userId = userId;
         this.corpNo = corpNo;
-        this.userName = userName;
+        this.username = userName;
         this.password = password;
         this.level = level;
         this.stationId = stationId;
@@ -136,8 +136,9 @@ public class LoginUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.userName;
+        return "";
     }
+
 
     /**
      * 账户是否未过期,过期无法验证

@@ -5,10 +5,13 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itssky.common.core.controller.BaseController;
 import com.itssky.common.core.domain.AjaxResult;
+import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.core.page.TableDataInfo;
+import com.itssky.common.utils.SecurityUtils;
 import com.itssky.common.utils.poi.ExcelUtil;
 import com.itssky.system.domain.SysConfig;
 import com.itssky.system.domain.TbStationInfo;
+import com.itssky.system.domain.TbUserInfo;
 import com.itssky.system.domain.dto.VehicleClassStatDto;
 import com.itssky.system.domain.dto.FtStationDto;
 import com.itssky.system.domain.dto.StationShiftDto;
@@ -16,6 +19,7 @@ import com.itssky.system.domain.vo.*;
 import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.service.CardService;
 import com.itssky.system.service.ITollService;
+import com.itssky.system.service.TbUserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,10 +53,10 @@ public class TollController extends BaseController {
     private ITollService tollService;
 
     @Autowired
-    private TbStationInfoMapper tbStationInfoMapper;
+    private CardService cardService;
 
     @Autowired
-    private CardService cardService;
+    private TbUserInfoService userInfoService;
 
 
     /**
@@ -63,7 +67,10 @@ public class TollController extends BaseController {
         List<StationShiftVo> result = tollService.f1StationShift(dto);
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(result);
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        tableDataVo.setOperatorName(loginUser.getUsername());
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
+        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
         return tableDataVo;
     }
 
@@ -75,7 +82,8 @@ public class TollController extends BaseController {
         List<F1StationShiftTollVo> f1StationShiftToll = tollService.getF1StationShiftToll(dto);
         ExcelUtil<F1StationShiftTollVo> util = new ExcelUtil<F1StationShiftTollVo>(F1StationShiftTollVo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
-        return util.exportDynamic(f1StationShiftToll, "F1收费站通行费收入班统计表", conditionList, 15, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(f1StationShiftToll, "F1收费站通行费收入班统计表", conditionList, 15, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -87,6 +95,7 @@ public class TollController extends BaseController {
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(result);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime()));
+        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
         return tableDataVo;
     }
 
@@ -98,7 +107,8 @@ public class TollController extends BaseController {
         List<F2StationShiftTollVo> f2StationShiftToll = tollService.getF2StationShiftToll(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime());
         ExcelUtil<F2StationShiftTollVo> util = new ExcelUtil<F2StationShiftTollVo>(F2StationShiftTollVo.class);
-        return util.exportDynamic(f2StationShiftToll, "F2收费站通行费收入日统计表", conditionList, 14, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(f2StationShiftToll, "F2收费站通行费收入日统计表", conditionList, 14, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -110,6 +120,7 @@ public class TollController extends BaseController {
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(result);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
         return tableDataVo;
     }
 
@@ -121,7 +132,8 @@ public class TollController extends BaseController {
         List<FtTollVo> ftToll = tollService.getFtToll(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<FtTollVo> util = new ExcelUtil<FtTollVo>(FtTollVo.class);
-        return util.exportDynamic(ftToll, "FT通行费收入统计表", conditionList, 13, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(ftToll, "FT通行费收入统计表", conditionList, 13, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -133,6 +145,7 @@ public class TollController extends BaseController {
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(result);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
         return tableDataVo;
     }
 
@@ -144,7 +157,8 @@ public class TollController extends BaseController {
         List<AfvVehicleVo> afvGeneral = tollService.getAfvGeneral(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<AfvVehicleVo> util = new ExcelUtil<AfvVehicleVo>(AfvVehicleVo.class);
-        return util.exportDynamic(afvGeneral, "AFV综合MTC、ETC按车型统计表", conditionList, 22, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(afvGeneral, "AFV综合MTC、ETC按车型统计表", conditionList, 22, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -156,6 +170,7 @@ public class TollController extends BaseController {
         List<EPayTollStatVo> ePayTollStatVos = tollService.eefEPay(dto);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         tableDataVo.setRows(ePayTollStatVos);
+        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
         return tableDataVo;
     }
 
@@ -169,7 +184,8 @@ public class TollController extends BaseController {
         List<EPayTollStatVo> list = tollService.eefEPay(dto);
         ExcelUtil<EPayTollStatVo> util = new ExcelUtil<EPayTollStatVo>(EPayTollStatVo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
-        return util.exportDynamic(list, "EEF电子支付通行费MTC、ETC统计表", conditionList, 61, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "EEF电子支付通行费MTC、ETC统计表", conditionList, 61, reportTitleName, loginUserInfo.getUsername());
     }
 
     @PostMapping(value = "/f6toll")
@@ -177,6 +193,7 @@ public class TollController extends BaseController {
         TableDataVo data = new TableDataVo();
         data.setRows(tollService.f6Toll(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
         return data;
     }
 
@@ -185,7 +202,8 @@ public class TollController extends BaseController {
         List<F6TollVo> list = tollService.f6Toll(dto);
         ExcelUtil<F6TollVo> util = new ExcelUtil<F6TollVo>(F6TollVo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
-        return util.exportDynamic(list, "F6收费站通行费收入班对账表", conditionList, 6, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "F6收费站通行费收入班对账表", conditionList, 6, reportTitleName, loginUserInfo.getUsername());
     }
 
     @PostMapping(value = "/cf1toll")
@@ -193,6 +211,7 @@ public class TollController extends BaseController {
         TableDataVo data = new TableDataVo();
         data.setRows(tollService.cf1Toll(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
         return data;
     }
 
@@ -201,7 +220,8 @@ public class TollController extends BaseController {
         List<Cf1Vo> list = tollService.cf1Toll(dto);
         ExcelUtil<Cf1Vo> util = new ExcelUtil<Cf1Vo>(Cf1Vo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
-        return util.exportDynamic(list, "CF1收费中心通行费收入班统计表", conditionList, 14, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "CF1收费中心通行费收入班统计表", conditionList, 14, reportTitleName, loginUserInfo.getUsername());
     }
 
     @PostMapping(value = "/mobtoll")
@@ -209,6 +229,7 @@ public class TollController extends BaseController {
         TableDataVo data = new TableDataVo();
         data.setRows(tollService.mobToll(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
         return data;
     }
 
@@ -217,6 +238,7 @@ public class TollController extends BaseController {
         List<MOBTollVo> list = tollService.mobToll(dto);
         ExcelUtil<MOBTollVo> util = new ExcelUtil<>(MOBTollVo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
-        return util.exportDynamic(list, "MOB移动支付收费统计报表", conditionList, 19, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "MOB移动支付收费统计报表", conditionList, 19, reportTitleName, loginUserInfo.getUsername());
     }
 }

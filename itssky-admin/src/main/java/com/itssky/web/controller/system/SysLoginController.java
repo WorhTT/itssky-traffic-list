@@ -8,7 +8,9 @@ import com.itssky.common.core.domain.model.LoginBody;
 import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.SecurityUtils;
 import com.itssky.framework.web.service.SysLoginService;
+import com.itssky.system.domain.TbUserInfo;
 import com.itssky.system.service.ITbMenuService;
+import com.itssky.system.service.TbUserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +42,7 @@ public class SysLoginController {
     private SysLoginService loginService;
 
     @Autowired
-    private ITbMenuService menuService;
+    private TbUserInfoService userInfoService;
 
     /**
      * 登录方法
@@ -84,6 +86,12 @@ public class SysLoginController {
         return ajax;
     }
 
+    @GetMapping(value = "/get/login/user")
+    public AjaxResult getLoginUser() {
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return AjaxResult.success(loginUserInfo);
+    }
+
     /**
      * 获取路由信息
      *
@@ -91,8 +99,9 @@ public class SysLoginController {
      */
     @GetMapping("getRouters")
     public AjaxResult getRouters() {
-        Long userId = SecurityUtils.getUserId();
-        List<TbMenu> menus = menuService.selectMenuTreeByUserId(userId);
-        return AjaxResult.success(menuService.buildMenus(menus));
+//        Long userId = SecurityUtils.getUserId();
+//        List<TbMenu> menus = menuService.selectMenuTreeByUserId(userId);
+//        return AjaxResult.success(menuService.buildMenus(menus));
+        return AjaxResult.success(new ArrayList<>());
     }
 }

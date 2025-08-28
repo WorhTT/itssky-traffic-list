@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -1983,7 +1984,7 @@ public class ExcelUtil<T>
         }
     }
 
-    public AjaxResult exportDynamic(List<T> list, String sheetName, List<String> conditionList, int columnMax, String corpName) throws IOException {
+    public AjaxResult exportDynamic(List<T> list, String sheetName, List<String> conditionList, int columnMax, String corpName, String userName) throws IOException {
         List<List<HeaderCell>> headerData = new ArrayList<>();
         List<HeaderCell> firstHeader = new ArrayList<>();
         List<HeaderCell> secondHeader = new ArrayList<>();
@@ -2185,10 +2186,59 @@ public class ExcelUtil<T>
             bodyRowIndex++;
         }
 
-        // 自动调整列宽
-//        for (int j = 0; j < sheet.getRow(0).getLastCellNum(); j++) {
-//            sheet.autoSizeColumn(j);
-//        }
+        // 底部增加操作人 导出时间行
+        XSSFRow footerRow = sheet.createRow(bodyRowIndex);
+        int[] conditionRowSplitFooter = getConditionRowSplit(columnMax, 2);
+        int i1 = conditionRowSplitFooter[0];
+        int i2 = conditionRowSplitFooter[1];
+
+
+        // 创建左侧单元格：操作人信息
+        XSSFCell operatorCell = footerRow.createCell(0);
+        operatorCell.setCellValue("操作人:" + userName);
+
+        // 创建右侧单元格：导出时间
+        XSSFCell timeCell = footerRow.createCell(Math.max(i1, i2));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        timeCell.setCellValue("导出时间:" + sdf.format(new Date()));
+
+        // 合并左侧单元格（从0到midColumn-1）
+        if (i1 > 0) {
+            CellRangeAddress leftMergedRegion = new CellRangeAddress(
+                    footerRow.getRowNum(),
+                    footerRow.getRowNum(),
+                    0,
+                    i1 - 1
+            );
+            sheet.addMergedRegion(leftMergedRegion);
+        }
+
+        // 合并右侧单元格（从midColumn到columnMax-1）
+        if (i2 < columnMax) {
+            CellRangeAddress rightMergedRegion = new CellRangeAddress(
+                    footerRow.getRowNum(),
+                    footerRow.getRowNum(),
+                    i2,
+                    columnMax - 1
+            );
+            sheet.addMergedRegion(rightMergedRegion);
+        }
+
+        // 创建左对齐样式
+        XSSFCellStyle leftStyle = workbook.createCellStyle();
+        leftStyle.cloneStyleFrom(titleTwoStyle);
+        leftStyle.setAlignment(HorizontalAlignment.LEFT);
+
+        // 创建右对齐样式
+        XSSFCellStyle rightStyle = workbook.createCellStyle();
+        rightStyle.cloneStyleFrom(titleTwoStyle);
+        rightStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+        // 设置操作人单元格样式为左对齐
+        operatorCell.setCellStyle(leftStyle);
+
+        // 设置导出时间单元格样式为右对齐
+        timeCell.setCellStyle(rightStyle);
 
         OutputStream out = null;
         String filename = encodingFilename(sheetName);
@@ -2334,6 +2384,26 @@ public class ExcelUtil<T>
         XSSFFont font = wb.createFont();
         font.setColor((short) 8);
         font.setFontHeightInPoints((short) 12);
+        cellStyle.setFont(font);
+
+        return cellStyle;
+    }
+
+    private static XSSFCellStyle createFooterCellStyle(XSSFWorkbook wb) {
+        XSSFCellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER); // 垂直居中
+        cellStyle.setAlignment(HorizontalAlignment.LEFT); // 水平左对齐
+        cellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex()); // 背景颜色
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        cellStyle.setBorderBottom(BorderStyle.THIN); // 下边框
+        cellStyle.setBorderLeft(BorderStyle.THIN); // 左边框
+        cellStyle.setBorderRight(BorderStyle.THIN); // 右边框
+        cellStyle.setBorderTop(BorderStyle.THIN); // 上边框
+
+        // 设置字体
+        XSSFFont font = wb.createFont();
+        font.setFontHeightInPoints((short) 10);
+        font.setColor(IndexedColors.BLACK.getIndex());
         cellStyle.setFont(font);
 
         return cellStyle;

@@ -5,11 +5,13 @@ import com.itssky.common.core.domain.AjaxResult;
 import com.itssky.common.exception.biz.BizException;
 import com.itssky.common.utils.DateUtils;
 import com.itssky.common.utils.poi.ExcelUtil;
+import com.itssky.system.domain.TbUserInfo;
 import com.itssky.system.domain.dto.FD06Dto;
 import com.itssky.system.domain.dto.FD26Dto;
 import com.itssky.system.domain.dto.FD27Dto;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.service.CardService;
+import com.itssky.system.service.TbUserInfoService;
 import com.itssky.system.service.impl.ExamineServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,8 @@ public class ExamineController extends BaseController {
 
     private final CardService cardService;
 
+    private final TbUserInfoService userInfoService;
+
     @Value(("${reportTitleName}"))
     private String reportTitleName;
 
@@ -45,6 +49,8 @@ public class ExamineController extends BaseController {
         data.setRows(list);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         data.setConditionList(conditionList);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        data.setOperatorName(loginUserInfo.getUsername());
         return data;
     }
 
@@ -56,7 +62,8 @@ public class ExamineController extends BaseController {
         List<FD06Vo> list = examineService.getFd06(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<FD06Vo> util = new ExcelUtil<FD06Vo>(FD06Vo.class);
-        return util.exportDynamic(list, "FD06收费员发卡统计表", conditionList, 4, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "FD06收费员发卡统计表", conditionList, 4, reportTitleName, loginUserInfo.getUsername());
     }
 
     @PostMapping(value = "/fd07")
@@ -69,6 +76,8 @@ public class ExamineController extends BaseController {
         data.setRows(list);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         data.setConditionList(conditionList);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        data.setOperatorName(loginUserInfo.getUsername());
         return data;
     }
 
@@ -80,7 +89,8 @@ public class ExamineController extends BaseController {
         List<FD07Vo> list = examineService.getFd07(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<FD07Vo> util = new ExcelUtil<FD07Vo>(FD07Vo.class);
-        return util.exportDynamic(list, "FD07收费员收费统计表", conditionList, 10, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "FD07收费员收费统计表", conditionList, 10, reportTitleName, loginUserInfo.getUsername());
     }
 
     @PostMapping(value = "/fd27")
@@ -91,6 +101,8 @@ public class ExamineController extends BaseController {
         TableDataVo data = new TableDataVo();
         data.setRows(examineService.getFd27(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        data.setOperatorName(loginUserInfo.getUsername());
         return data;
     }
 
@@ -102,7 +114,8 @@ public class ExamineController extends BaseController {
         List<FD27Vo> list = examineService.getFd27(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<FD27Vo> util = new ExcelUtil<FD27Vo>(FD27Vo.class);
-        return util.exportDynamic(list, "FD27变档明细统计表", conditionList, 12, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "FD27变档明细统计表", conditionList, 12, reportTitleName, loginUserInfo.getUsername());
     }
 
     @PostMapping(value = "/fd26")
@@ -110,6 +123,8 @@ public class ExamineController extends BaseController {
         TableDataVo data = new TableDataVo();
         data.setRows(examineService.getFd26(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        data.setOperatorName(loginUserInfo.getUsername());
         return data;
     }
 
@@ -118,7 +133,8 @@ public class ExamineController extends BaseController {
         List<FD26Vo> list = examineService.getFd26(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime());
         ExcelUtil<FD26Vo> util = new ExcelUtil<FD26Vo>(FD26Vo.class);
-        return util.exportDynamic(list, "FD26误判率明细统计", conditionList, 13, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "FD26误判率明细统计", conditionList, 13, reportTitleName, loginUserInfo.getUsername());
     }
 
     @PostMapping(value = "/fd29")
@@ -129,6 +145,8 @@ public class ExamineController extends BaseController {
         TableDataVo data = new TableDataVo();
         data.setRows(examineService.getFd29(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        data.setOperatorName(loginUserInfo.getUsername());
         return data;
     }
 
@@ -140,6 +158,7 @@ public class ExamineController extends BaseController {
         List<FD29Vo> list = examineService.getFd29(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<FD29Vo> util = new ExcelUtil<FD29Vo>(FD29Vo.class);
-        return util.exportDynamic(list, "FD29升档排名汇总表", conditionList, 5, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "FD29升档排名汇总表", conditionList, 5, reportTitleName, loginUserInfo.getUsername());
     }
 }

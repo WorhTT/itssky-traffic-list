@@ -2,6 +2,7 @@ package com.itssky.report.controller;
 
 import com.itssky.common.core.domain.AjaxResult;
 import com.itssky.common.utils.poi.ExcelUtil;
+import com.itssky.system.domain.TbUserInfo;
 import com.itssky.system.domain.dto.CxczDto;
 import com.itssky.system.domain.dto.GreenDto;
 import com.itssky.system.domain.vo.CxczVo;
@@ -9,6 +10,7 @@ import com.itssky.system.domain.vo.GreenVo;
 import com.itssky.system.domain.vo.TableDataVo;
 import com.itssky.system.service.CardService;
 import com.itssky.system.service.ISpecialService;
+import com.itssky.system.service.TbUserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,8 @@ public class SpecialController {
 
     private final CardService cardService;
 
+    private final TbUserInfoService userInfoService;
+
     @Value(("${reportTitleName}"))
     private String reportTitleName;
 
@@ -44,6 +48,8 @@ public class SpecialController {
         tableDataVo.setRows(greenVos);
         tableDataVo.setConditionList(cardService.buildConditionList(greenDto.getStationId(),
                 greenDto.getBeginTime(), greenDto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        tableDataVo.setOperatorName(loginUserInfo.getUsername());
         return tableDataVo;
     }
 
@@ -59,7 +65,8 @@ public class SpecialController {
         List<String> conditionList = cardService.buildConditionList(greenDto.getStationId(),
                 greenDto.getBeginTime(), greenDto.getEndTime());
         ExcelUtil<GreenVo> util = new ExcelUtil<GreenVo>(GreenVo.class);
-        return util.exportDynamic(greenVos, "绿优台账", conditionList, 7, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(greenVos, "绿优台账", conditionList, 7, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -71,6 +78,8 @@ public class SpecialController {
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(cxczVos);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        tableDataVo.setOperatorName(loginUserInfo.getUsername());
         return tableDataVo;
     }
 
@@ -83,6 +92,7 @@ public class SpecialController {
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(),
                 dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<CxczVo> util = new ExcelUtil<CxczVo>(CxczVo.class);
-        return util.exportDynamic(cxczVos, "入口超限操作明细表", conditionList, 14, reportTitleName);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(cxczVos, "入口超限操作明细表", conditionList, 14, reportTitleName, loginUserInfo.getUsername());
     }
 }
