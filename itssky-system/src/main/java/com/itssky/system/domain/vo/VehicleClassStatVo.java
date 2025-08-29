@@ -2,6 +2,8 @@ package com.itssky.system.domain.vo;
 
 import lombok.*;
 
+import java.math.BigDecimal;
+
 /**
  * 车型统计表Vo
  */
@@ -40,112 +42,112 @@ public class VehicleClassStatVo {
     /**
      * 月份
      */
-    private String monthDate;
+    private Integer monthDate;
 
     /**
      * 客一
      */
-    private Double cust1;
+    private BigDecimal cust1;
 
     /**
      * 客二
      */
-    private Double cust2;
+    private BigDecimal cust2;
 
     /**
      * 客三
      */
-    private Double cust3;
+    private BigDecimal cust3;
 
     /**
      * 客四
      */
-    private Double cust4;
+    private BigDecimal cust4;
 
     /**
      * 客车小计
      */
-    private Double custSubTotal;
+    private BigDecimal custSubTotal;
 
     /**
      * 货一
      */
-    private Double truck1;
+    private BigDecimal truck1;
 
     /**
      * 货二
      */
-    private Double truck2;
+    private BigDecimal truck2;
 
     /**
      * 货三
      */
-    private Double truck3;
+    private BigDecimal truck3;
 
     /**
      * 货四
      */
-    private Double truck4;
+    private BigDecimal truck4;
 
     /**
      * 货五
      */
-    private Double truck5;
+    private BigDecimal truck5;
 
     /**
      * 货六
      */
-    private Double truck6;
+    private BigDecimal truck6;
 
     /**
      * 货车小计
      */
-    private Double truckSubTotal;
+    private BigDecimal truckSubTotal;
 
     /**
      * 专一
      */
-    private Double spec1;
+    private BigDecimal spec1;
 
     /**
      * 专二
      */
-    private Double spec2;
+    private BigDecimal spec2;
 
     /**
      * 专三
      */
-    private Double spec3;
+    private BigDecimal spec3;
 
     /**
      * 专四
      */
-    private Double spec4;
+    private BigDecimal spec4;
 
     /**
      * 专五
      */
-    private Double spec5;
+    private BigDecimal spec5;
 
     /**
      * 专六
      */
-    private Double spec6;
+    private BigDecimal spec6;
 
     /**
      * 专车小计
      */
-    private Double specSubTotal;
+    private BigDecimal specSubTotal;
 
     /**
      * 加收款
      */
-    private Double addedAmount = 0D;
+    private BigDecimal addedAmount = BigDecimal.ZERO;
 
     /**
      * 总计
      */
-    private Double totalAmount = 0D;
+    private BigDecimal totalAmount = BigDecimal.ZERO;
 
     private boolean totalRow;
 

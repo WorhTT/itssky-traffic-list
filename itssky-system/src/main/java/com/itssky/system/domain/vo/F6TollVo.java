@@ -3,6 +3,8 @@ package com.itssky.system.domain.vo;
 import com.itssky.common.annotation.Excel;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class F6TollVo {
 
@@ -13,7 +15,17 @@ public class F6TollVo {
     private String operatorName = "";
 
     @Excel(name = "应缴金额")
-    private Double toll = 0D;
+    private BigDecimal toll;
+
+    /**
+     * 出口钱
+     */
+    private BigDecimal exitToll;
+
+    /**
+     * 加收款
+     */
+    private BigDecimal addedToll;
 
     @Excel(name = "应缴IC卡张数")
     private int yjIcCardNum = 0;

@@ -35,4 +35,11 @@ public class StationShiftDto {
 
     private String tableName;
 
+    private String statisticsType;
+
+    private List<String> tableNameList;
+
+    private int intBeginTime;
+
+    private int intEndTime;
 }

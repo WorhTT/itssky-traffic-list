@@ -2,6 +2,8 @@ package com.itssky.system.domain.vo;
 
 import lombok.*;
 
+import java.math.BigDecimal;
+
 /**
  * 交款记录表Vo
  */
@@ -27,12 +29,12 @@ public class TbShVo {
     /**
      * 实缴金额
      */
-    private Double handToll;
+    private BigDecimal handToll = BigDecimal.ZERO;
 
     /**
      * 加收款
      */
-    private Double addedToll;
+    private BigDecimal addedToll = BigDecimal.ZERO;
 
     /**
      * 统计日期
@@ -42,7 +44,7 @@ public class TbShVo {
     /**
      * 统计方式 月份
      */
-    private String monthDate;
+    private Integer monthDate;
 
     /**
      * 收费站ID

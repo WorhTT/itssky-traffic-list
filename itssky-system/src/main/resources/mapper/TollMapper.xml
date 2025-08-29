@@ -10,15 +10,14 @@
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
         a.TeamID AS teamId,
-        IFNULL(SUM(TotalToll / 100), 0) as statAmount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=6 THEN CarNum ELSE 0 END),0) as officialIcCardCount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=8 THEN CarNum ELSE 0 END),0) as militaryIcCardCount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=12 THEN CarNum ELSE 0 END),0) as freeIcCardCount,
         IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
         AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
         OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
+        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14 IN (0,10) THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
-        SUM(CASE WHEN a.PayType = 0 THEN a.TotalToll / 100 ELSE 0 END) AS dueAmount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
         IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
         IFNULL(CAST(SUM(CASE WHEN PayType=2 THEN TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount
@@ -48,15 +47,14 @@
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
         a.TeamID AS teamId,
-        IFNULL(SUM(TotalToll / 100), 0) as statAmount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=6 THEN CarNum ELSE 0 END),0) as officialIcCardCount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=8 THEN CarNum ELSE 0 END),0) as militaryIcCardCount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=12 THEN CarNum ELSE 0 END),0) as freeIcCardCount,
         IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
         AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
         OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
+        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14 IN (0,10) THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
-        SUM(CASE WHEN a.PayType = 0 THEN a.TotalToll / 100 ELSE 0 END) AS dueAmount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
         IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
         IFNULL(CAST(SUM(CASE WHEN PayType=2 THEN TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount
@@ -88,12 +86,11 @@
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=6 THEN CarNum ELSE 0 END),0) as officialIcCardCount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=8 THEN CarNum ELSE 0 END),0) as militaryIcCardCount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=12 THEN CarNum ELSE 0 END),0) as freeIcCardCount,
-        IFNULL(SUM(TotalToll / 100), 0) as statAmount,
         IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
         AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
         OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
+        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14 IN (0,10) THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
-        SUM(CASE WHEN a.PayType = 0 THEN a.TotalToll / 100 ELSE 0 END) AS dueAmount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
         IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
         IFNULL(CAST(SUM(CASE WHEN PayType=2 THEN TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount,
@@ -152,7 +149,7 @@
         a.OperatorID AS operatorId,
         LEFT(a.StaDate, 6) AS monthDate,
         a.StaDate AS staDate,
-        IFNULL(SUM(TotalToll / 100), 0) as totalAmount,
+        IFNULL(SUM(a.TotalToll / 100), 0) as totalAmount,
         SUM(CASE WHEN a.VehicleClass = 1 THEN a.TotalToll / 100 ELSE 0 END) AS cust1,
         SUM(CASE WHEN a.VehicleClass = 2 THEN a.TotalToll / 100 ELSE 0 END) AS cust2,
         SUM(CASE WHEN a.VehicleClass = 3 THEN a.TotalToll / 100 ELSE 0 END) AS cust3,
@@ -178,6 +175,7 @@
             *
             FROM ${tableName} AS alias${index + 1}
             <where>
+                AND DealStatus &amp; 14 IN(0,2,10)
                 AND StationID in
                 <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
                     #{stationId}
@@ -345,7 +343,7 @@
         SELECT
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
-        IFNULL(AddedToll/100,0) as addedToll,
+        IFNULL(CAST(sum(AddedToll)/100 as DECIMAL(10,2)), 0) as addedToll,
         IFNULL(CAST(HandToll/100 as DECIMAL(10,2)), 0) as handToll
         FROM `tbsh` a
         <where>
@@ -367,8 +365,8 @@
     <select id="getTbShDataV2" resultType="com.itssky.system.domain.vo.TbShVo"
             parameterType="com.itssky.system.domain.dto.FtStationDto">
         SELECT
-        IFNULL(AddedToll/100,0) as addedToll,
-        IFNULL(CAST(HandToll/100 as DECIMAL(10,2)), 0) as handToll,
+        IFNULL(a.AddedToll/100,0) as addedToll,
+        IFNULL(CAST(a.HandToll/100 as DECIMAL(10,2)), 0) as handToll,
         a.StaDate AS staDate,
         LEFT(a.StaDate, 6) AS monthDate,
         a.StationID AS stationId,
@@ -383,6 +381,60 @@
                 <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
                     #{stationId}
                 </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                GROUP BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                GROUP BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                GROUP BY StationID
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 3">
+                GROUP BY OperatorID
+            </when>
+        </choose>
+    </select>
+
+    <!-- 加收表查询 (支持多表联查)-->
+    <select id="getExtraPay" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.ExtraPayVo">
+        SELECT
+        a.StaDate AS staDate,
+        LEFT(a.StaDate, 6) AS monthDate,
+        a.OperatorID AS operatorId,
+        a.StationID AS stationId,
+        IFNULL(SUM(a.AddedToll),0)/100 AS extAddToll,
+        IFNULL(SUM(CASE WHEN a.payType=0 THEN a.AddedToll ELSE 0 END),0) as xjMoney,
+        IFNULL(SUM(CASE WHEN a.payType=16 THEN a.AddedToll ELSE 0 END),0) as ydzfMoney
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")">
+            SELECT
+            *
+            FROM ${tableName}
+            <where>
+                AND CancelFlag = 0
+                AND IsSplit=1
+                AND IsConfirm = 1
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="timeFormat != null and timeFormat != ''">
+                    AND StaDate = #{timeFormat}
+                </if>
+                <if test="shiftId != null and shiftId != ''">
+                    AND ShiftID = #{shiftId}
+                </if>
                 <if test="intBeginTime != null and intBeginTime != ''">
                     AND StaDate >= #{intBeginTime}
                 </if>
@@ -437,7 +489,7 @@
         SELECT
         a.OperatorID AS operatorId,
         (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
-        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14 IN (0,10) THEN a.TotalToll ELSE 0 END),0)/100 AS toll,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14 IN (0,10) THEN a.TotalToll ELSE 0 END),0)/100 AS exitToll,
         IFNULL(SUM(CASE WHEN a.CardType=26 THEN 1 ELSE 0 END),0) AS yjIcCardNum,
 		IFNULL(SUM(CASE WHEN a.CardType=254 THEN 1 ELSE 0 END),0) AS paperNum
         FROM tbstatexit a
@@ -464,7 +516,7 @@
         SELECT
         a.OperatorID AS operatorId,
         (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
-        SUM(a.addedtoll) / 100 AS toll
+        SUM(a.addedtoll) / 100 AS addedToll
         FROM ${tableName} a
         <where>
             AND a.CancelFlag=0
@@ -506,29 +558,6 @@
         ORDER BY StationID ASC
     </select>
 
-    <select id="getExtraPayByStation" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.ExtraPayVo">
-        SELECT
-        StationID AS stationId,
-        IFNULL(SUM(AddedToll),0)/100 AS extAddToll
-        FROM ${tableName}
-        <where>
-            AND CancelFlag = 0
-            AND IsSplit=1
-            AND StationID in
-            <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
-                #{stationId}
-            </foreach>
-            <if test="timeFormat != null and timeFormat != ''">
-                AND StaDate = #{timeFormat}
-            </if>
-            <if test="shiftId != null and shiftId != ''">
-                AND ShiftID = #{shiftId}
-            </if>
-        </where>
-        GROUP BY StationID
-        ORDER BY StationID ASC
-    </select>
-
     <select id="getCf1Vo" resultType="com.itssky.system.domain.vo.Cf1Vo" parameterType="com.itssky.system.domain.dto.StationShiftDto">
         SELECT
         a.StationID AS stationId,
@@ -539,6 +568,7 @@
         IFNULL(SUM(CASE WHEN (a.DealStatus&amp;14 != 14 AND a.DealStatus&amp;14 != 2 AND a.DealStatus&amp;0xE00000 != 0x200000
             AND a.DealStatus&amp;0x1000000=0 AND a.DealStatus&amp;32 != 32 AND a.CardType=0)
             OR (a.CardType=26 AND a.DealStatus&amp;32 != 32) THEN a.CardNum ELSE 0 END),0) AS dueIcCardCount,
+        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14 IN (0,10) THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=4 THEN a.TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
         SUM(CASE WHEN a.PayType = 0 THEN a.TotalToll / 100 ELSE 0 END) AS dueAmount,
         IFNULL(CAST(SUM(CASE WHEN a.PayType=16 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
@@ -621,5 +651,4 @@
             </when>
         </choose>
     </select>
-
 </mapper>

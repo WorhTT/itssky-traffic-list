@@ -10,7 +10,6 @@ import com.itssky.system.domain.dto.StationShiftDto;
 import com.itssky.system.domain.dto.VehicleClassStatDto;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author ITSSKY
@@ -50,8 +49,8 @@ public interface TollMapper {
     @ItsData
     public List<TbShVo> getTbShGroupByStation(StationShiftDto dto);
 
-    @ItsData
-    public List<ExtraPayVo> getExtraPayByStation(StationShiftDto dto);
+    @Dbedge
+    public List<ExtraPayVo> getExtraPay(StationShiftDto dto);
 
     @Dbstats
     public List<Cf1Vo> getCf1Vo(StationShiftDto dto);

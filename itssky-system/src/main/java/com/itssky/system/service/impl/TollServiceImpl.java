@@ -15,7 +15,6 @@ import com.itssky.system.mapper.TollMapper;
 import com.itssky.system.service.ITollService;
 import com.itssky.util.TableUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -24,9 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,7 +50,8 @@ public class TollServiceImpl implements ITollService {
     @Override
     @DynamicTableName(dateParam = "#dto.time")
     public List<StationShiftVo> f1StationShift(StationShiftDto dto) {
-        dto.setTimeFormat(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
+        int statDate = Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN));
+        dto.setTimeFormat(statDate);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         //判断用户的corpno
@@ -74,32 +72,49 @@ public class TollServiceImpl implements ITollService {
         List<StationShiftVo> stationShiftVos = tollMapper.f1StationShift(dto);
         //获取解款数据
         List<TbShVo> tbShData = tollMapper.getTbShData(dto);
+        //获取加收记录
+        //extrapay按年进行分表
+        dto.setTableNameList(Collections.singletonList("extrapay" + DateUtil.format(dto.getTime(),
+                DatePattern.NORM_YEAR_PATTERN)));
+        dto.setStatisticsType("3");
+        List<ExtraPayVo> extraPayList = tollMapper.getExtraPay(dto);
         //获取交款记录表数据
         Map<Integer, TbShVo> tbShMap = tbShData.stream().collect(Collectors.toMap(TbShVo::getOperatorId, i -> i));
+        Map<Integer, ExtraPayVo> extraPayVoMap = extraPayList.stream().collect(Collectors.toMap(ExtraPayVo::getOperatorId, i -> i));
         stationShiftVos.forEach(i -> {
+            //加收金额
+            BigDecimal addedToll = BigDecimal.ZERO;
+            //移动支付加收金额
+            BigDecimal ydzfAddedToll = BigDecimal.ZERO;
+            //实收金额
+            BigDecimal handToll = BigDecimal.ZERO;
+            //douTotalToll
+            BigDecimal douTotalToll = i.getDouTotalToll();
             if (Objects.nonNull(tbShMap.get(i.getOperatorId()))) {
                 TbShVo tbShVo = tbShMap.get(i.getOperatorId());
-                //实缴金额
-                double handToll = new BigDecimal(tbShVo.getHandToll().toString()).doubleValue();
-                i.setPaidAmount(handToll);
-                //加收款
-                double addedToll = new BigDecimal(tbShVo.getAddedToll().toString()).doubleValue();
-                i.setExtraTotal(addedToll);
-//                //应缴IC卡
-//                int yj = new BigDecimal(tbShVo.getHandOutCNum().toString()).intValue();
-//                i.setDueIcCardCount(yj);
+                handToll = tbShVo.getHandToll();
             }
-//            //计算统计金额
-//            BigDecimal bigDecimal = new BigDecimal("0");
-//            bigDecimal = bigDecimal.add(BigDecimal.valueOf(Objects.nonNull(i.getDueAmount()) ? i.getDueAmount() : 0));
-//            bigDecimal = bigDecimal.add(BigDecimal.valueOf(Objects.nonNull(i.getMobilePaymentAmount()) ? i.getMobilePaymentAmount() : 0));
-//            bigDecimal = bigDecimal.add(BigDecimal.valueOf(Objects.nonNull(i.getEPaymentAmount()) ? i.getEPaymentAmount() : 0));
-//            i.setStatAmount(bigDecimal.setScale(2, RoundingMode.HALF_UP).doubleValue());
-            //计算金额差异
-            BigDecimal decimal = BigDecimal.valueOf(Objects.nonNull(i.getPaidAmount()) ? i.getPaidAmount() : 0);
-            double amountDiff = decimal.subtract(BigDecimal.valueOf(Objects.nonNull(i.getDueAmount()) ? i.getDueAmount() : 0))
-                    .setScale(2, RoundingMode.HALF_UP).doubleValue();
-            i.setAmountDiff(amountDiff);
+            if (Objects.nonNull(extraPayVoMap.get(i.getOperatorId()))) {
+                ExtraPayVo extraPayVo = extraPayVoMap.get(i.getOperatorId());
+                ydzfAddedToll = extraPayVo.getYdzfMoney();
+                addedToll =  extraPayVo.getExtAddToll();
+            }
+            //应缴金额计算
+            BigDecimal yjje = douTotalToll.add(addedToll).subtract(ydzfAddedToll);
+            //金额差异
+            BigDecimal jecy = handToll.subtract(yjje);
+            //统计金额 应缴金额(现金)+移动支付+电子支付+移动支付加收
+            BigDecimal tjje = yjje.add(i.getMobilePaymentAmount()).add(i.getEPaymentAmount()).add(ydzfAddedToll);
+            //实缴金额
+            i.setPaidAmount(handToll);
+            //应缴金额
+            i.setDueAmount(yjje);
+            //金额差异
+            i.setAmountDiff(jecy);
+            //统计金额
+            i.setStatAmount(tjje);
+            //加收款
+            i.setExtraTotal(addedToll);
         });
         return stationShiftVos;
     }
@@ -193,31 +208,51 @@ public class TollServiceImpl implements ITollService {
         } else {
             dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
-        dto.setTimeFormat(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
+        int dateFormat = Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN));
+        dto.setTimeFormat(dateFormat);
         List<StationShiftVo> stationShiftVos = tollMapper.f2StationShift(dto);
         List<TbShVo> tbShData = tollMapper.getTbShData(dto);
+        //获取加收记录
+        dto.setTableNameList(Collections.singletonList("extrapay" + DateUtil.format(dto.getTime(),
+                DatePattern.NORM_YEAR_PATTERN)));
+        dto.setStatisticsType("3");
+        List<ExtraPayVo> extraPayList = tollMapper.getExtraPay(dto);
         Map<Integer, TbShVo> tbShMap = tbShData.stream().collect(Collectors.toMap(TbShVo::getOperatorId, i -> i));
+        Map<Integer, ExtraPayVo> extraPayVoMap = extraPayList.stream().collect(Collectors.toMap(ExtraPayVo::getOperatorId, i -> i));
         stationShiftVos.forEach(i -> {
+            //加收金额
+            BigDecimal addedToll = BigDecimal.ZERO;
+            //移动支付加收金额
+            BigDecimal ydzfAddedToll = BigDecimal.ZERO;
+            //实收金额
+            BigDecimal handToll = BigDecimal.ZERO;
+            //douTotalToll
+            BigDecimal douTotalToll = i.getDouTotalToll();
             if (Objects.nonNull(tbShMap.get(i.getOperatorId()))) {
                 TbShVo tbShVo = tbShMap.get(i.getOperatorId());
-                //实缴金额
-                double handToll = new BigDecimal(tbShVo.getHandToll().toString()).doubleValue();
-                i.setPaidAmount(handToll);
-                //加收款
-                double addedToll = new BigDecimal(tbShVo.getAddedToll().toString()).doubleValue();
-                i.setExtraTotal(addedToll);
+                handToll = tbShVo.getHandToll();
             }
-            //计算统计金额
-//            BigDecimal zero = new BigDecimal("0");
-//            zero = zero.add(BigDecimal.valueOf(Objects.nonNull(i.getDueAmount()) ? i.getDueAmount() : 0));
-//            zero = zero.add(BigDecimal.valueOf(Objects.nonNull(i.getMobilePaymentAmount()) ? i.getMobilePaymentAmount() : 0));
-//            zero = zero.add(BigDecimal.valueOf(Objects.nonNull(i.getEPaymentAmount()) ? i.getEPaymentAmount() : 0));
-//            i.setStatAmount(zero.setScale(2, RoundingMode.HALF_UP).doubleValue());
-            //计算金额差异
-            BigDecimal bigDecimal = BigDecimal.valueOf(Objects.nonNull(i.getPaidAmount()) ? i.getPaidAmount() : 0);
-            double amountDiff = bigDecimal.subtract(BigDecimal.valueOf(Objects.nonNull(i.getDueAmount()) ? i.getDueAmount() : 0))
-                    .setScale(2, RoundingMode.HALF_UP).doubleValue();
-            i.setAmountDiff(amountDiff);
+            if (Objects.nonNull(extraPayVoMap.get(i.getOperatorId()))) {
+                ExtraPayVo extraPayVo = extraPayVoMap.get(i.getOperatorId());
+                ydzfAddedToll = extraPayVo.getYdzfMoney();
+                addedToll =  extraPayVo.getExtAddToll();
+            }
+            //应缴金额计算
+            BigDecimal yjje = douTotalToll.add(addedToll).subtract(ydzfAddedToll);
+            //金额差异
+            BigDecimal jecy = handToll.subtract(yjje);
+            //统计金额 应缴金额(现金)+移动支付+电子支付+移动支付加收
+            BigDecimal tjje = yjje.add(i.getMobilePaymentAmount()).add(i.getEPaymentAmount()).add(ydzfAddedToll);
+            //实缴金额
+            i.setPaidAmount(handToll);
+            //应缴金额
+            i.setDueAmount(yjje);
+            //金额差异
+            i.setAmountDiff(jecy);
+            //统计金额
+            i.setStatAmount(tjje);
+            //加收款
+            i.setExtraTotal(addedToll);
         });
         //给列表增加小计行和合计行
         LinkedList<StationShiftVo> linkedList = buildTotalRow(stationShiftVos);
@@ -248,32 +283,32 @@ public class TollServiceImpl implements ITollService {
     private StationShiftVo buildTotalRowVo(List<StationShiftVo> list) {
         StationShiftVo subTotalRow = new StationShiftVo();
         //统计金额
-        subTotalRow.setStatAmount(list.stream().map(i -> BigDecimal.valueOf(i.getStatAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        subTotalRow.setStatAmount(list.stream().map(StationShiftVo::getStatAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //应缴金额
-        subTotalRow.setDueAmount(list.stream().map(i -> BigDecimal.valueOf(i.getDueAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        subTotalRow.setDueAmount(list.stream().map(StationShiftVo::getDueAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //实缴金额
-        subTotalRow.setPaidAmount(list.stream().map(i -> BigDecimal.valueOf(i.getPaidAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        subTotalRow.setPaidAmount(list.stream().map(StationShiftVo::getPaidAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //金额差异
-        subTotalRow.setAmountDiff(list.stream().map(i -> BigDecimal.valueOf(i.getAmountDiff()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        subTotalRow.setAmountDiff(list.stream().map(StationShiftVo::getAmountDiff)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //欠款车次
         subTotalRow.setArrearsTrips(list.stream().map(i -> new BigDecimal(i.getArrearsTrips()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         //欠款金额
-        subTotalRow.setArrearsAmount(list.stream().map(i -> BigDecimal.valueOf(i.getArrearsAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        subTotalRow.setArrearsAmount(list.stream().map(StationShiftVo::getArrearsAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //加收款
-        subTotalRow.setExtraTotal(list.stream().map(i -> BigDecimal.valueOf(i.getExtraTotal()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        subTotalRow.setExtraTotal(list.stream().map(StationShiftVo::getExtraTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //移动支付
-        subTotalRow.setMobilePaymentAmount(list.stream().map(i -> BigDecimal.valueOf(i.getMobilePaymentAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        subTotalRow.setMobilePaymentAmount(list.stream().map(StationShiftVo::getMobilePaymentAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //电子支付
-        subTotalRow.setEPaymentAmount(list.stream().map(i -> BigDecimal.valueOf(i.getEPaymentAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        subTotalRow.setEPaymentAmount(list.stream().map(StationShiftVo::getEPaymentAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //公务IC
         subTotalRow.setOfficialIcCardCount(list.stream().map(i -> new BigDecimal(i.getOfficialIcCardCount()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
@@ -328,52 +363,102 @@ public class TollServiceImpl implements ITollService {
                 TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbsh",
                         DatePattern.SIMPLE_MONTH_PATTERN));
         List<TbShVo> tbShVoList = tollMapper.getTbShDataV2(dto);
-        for (StationShiftVo stationShiftVo : stationShiftVos) {
-            for (TbShVo tbSh : tbShVoList) {
-                //日
-                if (dto.getStatisticsType().equals("0")) {
-                    if (stationShiftVo.getStaDate().equals(tbSh.getStaDate())) {
-                        //实缴金额
-                        stationShiftVo.setPaidAmount(tbSh.getHandToll());
-                        //加收款
-                        stationShiftVo.setExtraTotal(tbSh.getAddedToll());
-                    }
-                }
-                //月
-                else if (dto.getStatisticsType().equals("1")) {
-                    if (stationShiftVo.getMonthDate().equals(tbSh.getMonthDate())) {
-                        //实缴金额
-                        stationShiftVo.setPaidAmount(tbSh.getHandToll());
-                        //加收款
-                        stationShiftVo.setExtraTotal(tbSh.getAddedToll());
-                    }
-                }
-                //站
-                else if (dto.getStatisticsType().equals("2")) {
-                    if (stationShiftVo.getStationId().equals(tbSh.getStationId())) {
-                        //实缴金额
-                        stationShiftVo.setPaidAmount(tbSh.getHandToll());
-                        //加收款
-                        stationShiftVo.setExtraTotal(tbSh.getAddedToll());
-                    }
-                }
-            }
+        //新加收表查询
+        dto.setTableNameList(
+                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "extrapay",
+                        DatePattern.NORM_YEAR_PATTERN)
+        );
+        StationShiftDto  paramDto = new StationShiftDto();
+        BeanUtils.copyProperties(dto,  paramDto);
+        List<ExtraPayVo> extraPayList = tollMapper.getExtraPay(paramDto);
+        //日
+        Map<Integer, TbShVo> tbshMap = new HashMap<>();
+        Map<Integer, ExtraPayVo> extrapayMap = new HashMap<>();
+        if ("0".equals(dto.getStatisticsType())) {
+            tbshMap = tbShVoList.stream()
+                    .collect(Collectors.toMap(TbShVo::getStaDate, i -> i));
+            extrapayMap = extraPayList.stream()
+                    .collect(Collectors.toMap(ExtraPayVo::getStaDate, i -> i));
         }
-        //计算金额差异和统计金额
-        stationShiftVos.forEach(i -> {
-            //计算金额差异
-            BigDecimal amountDiff = BigDecimal.valueOf(i.getPaidAmount());
-            amountDiff = amountDiff.subtract(BigDecimal.valueOf(i.getDueAmount()));
-            i.setAmountDiff(amountDiff.setScale(2, RoundingMode.HALF_UP).doubleValue());
-            //给统计方式赋值
-            if (dto.getStatisticsType().equals("0")) {
-                i.setStatType(i.getStaDate().toString());
-            } else if (dto.getStatisticsType().equals("1")) {
-                i.setStatType(i.getMonthDate());
-            } else if (dto.getStatisticsType().equals("2")) {
-                i.setStatType(i.getStationName());
+        //月
+        else if ("1".equals(dto.getStatisticsType())) {
+            tbshMap = tbShVoList.stream()
+                    .collect(Collectors.toMap(TbShVo::getMonthDate, i -> i));
+            extrapayMap = extraPayList.stream()
+                    .collect(Collectors.toMap(ExtraPayVo::getMonthDate, i -> i));
+        }
+        //站
+        else if ("2".equals(dto.getStatisticsType())) {
+            tbshMap = tbShVoList.stream()
+                    .collect(Collectors.toMap(TbShVo::getStaDate, i -> i));
+            extrapayMap = extraPayList.stream()
+                    .collect(Collectors.toMap(ExtraPayVo::getStaDate, i -> i));
+        }
+        //计算金额差异和统计金额和应缴金额
+        for (StationShiftVo item : stationShiftVos) {
+            //加收金额
+            BigDecimal addedToll = BigDecimal.ZERO;
+            //移动支付加收金额
+            BigDecimal ydzfAddedToll = BigDecimal.ZERO;
+            //实收金额
+            BigDecimal handToll = BigDecimal.ZERO;
+            //douTotalToll
+            BigDecimal douTotalToll = item.getDouTotalToll();
+            switch (dto.getStatisticsType()) {
+                case "0":
+                    item.setStatType(item.getStaDate().toString());
+                    if (Objects.nonNull(tbshMap.get(item.getStaDate()))) {
+                        TbShVo tbShVo = tbshMap.get(item.getStaDate());
+                        handToll = tbShVo.getHandToll();
+                    }
+                    if (Objects.nonNull(extrapayMap.get(item.getStaDate()))) {
+                        ExtraPayVo extraPayVo = extrapayMap.get(item.getStaDate());
+                        ydzfAddedToll = extraPayVo.getYdzfMoney();
+                        addedToll =  extraPayVo.getExtAddToll();
+                    }
+                    break;
+                case "1":
+                    item.setStatType(item.getMonthDate().toString());
+                    if (Objects.nonNull(tbshMap.get(item.getMonthDate()))) {
+                        TbShVo tbShVo = tbshMap.get(item.getMonthDate());
+                        handToll = tbShVo.getHandToll();
+                    }
+                    if (Objects.nonNull(extrapayMap.get(item.getMonthDate()))) {
+                        ExtraPayVo extraPayVo = extrapayMap.get(item.getMonthDate());
+                        ydzfAddedToll = extraPayVo.getYdzfMoney();
+                        addedToll =  extraPayVo.getExtAddToll();
+                    }
+                    break;
+                case "2":
+                    item.setStatType(item.getStationName());
+                    if (Objects.nonNull(tbshMap.get(item.getStationId()))) {
+                        TbShVo tbShVo = tbshMap.get(item.getStationId());
+                        handToll = tbShVo.getHandToll();
+                    }
+                    if (Objects.nonNull(extrapayMap.get(item.getStationId()))) {
+                        ExtraPayVo extraPayVo = extrapayMap.get(item.getStationId());
+                        ydzfAddedToll = extraPayVo.getYdzfMoney();
+                        addedToll =  extraPayVo.getExtAddToll();
+                    }
+                    break;
             }
-        });
+            //应缴金额计算
+            BigDecimal yjje = douTotalToll.add(addedToll).subtract(ydzfAddedToll);
+            //金额差异
+            BigDecimal jecy = handToll.subtract(yjje);
+            //统计金额 应缴金额(现金)+移动支付+电子支付+移动支付加收
+            BigDecimal tjje = yjje.add(item.getMobilePaymentAmount()).add(item.getEPaymentAmount()).add(ydzfAddedToll);
+            //实缴金额
+            item.setPaidAmount(handToll);
+            //应缴金额
+            item.setDueAmount(yjje);
+            //金额差异
+            item.setAmountDiff(jecy);
+            //统计金额
+            item.setStatAmount(tjje);
+            //加收款
+            item.setExtraTotal(addedToll);
+        }
         //合计行
         StationShiftVo hjRow = buildTotalRowVo(stationShiftVos);
         hjRow.setTotalRow(true);
@@ -450,58 +535,68 @@ public class TollServiceImpl implements ITollService {
         FtStationDto paramDto = new FtStationDto();
         BeanUtils.copyProperties(dto, paramDto);
         List<TbShVo> tbShVoList = tollMapper.getTbShDataV2(paramDto);
-        for (VehicleClassStatVo vehicleClassStatVo : vehicleClassStatVos) {
-            for (TbShVo tbSh : tbShVoList) {
-                //日
-                if (dto.getStatisticsType().equals("0")) {
-                    if (vehicleClassStatVo.getStaDate().equals(tbSh.getStaDate())) {
-                        //加收款
-                        vehicleClassStatVo.setAddedAmount(tbSh.getAddedToll());
-                    }
-                }
-                //月
-                else if (dto.getStatisticsType().equals("1")) {
-                    if (vehicleClassStatVo.getMonthDate().equals(tbSh.getMonthDate())) {
-                        //加收款
-                        vehicleClassStatVo.setAddedAmount(tbSh.getAddedToll());
-                    }
-                }
-                //站
-                else if (dto.getStatisticsType().equals("2")) {
-                    if (vehicleClassStatVo.getStationId().equals(tbSh.getStationId())) {
-                        //加收款
-                        vehicleClassStatVo.setAddedAmount(tbSh.getAddedToll());
-                    }
-                }
-                //人员
-                else if (dto.getStatisticsType().equals("3")) {
-                    if (vehicleClassStatVo.getOperatorId().equals(tbSh.getOperatorId())) {
-                        //加收款
-                        vehicleClassStatVo.setAddedAmount(tbSh.getAddedToll());
-                    }
-                }
-            }
+
+        Map<Integer, TbShVo>  tbshMap = new HashMap<>();
+        //日
+        if ("0".equals(dto.getStatisticsType())) {
+            tbshMap = tbShVoList.stream().collect(Collectors.toMap(TbShVo::getStaDate, i -> i));
         }
-        //计算合计
-        vehicleClassStatVos.forEach(i -> {
-            BigDecimal sum = BigDecimal.valueOf(Objects.nonNull(i.getCustSubTotal()) ? i.getCustSubTotal() : 0);
-            sum = sum.add(BigDecimal.valueOf(Objects.nonNull(i.getTruckSubTotal()) ? i.getTruckSubTotal() : 0));
-            sum = sum.add(BigDecimal.valueOf(Objects.nonNull(i.getSpecSubTotal()) ? i.getSpecSubTotal() : 0));
-            sum = sum.add(BigDecimal.valueOf(Objects.nonNull(i.getAddedAmount()) ? i.getAddedAmount() : 0));
-            i.setTotalAmount(sum.setScale(2, RoundingMode.HALF_UP).doubleValue());
-        });
-        //获取统计方式
-        vehicleClassStatVos.forEach(v -> {
-            if (dto.getStatisticsType().equals("0")) {
-                v.setStatType(v.getStaDate().toString());
-            } else if (dto.getStatisticsType().equals("1")) {
-                v.setStatType(v.getMonthDate());
-            } else if (dto.getStatisticsType().equals("2")) {
-                v.setStatType(v.getStationName());
-            } else if (dto.getStatisticsType().equals("3")) {
-                v.setStatType(v.getOperatorId().toString());
+        //月
+        else if ("1".equals(dto.getStatisticsType())) {
+            tbshMap = tbShVoList.stream().collect(Collectors.toMap(TbShVo::getMonthDate, i -> i));
+        }
+        //站
+        else if ("2".equals(dto.getStatisticsType())) {
+            tbshMap = tbShVoList.stream().collect(Collectors.toMap(TbShVo::getStationId, i -> i));
+        }
+        //人员
+        else if ("3".equals(dto.getStatisticsType())) {
+            tbshMap = tbShVoList.stream().collect(Collectors.toMap(TbShVo::getOperatorId, i -> i));
+        }
+
+        for (VehicleClassStatVo item : vehicleClassStatVos) {
+            //加收金额
+            BigDecimal addedToll = BigDecimal.ZERO;
+            switch (dto.getStatisticsType()) {
+                //日
+                case "0":
+                    item.setStatType(item.getStaDate().toString());
+                    if (Objects.nonNull(tbshMap.get(item.getStaDate()))) {
+                        addedToll = tbshMap.get(item.getStaDate()).getAddedToll();
+                    }
+                    break;
+                //月
+                case "1":
+                    item.setStatType(item.getMonthDate().toString());
+                    if (Objects.nonNull(tbshMap.get(item.getMonthDate()))) {
+                        addedToll = tbshMap.get(item.getStaDate()).getAddedToll();
+                    }
+                    break;
+                //站
+                case "2":
+                    item.setStatType(item.getStationName());
+                    if (Objects.nonNull(tbshMap.get(item.getStationId()))) {
+                        addedToll = tbshMap.get(item.getStaDate()).getAddedToll();
+                    }
+                    break;
+                //人
+                case "3":
+                    item.setStatType(item.getOperatorId().toString());
+                    if (Objects.nonNull(tbshMap.get(item.getOperatorId()))) {
+                        addedToll = tbshMap.get(item.getStaDate()).getAddedToll();
+                    }
+                    break;
             }
-        });
+            //设置加收金额
+            item.setAddedAmount(addedToll);
+            //计算合计
+            BigDecimal totalToll = BigDecimal.ZERO;
+            totalToll = totalToll.add(item.getCustSubTotal())
+                    .add(item.getTruckSubTotal())
+                    .add(item.getSpecSubTotal())
+                    .add(item.getAddedAmount());
+            item.setTotalAmount(totalToll);
+        }
         //合计
         VehicleClassStatVo totalRow = buildAfvTotalRow(vehicleClassStatVos);
         vehicleClassStatVos.add(totalRow);
@@ -512,48 +607,48 @@ public class TollServiceImpl implements ITollService {
         VehicleClassStatVo vehicleClassStatVo = new VehicleClassStatVo();
         vehicleClassStatVo.setStatType("合计");
         vehicleClassStatVo.setTotalRow(true);
-        vehicleClassStatVo.setCust1(list.stream().map(i -> BigDecimal.valueOf(i.getCust1()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setCust2(list.stream().map(i -> BigDecimal.valueOf(i.getCust2()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setCust3(list.stream().map(i -> BigDecimal.valueOf(i.getCust3()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setCust4(list.stream().map(i -> BigDecimal.valueOf(i.getCust4()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setCustSubTotal(list.stream().map(i -> BigDecimal.valueOf(i.getCustSubTotal()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setTruck1(list.stream().map(i -> BigDecimal.valueOf(i.getTruck1()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setTruck2(list.stream().map(i -> BigDecimal.valueOf(i.getTruck2()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setTruck3(list.stream().map(i -> BigDecimal.valueOf(i.getTruck3()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setTruck4(list.stream().map(i -> BigDecimal.valueOf(i.getTruck4()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setTruck5(list.stream().map(i -> BigDecimal.valueOf(i.getTruck5()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setTruck6(list.stream().map(i -> BigDecimal.valueOf(i.getTruck6()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setTruckSubTotal(list.stream().map(i -> BigDecimal.valueOf(i.getTruckSubTotal()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setSpec1(list.stream().map(i -> BigDecimal.valueOf(i.getSpec1()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setSpec2(list.stream().map(i -> BigDecimal.valueOf(i.getSpec2()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setSpec3(list.stream().map(i -> BigDecimal.valueOf(i.getSpec3()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setSpec4(list.stream().map(i -> BigDecimal.valueOf(i.getSpec4()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setSpec5(list.stream().map(i -> BigDecimal.valueOf(i.getSpec5()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setSpec6(list.stream().map(i -> BigDecimal.valueOf(i.getSpec6()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setSpecSubTotal(list.stream().map(i -> BigDecimal.valueOf(i.getSpecSubTotal()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setAddedAmount(list.stream().map(i -> BigDecimal.valueOf(i.getAddedAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
-        vehicleClassStatVo.setTotalAmount(list.stream().map(i -> BigDecimal.valueOf(i.getTotalAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        vehicleClassStatVo.setCust1(list.stream().map(VehicleClassStatVo::getCust1)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setCust2(list.stream().map(VehicleClassStatVo::getCust2)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setCust3(list.stream().map(VehicleClassStatVo::getCust3)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setCust4(list.stream().map(VehicleClassStatVo::getCust4)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setCustSubTotal(list.stream().map(VehicleClassStatVo::getCustSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setTruck1(list.stream().map(VehicleClassStatVo::getTruck1)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setTruck2(list.stream().map(VehicleClassStatVo::getTruck2)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setTruck3(list.stream().map(VehicleClassStatVo::getTruck3)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setTruck4(list.stream().map(VehicleClassStatVo::getTruck4)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setTruck5(list.stream().map(VehicleClassStatVo::getTruck5)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setTruck6(list.stream().map(VehicleClassStatVo::getTruck6)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setTruckSubTotal(list.stream().map(VehicleClassStatVo::getTruckSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setSpec1(list.stream().map(VehicleClassStatVo::getSpec1)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setSpec2(list.stream().map(VehicleClassStatVo::getSpec2)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setSpec3(list.stream().map(VehicleClassStatVo::getSpec3)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setSpec4(list.stream().map(VehicleClassStatVo::getSpec4)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setSpec5(list.stream().map(VehicleClassStatVo::getSpec5)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setSpec6(list.stream().map(VehicleClassStatVo::getSpec6)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setSpecSubTotal(list.stream().map(VehicleClassStatVo::getSpecSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setAddedAmount(list.stream().map(VehicleClassStatVo::getAddedAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        vehicleClassStatVo.setTotalAmount(list.stream().map(VehicleClassStatVo::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         return vehicleClassStatVo;
     }
 
@@ -611,14 +706,14 @@ public class TollServiceImpl implements ITollService {
         //获取内容
         List<EPayTollStatVo> ePayTollStatVos = tollMapper.eefEPay(dto);
         ePayTollStatVos.forEach(i -> {
-            if (dto.getStatisticsType().equals("0")) {
-                i.setStatType(i.getStaDate().toString());
-            } else if (dto.getStatisticsType().equals("1")) {
+            if ("0".equals(dto.getStatisticsType())) {
+                i.setStatType(i.getStaDate());
+            } else if ("1".equals(dto.getStatisticsType())) {
                 i.setStatType(i.getMonthDate());
-            } else if (dto.getStatisticsType().equals("2")) {
+            } else if ("2".equals(dto.getStatisticsType())) {
                 i.setStatType(i.getStationName());
-            } else if (dto.getStatisticsType().equals("3")) {
-                i.setStatType(i.getOperatorId().toString());
+            } else if ("3".equals(dto.getStatisticsType())) {
+                i.setStatType(i.getOperatorId());
             }
         });
         return ePayTollStatVos;
@@ -642,34 +737,54 @@ public class TollServiceImpl implements ITollService {
         if (!CollectionUtils.isEmpty(extraList)) {
             result.addAll(extraList);
         }
+
         Map<String, F6TollVo> map = result.stream()
                 .collect(Collectors.groupingBy(F6TollVo::getOperatorId,
                         Collectors.collectingAndThen(
                                 Collectors.toList(),
                                 list -> {
                                     F6TollVo summary = new F6TollVo();
+                                    // 设置操作员信息
                                     summary.setOperatorId(list.get(0).getOperatorId());
                                     summary.setOperatorName(list.get(0).getOperatorName());
-                                    list.forEach(item -> {
-                                        summary.setToll(summary.getToll() + item.getToll());
-                                        summary.setYjIcCardNum(summary.getYjIcCardNum() + item.getYjIcCardNum());
-                                        summary.setPaperNum(summary.getPaperNum() + item.getPaperNum());
-                                        summary.setYfIcCardNum(summary.getYfIcCardNum() + item.getYfIcCardNum());
-                                    });
+                                    // 初始化金额字段为 BigDecimal.ZERO
+                                    BigDecimal tollSum = BigDecimal.ZERO;
+                                    // 初始化数量字段为 0
+                                    int yjIcCardSum = 0;
+                                    int paperNumSum = 0;
+                                    int yfIcCardSum = 0;
+                                    // 遍历列表进行累加
+                                    for (F6TollVo item : list) {
+                                        // 计算当前项目的 toll（exitToll + addedToll）
+                                        BigDecimal exitToll = item.getExitToll() != null ? item.getExitToll() : BigDecimal.ZERO;
+                                        BigDecimal addedToll = item.getAddedToll() != null ? item.getAddedToll() : BigDecimal.ZERO;
+                                        BigDecimal itemToll = exitToll.add(addedToll);
+                                        tollSum = tollSum.add(itemToll);
+
+                                        // 累加其他 int 类型的字段
+                                        yjIcCardSum += item.getYjIcCardNum();
+                                        paperNumSum += item.getPaperNum();
+                                        yfIcCardSum += item.getYfIcCardNum();
+                                    }
+                                    // 设置累加结果到 summary 对象
+                                    summary.setToll(tollSum);
+                                    summary.setYjIcCardNum(yjIcCardSum);
+                                    summary.setPaperNum(paperNumSum);
+                                    summary.setYfIcCardNum(yfIcCardSum);
                                     return summary;
                                 }
                         )
                 ));
         List<F6TollVo> realResult = new ArrayList<>();
         map.forEach((s, item) -> realResult.add(item));
-        realResult.forEach(item -> item.setToll(new BigDecimal(item.getToll().toString()).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+        realResult.forEach(item -> item.setToll(item.getToll()));
 
         //增加合计行
         F6TollVo totalRow = new F6TollVo();
         totalRow.setTotalRow(true);
         totalRow.setOperatorId("合计");
-        totalRow.setToll(realResult.stream().map(i -> BigDecimal.valueOf(i.getToll()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        totalRow.setToll(realResult.stream().map(F6TollVo::getToll)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         totalRow.setPaperNum(realResult.stream().map(i -> BigDecimal.valueOf(i.getPaperNum()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setYjIcCardNum(realResult.stream().map(i -> BigDecimal.valueOf(i.getYjIcCardNum()))
@@ -693,8 +808,8 @@ public class TollServiceImpl implements ITollService {
                     TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
             List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
             if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                List<Integer> stationIdList = tbStationInfoList.stream().map(TbStationInfo::getStationid)
+                        .filter(Objects::nonNull).collect(Collectors.toList());
                 dto.setStationIdList(stationIdList);
             }
         } else {
@@ -705,65 +820,65 @@ public class TollServiceImpl implements ITollService {
         Map<Integer, TbShVo> tbShMap = new HashMap<>();
         dto.setTableName("sh" + DateUtil.format(dto.getTime(), DatePattern.SIMPLE_MONTH_PATTERN));
         List<TbShVo> tbShList = tollMapper.getTbShGroupByStation(dto);
-        Set<Integer> stationIdSet = new HashSet<>();
         if (!CollectionUtils.isEmpty(tbShList)) {
             tbShMap = tbShList.stream().collect(Collectors.toMap(TbShVo::getStationId, i -> i, (m,n)->m));
-            stationIdSet.addAll(tbShMap.keySet());
         }
         //新款加收 获取字段extAddToll
-        dto.setTableName("extrapay" + DateUtil.format(dto.getTime(), DatePattern.NORM_YEAR_PATTERN));
+        dto.setTableNameList(Collections.singletonList("extrapay" + DateUtil.format(dto.getTime(), DatePattern.NORM_YEAR_PATTERN)));
+        dto.setStatisticsType("2");
         Map<Integer, ExtraPayVo> extraPayMap = new HashMap<>();
-        List<ExtraPayVo> extraPayList = tollMapper.getExtraPayByStation(dto);
+        List<ExtraPayVo> extraPayList = tollMapper.getExtraPay(dto);
         if (!CollectionUtils.isEmpty(extraPayList)) {
             extraPayMap = extraPayList.stream().collect(Collectors.toMap(ExtraPayVo::getStationId, i -> i, (m,n)->m));
-            stationIdSet.addAll(extraPayMap.keySet());
         }
         //出口表数据
         dto.setTableName("tbstatexit" + DateUtil.format(dto.getTime(), DatePattern.SIMPLE_MONTH_PATTERN));
         List<Cf1Vo> tbstatExitList = tollMapper.getCf1Vo(dto);
-        // 加收金额= addedtoll+extAddToll
-        // 实收金额 = cash + addedtoll
-        // 总金额 = 实收金额 + eAmount + mAmount
-        // 金额差异 = handtoll - 实收金额
         if (CollectionUtils.isEmpty(tbstatExitList)) {
             return new ArrayList<>();
         } else {
-            stationIdSet.addAll(tbstatExitList.stream().map(Cf1Vo::getStationId).collect(Collectors.toSet()));
             for (Cf1Vo item : tbstatExitList) {
-                item.setDueAmount(new BigDecimal(item.getDueAmount()).setScale(2, RoundingMode.HALF_UP).toPlainString());
-                item.setArrearsAmount(new BigDecimal(item.getArrearsAmount()).setScale(2, RoundingMode.HALF_UP).toPlainString());
-                BigDecimal extraDecimal = new BigDecimal(0);
-                BigDecimal paidDecimal = new BigDecimal(0);
-                BigDecimal totalTollDecimal = new BigDecimal(0);
-                BigDecimal diffDecimal = new BigDecimal(0);
-                Integer stationId = item.getStationId();
-                if (Objects.nonNull(tbShMap.get(stationId))) {
-                    TbShVo tbShVo = tbShMap.get(stationId);
-                    extraDecimal = extraDecimal.add(BigDecimal.valueOf(tbShVo.getAddedToll()));
-                    paidDecimal = paidDecimal.add(BigDecimal.valueOf(tbShVo.getHandToll()));
-                    diffDecimal = BigDecimal.valueOf(tbShVo.getHandToll());
-                }
-                if (Objects.nonNull(extraPayMap.get(stationId))) {
-                    ExtraPayVo extraPayVo = extraPayMap.get(stationId);
-                    extraDecimal = extraDecimal.add(BigDecimal.valueOf(extraPayVo.getExtAddToll()));
-                }
-                //加收金额
-                String extraTotal = extraDecimal.setScale(2, RoundingMode.HALF_UP).toPlainString();
+//                SET @doutotaltolls = @doutotaltoll + @doutotaltoll1 + @addedtoll;
+//                SET @alltotalfee = @doutotaltolls + @eamoney+@ebmoney+@eamoney1+@ebmoney1+@mobmoney;-- 总金额
+//                SET @difffee = @handtoll-@doutotaltolls;-- 金额差异
                 //实收金额
-                paidDecimal = paidDecimal.add(extraDecimal);
-                String paidAmount = paidDecimal.setScale(2, RoundingMode.HALF_UP).toPlainString();
-                //总金额
-                totalTollDecimal = totalTollDecimal.add(paidDecimal);
-                totalTollDecimal = totalTollDecimal.add(new BigDecimal(item.getEPaymentAmount()));
-                totalTollDecimal = totalTollDecimal.add(new BigDecimal(item.getMobilePaymentAmount()));
-                String statAmount =  totalTollDecimal.setScale(2, RoundingMode.HALF_UP).toPlainString();
+                BigDecimal handToll = BigDecimal.ZERO;
+                //移动支付加收
+                BigDecimal ydzfMoney = BigDecimal.ZERO;
+                //加收金额
+                BigDecimal addedToll = BigDecimal.ZERO;
+                //应缴金额
+                BigDecimal yjje = BigDecimal.ZERO;
+                //统计金额(总金额)
+                BigDecimal tjje = BigDecimal.ZERO;
                 //金额差异
-                diffDecimal = diffDecimal.subtract(paidDecimal);
-                String amountDiff = diffDecimal.setScale(2, RoundingMode.HALF_UP).toPlainString();
-                item.setExtraTotal(extraTotal);
-                item.setPaidAmount(paidAmount);
-                item.setStatAmount(statAmount);
-                item.setAmountDiff(amountDiff);
+                BigDecimal jecy = BigDecimal.ZERO;
+                if (Objects.nonNull(tbShMap.get(item.getStationId()))) {
+                    TbShVo tbShVo = tbShMap.get(item.getStationId());
+                    handToll = tbShVo.getHandToll();
+                }
+                if (Objects.nonNull(extraPayMap.get(item.getStationId()))) {
+                    ExtraPayVo extraPayVo = extraPayMap.get(item.getStationId());
+                    ydzfMoney = extraPayVo.getYdzfMoney();
+                    addedToll = extraPayVo.getExtAddToll();
+                }
+                //应缴金额
+                yjje = yjje.add(item.getDouTotalToll()).add(addedToll).subtract(ydzfMoney);
+                //统计金额
+                tjje = tjje.add(yjje).add(item.getEPaymentAmount()).add(item.getMobilePaymentAmount()).add(ydzfMoney);
+                //金额差异
+                jecy = jecy.add(handToll).subtract(jecy);
+
+                //统计金额
+                item.setStatAmount(tjje);
+                //应缴金额
+                item.setDueAmount(yjje);
+                //实缴金额
+                item.setPaidAmount(handToll);
+                //金额差异
+                item.setAmountDiff(jecy);
+                //加收款
+                item.setExtraTotal(addedToll);
             }
         }
         //构建合计行
@@ -771,41 +886,41 @@ public class TollServiceImpl implements ITollService {
         totalRow.setTotalRow(true);
         totalRow.setStationName("合计");
         //统计金额
-        totalRow.setStatAmount(tbstatExitList.stream().map(i -> new BigDecimal(i.getStatAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toPlainString());
+        totalRow.setStatAmount(tbstatExitList.stream().map(Cf1Vo::getStatAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //应缴金额
-        totalRow.setDueAmount(tbstatExitList.stream().map(i -> new BigDecimal(i.getDueAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toPlainString());
+        totalRow.setDueAmount(tbstatExitList.stream().map(Cf1Vo::getDueAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //实缴金额
-        totalRow.setPaidAmount(tbstatExitList.stream().map(i -> new BigDecimal(i.getPaidAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toPlainString());
+        totalRow.setPaidAmount(tbstatExitList.stream().map(Cf1Vo::getPaidAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //金额差异
-        totalRow.setAmountDiff(tbstatExitList.stream().map(i -> new BigDecimal(i.getAmountDiff()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toPlainString());
+        totalRow.setAmountDiff(tbstatExitList.stream().map(Cf1Vo::getAmountDiff)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //欠款
-        totalRow.setArrearsAmount(tbstatExitList.stream().map(i -> new BigDecimal(i.getArrearsAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toPlainString());
+        totalRow.setArrearsAmount(tbstatExitList.stream().map(Cf1Vo::getArrearsAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //加收款
-        totalRow.setExtraTotal(tbstatExitList.stream().map(i -> new BigDecimal(i.getExtraTotal()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toPlainString());
+        totalRow.setExtraTotal(tbstatExitList.stream().map(Cf1Vo::getExtraTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //移动支付
-        totalRow.setMobilePaymentAmount(tbstatExitList.stream().map(i -> new BigDecimal(i.getMobilePaymentAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toPlainString());
+        totalRow.setMobilePaymentAmount(tbstatExitList.stream().map(Cf1Vo::getMobilePaymentAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //电子支付
-        totalRow.setEPaymentAmount(tbstatExitList.stream().map(i -> new BigDecimal(i.getEPaymentAmount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toPlainString());
+        totalRow.setEPaymentAmount(tbstatExitList.stream().map(Cf1Vo::getEPaymentAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         //公务IC卡
         totalRow.setOfficialIcCardCount(tbstatExitList.stream().map(i -> BigDecimal.valueOf(i.getOfficialIcCardCount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         //军车IC卡
         totalRow.setMilitaryIcCardCount(tbstatExitList.stream().map(i -> BigDecimal.valueOf(i.getMilitaryIcCardCount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         //免费IC卡
         totalRow.setFreeIcCardCount(tbstatExitList.stream().map(i -> BigDecimal.valueOf(i.getFreeIcCardCount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         //应缴IC卡
         totalRow.setDueIcCardCount(tbstatExitList.stream().map(i -> BigDecimal.valueOf(i.getDueIcCardCount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).intValue());
+                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         tbstatExitList.add(totalRow);
         return tbstatExitList;
     }

@@ -3,6 +3,8 @@ package com.itssky.system.domain.vo;
 import com.itssky.common.annotation.Excel;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,28 +19,28 @@ public class FtTollVo {
     private String tollAmount;
 
     @Excel(name = "统计金额", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 2)
-    private Double statAmount = 0D;
+    private BigDecimal statAmount = BigDecimal.ZERO;
 
     @Excel(name = "应缴金额", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 3)
-    private Double dueAmount = 0D;
+    private BigDecimal dueAmount = BigDecimal.ZERO;
 
     @Excel(name = "实缴金额", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 4)
-    private Double paidAmount = 0D;
+    private BigDecimal paidAmount = BigDecimal.ZERO;
 
     @Excel(name = "金额差异", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 5)
-    private Double amountDiff = 0D;
+    private BigDecimal amountDiff = BigDecimal.ZERO;
 
     @Excel(name = "欠款", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 6)
-    private Double arrearsAmount = 0D;
+    private BigDecimal arrearsAmount = BigDecimal.ZERO;
 
     @Excel(name = "加收款", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 7)
-    private Double extraTotal = 0D;
+    private BigDecimal extraTotal = BigDecimal.ZERO;
 
     @Excel(name = "移动支付", mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private Double mobilePaymentAmount = 0D;
+    private BigDecimal mobilePaymentAmount = BigDecimal.ZERO;
 
     @Excel(name = "电子支付", mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private Double ePaymentAmount = 0D;
+    private BigDecimal ePaymentAmount = BigDecimal.ZERO;
 
     @Excel(name = "公务IC卡", mergeRow = 3, headerRow = 2, mergeColumn = 1)
     private Integer officialIcCardCount = 0;

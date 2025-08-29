@@ -2,6 +2,8 @@ package com.itssky.system.domain.vo;
 
 import lombok.*;
 
+import java.math.BigDecimal;
+
 /**
  * @author ITSSKY
  */
@@ -56,22 +58,22 @@ public class StationShiftVo {
     /**
      * 统计金额
      */
-    private Double statAmount = 0D;
+    private BigDecimal statAmount = BigDecimal.ZERO;
 
     /**
      * 应缴金额
      */
-    private Double dueAmount = 0D;
+    private BigDecimal dueAmount = BigDecimal.ZERO;
 
     /**
      * 实缴金额
      */
-    private Double paidAmount = 0D;
+    private BigDecimal paidAmount = BigDecimal.ZERO;
 
     /**
      * 金额差异
      */
-    private Double amountDiff = 0D;
+    private BigDecimal amountDiff = BigDecimal.ZERO;
 
     /**
      * 欠款车次
@@ -81,12 +83,17 @@ public class StationShiftVo {
     /**
      * 欠款金额
      */
-    private Double arrearsAmount = 0D;
+    private BigDecimal arrearsAmount = BigDecimal.ZERO;
 
     /**
      * 加收款现金
      */
     private Integer extraCash = 0;
+
+    /**
+     * doutotaltoll
+     */
+    private BigDecimal douTotalToll = BigDecimal.ZERO;
 
     /**
      * 移动支付加收款
@@ -96,17 +103,17 @@ public class StationShiftVo {
     /**
      * 加收款合计
      */
-    private Double extraTotal = 0D;
+    private BigDecimal extraTotal = BigDecimal.ZERO;
 
     /**
      * 移动支付金额
      */
-    private Double mobilePaymentAmount = 0D;
+    private BigDecimal mobilePaymentAmount = BigDecimal.ZERO;
 
     /**
      * 电子支付金额
      */
-    private Double ePaymentAmount = 0D;
+    private BigDecimal ePaymentAmount = BigDecimal.ZERO;
 
     /**
      * 公务IC卡数
@@ -141,7 +148,7 @@ public class StationShiftVo {
     /**
      * 统计方式 月份
      */
-    private String monthDate;
+    private Integer monthDate;
 
     private Integer staDate;
 }
