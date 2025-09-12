@@ -112,9 +112,12 @@ public class SpecialController {
      */
     @PostMapping(value = "/unuse/etc")
     public TableDataVo unuseEtcTable(@RequestBody UnUseEtcDto dto) throws IOException {
-        List<UnUseEtcVo> result = new ArrayList<>();
-        specialService.unuseEtcTable(dto);
-        return new TableDataVo();
+        TableDataVo tableDataVo = new TableDataVo();
+        List<UnUseEtcVo> unUseEtcVos = specialService.unuseEtcTable(dto);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getCorpNo(), dto.getBeginTime(), dto.getEndTime()));
+        tableDataVo.setRows(unUseEtcVos);
+        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        return tableDataVo;
     }
 
     /**
@@ -157,6 +160,7 @@ public class SpecialController {
         // 总列数 = 日期(1) + 收费站(3) + 小计(1) = 5
         int totalColumns = 1 + stationNames.size() + 1;
 
+        List<String> conditionList = cardService.buildConditionList(dto.getCorpNo(), dto.getBeginTime(), dto.getEndTime());
         // 自定义数据提取器
         Function<Object, Map<String, Object>> dataExtractor = data -> {
             UnUseEtcVo dailyData = (UnUseEtcVo) data;
@@ -175,7 +179,7 @@ public class SpecialController {
         return DynamicHeaderExcelExporter.exportToExcel(
                 result,
                 "收费站报表",
-                null,
+                conditionList,
                 totalColumns,
                 "南通绕城",
                 "张三",

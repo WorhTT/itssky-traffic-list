@@ -36,4 +36,6 @@ public interface CardService {
 
     public List<String> buildConditionList(Integer stationId, Date beginTime, Date endTime);
 
+    public List<String> buildConditionList(String corpNo, Date beginTime, Date endTime);
+
 }

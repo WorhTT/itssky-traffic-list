@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itssky.common.annotation.DynamicTableName;
 import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.MybatisPlusTableNameHelper;
+import com.itssky.system.domain.TbCorpInfo;
 import com.itssky.system.domain.TbStationInfo;
 import com.itssky.system.domain.dto.*;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.mapper.CardMapper;
+import com.itssky.system.mapper.TbCorpInfoMapper;
 import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.mapper.TollMapper;
 import com.itssky.system.service.CardService;
@@ -40,6 +42,9 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     private TbStationInfoMapper tbStationInfoMapper;
+
+    @Autowired
+    private TbCorpInfoMapper corpInfoMapper;
 
     /**
      * S1收费站通行卡发放班统计表
@@ -257,6 +262,18 @@ public class CardServiceImpl implements CardService {
             }
         }
         conditionList.add("统计日期：" + DateUtil.format(time, DatePattern.NORM_DATE_PATTERN));
+        return conditionList;
+    }
+
+    @Override
+    public List<String> buildConditionList(String corpNo, Date beginTime, Date endTime) {
+        List<String> conditionList = new ArrayList<>();
+        LambdaQueryWrapper<TbCorpInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(TbCorpInfo::getCorpno, corpNo);
+        TbCorpInfo tbCorpInfo = corpInfoMapper.selectOne(wrapper);
+        conditionList.add("收费站：" + tbCorpInfo.getCorpname());
+        conditionList.add("统计日期：" + DateUtil.format(beginTime, DatePattern.NORM_DATE_PATTERN) + " 至 " +
+                DateUtil.format(endTime, DatePattern.NORM_DATE_PATTERN));
         return conditionList;
     }
 
