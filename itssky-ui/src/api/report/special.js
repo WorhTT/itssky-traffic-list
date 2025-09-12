@@ -31,3 +31,20 @@ export function exportCxczTable(data) {
     data: data
   })
 }
+
+export function unUseEtcTable(data) {
+  return request({
+    url: '/special/unuse/etc',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportUnUseEtc(data) {
+  return request({
+    url: '/special/export/unuse/etc',
+    method: 'post',
+    data: data
+  })
+}
+

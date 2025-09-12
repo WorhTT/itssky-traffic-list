@@ -8,8 +8,11 @@ import com.itssky.common.utils.StringUtils;
 import com.itssky.system.domain.TbStationInfo;
 import com.itssky.system.domain.dto.CxczDto;
 import com.itssky.system.domain.dto.GreenDto;
+import com.itssky.system.domain.dto.UnUseEtcDto;
 import com.itssky.system.domain.vo.CxczVo;
 import com.itssky.system.domain.vo.GreenVo;
+import com.itssky.system.domain.vo.UnUseEtcSimpleVo;
+import com.itssky.system.domain.vo.UnUseEtcVo;
 import com.itssky.system.mapper.SpecialMapper;
 import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.service.ISpecialService;
@@ -146,5 +149,53 @@ public class SpecialServiceImpl implements ISpecialService {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public List<UnUseEtcVo> unuseEtcTable(UnUseEtcDto dto) {
+        List<UnUseEtcVo> result = new ArrayList<>();
+        //TODO: 因为方法较为通用,所以从列表中的路公司选择开始，
+        // 我们就要确定范围，确定CorpNo的传参，根据用户的权限，可选中心或分中心
+        // 然后根据选择的CorpNo在进行具体收费站列表的查询
+        String corpNo = dto.getCorpNo();
+        LambdaQueryWrapper<TbStationInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TbStationInfo::getCorpno, corpNo);
+        List<TbStationInfo> tbStationInfos = tbStationInfoMapper.selectList(queryWrapper);
+        List<String> stations = Arrays.asList("石港","海门东","金沙","新机场","二甲");
+        List<Integer> stationIds = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(tbStationInfos)) {
+            stations = tbStationInfos.stream().map(TbStationInfo::getStationname).collect(Collectors.toList());
+//            stationIds = tbStationInfos.stream().map(TbStationInfo::getStationid).collect(Collectors.toList());
+        }
+        stationIds = Arrays.asList(1660002,1660001,1660003,1660004,1660005);
+        dto.setStationIdList(stationIds);
+        dto.setTableNameList(
+                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbrawexit",
+                        DatePattern.SIMPLE_MONTH_PATTERN));
+        List<UnUseEtcSimpleVo> unUseEtcSimpleVos = specialMapper.unuseEtcTable(dto);
+        Map<String, List<UnUseEtcSimpleVo>> mapByStaDate = unUseEtcSimpleVos.stream()
+                .collect(Collectors.groupingBy(UnUseEtcSimpleVo::getStaDate));
+        if (!CollectionUtils.isEmpty(unUseEtcSimpleVos)) {
+            //进行聚合操作形成最终Result
+            for (Map.Entry<String, List<UnUseEtcSimpleVo>> entry : mapByStaDate.entrySet()) {
+                UnUseEtcVo unUseEtcVo = new UnUseEtcVo();
+                //单日的数据列表
+                List<UnUseEtcSimpleVo> list = entry.getValue();
+                Map<String, Integer> stationData = new HashMap<>();
+                BigDecimal dailyTotal = BigDecimal.ZERO;
+                for (UnUseEtcSimpleVo i : list) {
+                    String stationName = i.getStationName();
+                    stationData.put(stationName, i.getCount());
+                    dailyTotal = dailyTotal.add(BigDecimal.valueOf(i.getCount()));
+                }
+                unUseEtcVo.setStaDate(entry.getKey());
+                unUseEtcVo.setStationData(stationData);
+                unUseEtcVo.setDailyTotal(dailyTotal.toString());
+                unUseEtcVo.setStations(stations);
+                result.add(unUseEtcVo);
+            }
+        }
+        List<UnUseEtcVo> sortResult = result.stream().sorted(Comparator.comparing(UnUseEtcVo::getStaDate)).collect(Collectors.toList());
+        return sortResult;
     }
 }

@@ -16,3 +16,11 @@ export function listStationSelect(query) {
   });
 }
 
+//根据权限返回的中心及分中心下拉框
+export function centerOptions() {
+  return request({
+    url: '/tbstation/center/options',
+    method: 'get',
+  })
+}
+

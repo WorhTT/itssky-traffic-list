@@ -21,4 +21,48 @@
     id, corpno, corpname, corpshort, corpid, ownerid, ownername, `level`, indexno, spare1, 
     spare2
   </sql>
+
+  <resultMap type="com.itssky.system.domain.TbCorpInfo" id="TbCorpInfoResult">
+    <result property="id"    column="id"    />
+    <result property="corpno"    column="corpno"    />
+    <result property="corpname"    column="corpname"    />
+    <result property="corpshort"    column="corpshort"    />
+    <result property="corpid"    column="corpid"    />
+    <result property="ownerid"    column="ownerid"    />
+    <result property="ownername"    column="ownername"    />
+    <result property="level"    column="level"    />
+    <result property="indexno"    column="indexno"    />
+    <result property="spare1"    column="spare1"    />
+    <result property="spare2"    column="spare2"    />
+  </resultMap>
+
+  <sql id="selectTbCorpInfoVo">
+    select id, corpno, corpname, corpshort, corpid, ownerid, ownername, level, indexno, spare1, spare2 from tbcorpinfo
+  </sql>
+
+  <select id="selectTbCorpInfoList" parameterType="com.itssky.system.domain.TbCorpInfo" resultMap="TbCorpInfoResult">
+    <include refid="selectTbCorpInfoVo"/>
+    <where>
+      and corpno is not null and corpno != '' and Length(corpno) <![CDATA[<=]]> 4
+      <if test="corpname != null  and corpname != ''"> and corpname like concat('%', #{corpname}, '%')</if>
+      <if test="corpno != null  and corpno != ''"> and corpno = #{corpno}</if>
+    </where>
+  </select>
+
+  <select id="selectTbCorpInfoListForTree" parameterType="com.itssky.system.domain.TbCorpInfo" resultMap="TbCorpInfoResult">
+    select id, corpno, corpname, level from tbcorpinfo
+    <where>
+      and corpno is not null and corpno != '' and Length(corpno) <![CDATA[<=]]> 4
+      <if test="corpname != null  and corpname != ''"> and corpname like concat('%', #{corpname}, '%')</if>
+      <if test="corpNoList != null and corpNoList.size() != 0">
+        and corpno IN
+        <foreach collection="corpNoList" item="item" open="(" close=")" separator=",">
+          #{item}
+        </foreach>
+      </if>
+      <if test="corpno != null and corpno != ''">
+        and corpno  LIKE CONCAT (#{corpno},'%')
+      </if>
+    </where>
+  </select>
 </mapper>

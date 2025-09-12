@@ -164,6 +164,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/unUseEtcDetail',
+    component: () => import('@/views/report/special/unUseEtcDetail.vue'),
+    hidden: true
+  },
+  {
     path: '/fd06Detail',
     component: () => import("@/views/report/examine/fd06Detail.vue"),
     hidden: true
@@ -362,6 +367,12 @@ export const constantRoutes = [
         name: '入口超限操作明细表',
         meta: {title: '入口超限操作明细表', icon: 'chart'},
         component: () => import('@/views/report/special/cxcz.vue'),
+      },
+      {
+        path: '/unUseEtc',
+        name: '非ETC车辆开票统计表',
+        meta: {title: '非ETC车辆开票统计表', icon: 'chart'},
+        component: () => import('@/views/report/special/unUseEtc.vue'),
       }
     ]
   },

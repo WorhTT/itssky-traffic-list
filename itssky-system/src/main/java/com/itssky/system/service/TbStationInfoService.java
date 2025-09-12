@@ -34,5 +34,7 @@ public interface TbStationInfoService extends IService<TbStationInfo> {
      * @return {@link Integer }
      */
     public Integer currentAssignStationId();
+
+    public List<Map<String, Object>> centerOptions();
 }
 

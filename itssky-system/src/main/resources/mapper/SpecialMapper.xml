@@ -145,4 +145,38 @@
         a
         ORDER BY StationID, EntryTime
     </select>
+
+    <select id="unuseEtcTable" parameterType="com.itssky.system.domain.dto.UnUseEtcDto"
+            resultType="com.itssky.system.domain.vo.UnUseEtcSimpleVo">
+        SELECT
+            DATE_FORMAT(a.ExitTime, '%Y-%m-%d') AS staDate,
+            a.StationID AS stationId,
+            (SELECT StationName FROM dbtoms.tbstationinfo WHERE a.StationID = StationID LIMIT 1) AS StationName,
+            COUNT(*) AS count
+        FROM
+        (
+        <foreach collection="tableNameList" item="tableName" separator="UNION ALL" open="(" close=")">
+            SELECT ExitTime, StationID FROM ${tableName}
+            <where>
+                AND LENGTH(ECardID) != 20
+                AND DealStatus
+                <!-- 公共的查询条件 -->
+                <if test="beginTime != null">
+                    AND ExitTime >= #{beginTime}
+                </if>
+                <if test="endTime != null">
+                    AND ExitTime &lt;= #{endTime}
+                </if>
+                <if test="stationIdList != null and stationIdList.size() > 0">
+                    AND StationID IN
+                    <foreach collection="stationIdList" item="stationid" open="(" separator="," close=")">
+                        #{stationid}
+                    </foreach>
+                </if>
+            </where>
+        </foreach>
+        ) AS a
+        GROUP BY staDate, a.StationID
+        ORDER BY staDate, a.StationID
+    </select>
 </mapper>

@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
       <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
-      <h3 style="font-weight: bolder;margin: 1vh 0">绿优台账</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">非ETC车辆开票统计表</h3>
     </div>
     <div style="display: flex">
       <span v-for="item in conditionList" style="flex: 1;
@@ -33,15 +33,24 @@
       </el-row>
     </div>
 
-    <el-table v-loading="loading" :data="dataList" border ref="myTable" :span-method="arraySpanMethod" :cell-style="cellStyle" >
+
+    <el-table v-loading="loading" :data="dataList" border ref="myTable" >
+      <!--日期列-->
       <el-table-column label="日期" align="center" prop="staDate" min-width="120"/>
-      <el-table-column label="收费站" align="center" prop="stationName" min-width="120"/>
-      <el-table-column label="收费员" align="center" prop="operatorName"/>
-      <el-table-column label="入口车道" align="center" prop="entryLane"/>
-      <el-table-column label="车道" align="center" prop="laneId"/>
-      <el-table-column label="交易时间" align="center" prop="exitTimeStr"/>
-      <el-table-column label="优惠前金额(元)" align="center" prop="tollfee"/>
-      <el-table-column label="车牌" align="center" prop="licensePlate"/>
+      <!--动态合并收费站列-->
+      <el-table-column label="收费站" align="center">
+        <el-table-column
+          v-for="(station, index) in stations"
+          :key="index"
+          :label="station"
+          align="center"
+          :prop="station"
+          width="120"
+          class-name="station-header">
+        </el-table-column>
+      </el-table-column>
+      <!-- 小计列 -->
+      <el-table-column prop="dailyTotal" label="小计" width="120" align="center"/>
     </el-table>
     <!-- 添加底部信息区域 -->
     <div style="display: flex; justify-content: space-between; margin-top: 20px;">
@@ -54,11 +63,11 @@
 
 <script>
 
-import {greenTable, exportGreenTable,exportUnUseEtc } from "@/api/report/special"
+import {unUseEtcTable, exportUnUseEtc} from "@/api/report/special"
 import {getLoginUser} from "@/api/login";
 
 export default {
-  name: "GreenDetail",
+  name: "UnUseEtcDetail",
   data() {
     return {
       props: {multiple: true},
@@ -96,7 +105,7 @@ export default {
         },
       },
       conditionList:[],
-      operatorName: ''
+      operatorName: '',
     };
   },
   created() {
@@ -138,19 +147,19 @@ export default {
       if (row.hj === true) {
         row.staDate = "优惠前金额合计"
         if (columnIndex === 0) {
-          return [1, 6];
-        } else if (columnIndex >= 1 && columnIndex <= 5) {
+          return [1, 5];
+        } else if (columnIndex >= 1 && columnIndex <= 4) {
           return [0, 0];
-        } else if (columnIndex === 6) {
-          return [6, 8]
-        } else if (columnIndex >= 7 && columnIndex <= 8) {
+        } else if (columnIndex === 5) {
+          return [5, 7]
+        } else if (columnIndex >= 5 && columnIndex <= 7) {
           return [0, 0]
         }
       }
     },
     getList() {
       this.loading = true;
-      greenTable(this.queryParams).then(response => {
+      unUseEtcTable(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
         this.conditionList = response.conditionList;
@@ -162,12 +171,12 @@ export default {
     handleExport() {
       this.loading = true;
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出绿优台账?', "警告", {
+      this.$confirm('是否确认导出非ETC车辆开票统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportGreenTable(queryParams);
+        return exportUnUseEtc(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       }).finally(() => {
@@ -196,9 +205,9 @@ export default {
         <head>
         <title>Print</title>
         <style>
-        /* 在这里添加你的样式 */
+            /* 在这里添加你的样式 */
         .table-container {
-          zoom: 0.75;
+          zoom: 0.7;
           margin-top: 20px;
         }
         .print-title {
@@ -249,7 +258,7 @@ export default {
         }
         .el-table td {
           border: 1px solid #000000 !important;
-          font-size: 20px;
+          font-size: 16px;
           padding: 1px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
@@ -266,13 +275,9 @@ export default {
         }
         @media print {
           body {
-            -webkit-print-color-adjust: exact;
-            color-adjust: exact;
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100vw !important; /* 强制占据全部视口宽度 */
-            /*transform: scale(0.85);  !* 初始缩放系数 *!*/
-            transform-origin: top left;
+            padding: 0;
+            -webkit-print-color-adjust: exact; /* Chrome, Safari */
+            color-adjust: exact; /* Firefox */
           }
         }
         @page {
@@ -283,7 +288,7 @@ export default {
         </head>
         <body>
             <div class="print-title">${corpName}</div>
-            <div class="print-title">绿优台账</div>
+            <div class="print-title">非ETC车辆开票统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
             ${footerHtml}
@@ -299,6 +304,8 @@ export default {
     },
   }
 };
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -309,4 +316,3 @@ export default {
   padding: 4px 0;
 }
 </style>
-

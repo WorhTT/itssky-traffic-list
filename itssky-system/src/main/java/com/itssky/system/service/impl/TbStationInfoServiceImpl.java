@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.exception.biz.BizException;
+import com.itssky.common.utils.SecurityUtils;
 import com.itssky.system.domain.TbCorpInfo;
+import com.itssky.system.domain.TbCorpStationInfoVo;
 import com.itssky.system.domain.TbStationInfo;
+import com.itssky.system.mapper.TbCorpInfoMapper;
 import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.service.TbCorpInfoService;
 import com.itssky.system.service.TbStationInfoService;
@@ -30,7 +33,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
         implements TbStationInfoService {
 
     @Autowired
-    private TbCorpInfoService tbCorpInfoService;
+    private TbCorpInfoMapper tbCorpInfoMapper;
 
     /**
      * 前端下拉选择项
@@ -67,7 +70,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
         //获取路公司相关数据
         LambdaQueryWrapper<TbCorpInfo> tbcorpInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
         tbcorpInfoLambdaQueryWrapper.likeRight(TbCorpInfo::getCorpno, corpNoStr);
-        List<TbCorpInfo> tbcorpInfoList = tbCorpInfoService.list(tbcorpInfoLambdaQueryWrapper);
+        List<TbCorpInfo> tbcorpInfoList = tbCorpInfoMapper.selectList(tbcorpInfoLambdaQueryWrapper);
         if (CollectionUtils.isEmpty(tbstationInfoList)) {
             return null;
         }
@@ -190,5 +193,98 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
             throw new BizException("获取用户信息异常!");
         }
         return loginUser.getStationId();
+    }
+
+    @Override
+    public List<Map<String, Object>> centerOptions() {
+        List<Map<String, Object>> tempList = new ArrayList<>();
+        List<TbCorpStationInfoVo> list = new ArrayList<>();
+        LoginUser loginUser = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof LoginUser) {
+            loginUser = (LoginUser) authentication.getPrincipal();
+        }
+        if (Objects.isNull(loginUser)) {
+            log.error("获取当前用户为空");
+            return tempList;
+        } else {
+            if (SecurityUtils.isAdmin(loginUser.getUserId())) {
+                List<TbCorpInfo> corpInfoList = tbCorpInfoMapper.selectTbCorpInfoList(null);
+                if (!CollectionUtils.isEmpty(corpInfoList)) {
+                    corpInfoList.forEach(i -> {
+                        TbCorpStationInfoVo build = TbCorpStationInfoVo.builder()
+                                .corpName(i.getCorpname())
+                                .corpNo(i.getCorpno())
+                                .stationId(Integer.parseInt(i.getCorpno()))
+                                .stationHex(i.getLevel() == 1 ? "中心" : "分中心")
+                                .build();
+                        list.add(build);
+                    });
+                } else {
+                    log.error("获取路公司信息列表为空");
+                    return tempList;
+                }
+            }
+            //非管理员
+            else {
+                TbCorpInfo param = new TbCorpInfo();
+                if (Objects.isNull(loginUser.getCorpNo())) {
+                    throw new RuntimeException("当前用户获取到的CorpNo为空，请联系维护人员");
+                }
+                if (loginUser.getCorpNo().length() %2 != 0) {
+                    throw new RuntimeException("当前用户所属路公司编号位数有误，请联系维护人员");
+                }
+                //获取当前用户顶层路公司corpno
+                if (loginUser.getCorpNo().length() <= 4) {
+                    List<String> corpNoList = generateChildCorpPaths(loginUser.getCorpNo());
+                    param.setCorpNoList(corpNoList);
+                } else if (loginUser.getCorpNo().length() == 6) {
+                    param.setCorpNoList(Collections.singletonList(loginUser.getCorpNo().substring(0, 4)));
+                }
+
+                List<TbCorpInfo> corpInfoList = tbCorpInfoMapper.selectTbCorpInfoListForTree(param);
+                if (!CollectionUtils.isEmpty(corpInfoList)) {
+                    corpInfoList.forEach(i -> {
+                        TbCorpStationInfoVo build = TbCorpStationInfoVo.builder()
+                                .corpName(i.getCorpname())
+                                .corpNo(i.getCorpno())
+                                .stationId(Integer.parseInt(i.getCorpno()))
+                                .stationHex(i.getLevel() == 1 ? "中心" : "分中心")
+                                .build();
+                        list.add(build);
+                    });
+                }
+            }
+            for (TbCorpStationInfoVo r : list) {
+                Map<String, Object> tempMap = new HashMap<>();
+                tempMap.put("stationId", r.getStationId());
+                tempMap.put("corpNo", r.getCorpNo());
+                tempMap.put("label", r.getCorpName());
+                tempMap.put("stationHex", r.getStationHex());
+                tempList.add(tempMap);
+            }
+        }
+        return tempList;
+    }
+
+    /**
+     * 这个是只从当前的CorpNo往下迭代
+     * @param corpNo
+     * @return
+     */
+    public List<String> generateChildCorpPaths(String corpNo) {
+        List<String> paths = new ArrayList<>();
+        paths.add(corpNo); // 包含当前节点
+
+        // 如果当前CorpNo长度小于6，生成直接子节点
+        if (corpNo.length() < 6) {
+            // 生成所有可能的直接子节点（00-99）
+            for (int i = 0; i <= 99; i++) {
+                String child = corpNo + String.format("%02d", i);
+                paths.add(child);
+            }
+        }
+
+        return paths;
     }
 }

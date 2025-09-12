@@ -1,11 +1,15 @@
 package com.itssky.system.mapper;
 
+import com.itssky.db.Dbedge;
 import com.itssky.db.Dbstats;
 import com.itssky.db.ItsData;
 import com.itssky.system.domain.dto.CxczDto;
 import com.itssky.system.domain.dto.GreenDto;
+import com.itssky.system.domain.dto.UnUseEtcDto;
 import com.itssky.system.domain.vo.CxczVo;
 import com.itssky.system.domain.vo.GreenVo;
+import com.itssky.system.domain.vo.UnUseEtcSimpleVo;
+import com.itssky.system.domain.vo.UnUseEtcVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -24,4 +28,6 @@ public interface SpecialMapper {
     @ItsData
     public List<CxczVo> cxczTable(CxczDto dto);
 
+    @Dbedge
+    public List<UnUseEtcSimpleVo> unuseEtcTable(UnUseEtcDto dto);
 }

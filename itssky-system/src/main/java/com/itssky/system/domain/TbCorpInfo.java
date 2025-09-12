@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -49,6 +50,9 @@ public class TbCorpInfo implements Serializable {
 
     @TableField(value = "spare2")
     private String spare2;
+
+    @TableField(exist = false)
+    private List<String> corpNoList;
 
     private static final long serialVersionUID = 1L;
 }

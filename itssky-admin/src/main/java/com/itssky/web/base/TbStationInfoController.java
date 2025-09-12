@@ -122,4 +122,12 @@ public class TbStationInfoController {
         }
         return resultList;
     }
+
+    /**
+     * 获取中心及分中心的路公司下拉框选项
+     */
+    @GetMapping(value = "/center/options")
+    public AjaxResult getCenterOptions() {
+        return AjaxResult.success(tbStationInfoService.centerOptions());
+    }
 }
