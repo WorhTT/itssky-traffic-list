@@ -71,6 +71,7 @@ public class TollController extends BaseController {
         tableDataVo.setOperatorName(loginUser.getUsername());
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
         tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -96,6 +97,7 @@ public class TollController extends BaseController {
         tableDataVo.setRows(result);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime()));
         tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -121,6 +123,7 @@ public class TollController extends BaseController {
         tableDataVo.setRows(result);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -146,6 +149,7 @@ public class TollController extends BaseController {
         tableDataVo.setRows(result);
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -171,6 +175,7 @@ public class TollController extends BaseController {
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         tableDataVo.setRows(ePayTollStatVos);
         tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -194,6 +199,7 @@ public class TollController extends BaseController {
         data.setRows(tollService.f6Toll(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
         data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 
@@ -212,6 +218,7 @@ public class TollController extends BaseController {
         data.setRows(tollService.cf1Toll(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
         data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 
@@ -230,6 +237,7 @@ public class TollController extends BaseController {
         data.setRows(tollService.mobToll(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 

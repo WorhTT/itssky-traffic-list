@@ -53,9 +53,7 @@
 
 <script>
 
-import {getCharge, exportCharge} from "@/api/report/charge"
-import {listStationSelect, stationSelectList} from "@/api/system/station";
-import {afvGeneral} from "@/api/report/toll";
+import {listStationSelect} from "@/api/system/station";
 import { getCurrentTime, getMidnightTime } from "@/utils/dateUtils";
 
 export default {

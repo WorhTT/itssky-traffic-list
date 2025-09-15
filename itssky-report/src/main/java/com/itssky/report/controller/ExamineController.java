@@ -51,6 +51,7 @@ public class ExamineController extends BaseController {
         data.setConditionList(conditionList);
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         data.setOperatorName(loginUserInfo.getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 
@@ -78,6 +79,7 @@ public class ExamineController extends BaseController {
         data.setConditionList(conditionList);
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         data.setOperatorName(loginUserInfo.getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 
@@ -103,6 +105,7 @@ public class ExamineController extends BaseController {
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         data.setOperatorName(loginUserInfo.getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 
@@ -125,6 +128,7 @@ public class ExamineController extends BaseController {
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         data.setOperatorName(loginUserInfo.getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 
@@ -147,6 +151,7 @@ public class ExamineController extends BaseController {
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         data.setOperatorName(loginUserInfo.getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 

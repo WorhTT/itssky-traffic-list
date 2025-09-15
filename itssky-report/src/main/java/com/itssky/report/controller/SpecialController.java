@@ -58,6 +58,7 @@ public class SpecialController {
                 greenDto.getBeginTime(), greenDto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         tableDataVo.setOperatorName(loginUserInfo.getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -88,6 +89,7 @@ public class SpecialController {
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         tableDataVo.setOperatorName(loginUserInfo.getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -117,6 +119,7 @@ public class SpecialController {
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getCorpNo(), dto.getBeginTime(), dto.getEndTime()));
         tableDataVo.setRows(unUseEtcVos);
         tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 

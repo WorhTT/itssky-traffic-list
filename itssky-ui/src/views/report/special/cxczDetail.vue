@@ -105,6 +105,7 @@ export default {
       },
       conditionList:[],
       operatorName: '',
+      corpName: '',
     };
   },
   created() {
@@ -119,9 +120,9 @@ export default {
     })
   },
   computed: {
-    corpName() {
-      return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
-    },
+    // corpName() {
+    //   return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    // },
     currentDateTime() {
       return this.getCurrentDateTime();
     },
@@ -162,6 +163,7 @@ export default {
         this.dataList = response.rows;
         this.total = response.total;
         this.conditionList = response.conditionList;
+        this.corpName = response.title;
       }).finally(() => {
         this.loading = false;
       });

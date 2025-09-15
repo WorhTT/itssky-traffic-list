@@ -19,4 +19,6 @@ public class TableDataVo {
      * 操作人
      */
     private String operatorName;
+
+    private String title;
 }

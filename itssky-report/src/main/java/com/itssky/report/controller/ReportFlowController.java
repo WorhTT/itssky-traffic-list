@@ -54,6 +54,7 @@ public class ReportFlowController extends BaseController {
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         tableDataVo.setOperatorName(loginUserInfo.getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -68,6 +69,7 @@ public class ReportFlowController extends BaseController {
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         tableDataVo.setOperatorName(loginUserInfo.getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -82,6 +84,7 @@ public class ReportFlowController extends BaseController {
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         tableDataVo.setOperatorName(loginUserInfo.getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -96,6 +99,7 @@ public class ReportFlowController extends BaseController {
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         tableDataVo.setOperatorName(loginUserInfo.getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -186,6 +190,7 @@ public class ReportFlowController extends BaseController {
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         data.setOperatorName(loginUserInfo.getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 
@@ -205,6 +210,7 @@ public class ReportFlowController extends BaseController {
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         data.setOperatorName(loginUserInfo.getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 
@@ -230,6 +236,7 @@ public class ReportFlowController extends BaseController {
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         data.setOperatorName(loginUserInfo.getUsername());
+        data.setTitle(reportTitleName);
         return data;
     }
 

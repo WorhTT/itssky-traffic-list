@@ -16,7 +16,7 @@
         IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
         AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
         OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
-        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14 IN (0,10) THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
+        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
         IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
@@ -53,7 +53,7 @@
         IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
         AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
         OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
-        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14 IN (0,10) THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
+        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
         IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
@@ -89,7 +89,7 @@
         IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
         AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
         OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
-        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14 IN (0,10) THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
+        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
         IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
@@ -568,7 +568,7 @@
         IFNULL(SUM(CASE WHEN (a.DealStatus&amp;14 != 14 AND a.DealStatus&amp;14 != 2 AND a.DealStatus&amp;0xE00000 != 0x200000
             AND a.DealStatus&amp;0x1000000=0 AND a.DealStatus&amp;32 != 32 AND a.CardType=0)
             OR (a.CardType=26 AND a.DealStatus&amp;32 != 32) THEN a.CardNum ELSE 0 END),0) AS dueIcCardCount,
-        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14 IN (0,10) THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
+        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=4 THEN a.TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
         SUM(CASE WHEN a.PayType = 0 THEN a.TotalToll / 100 ELSE 0 END) AS dueAmount,
         IFNULL(CAST(SUM(CASE WHEN a.PayType=16 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,

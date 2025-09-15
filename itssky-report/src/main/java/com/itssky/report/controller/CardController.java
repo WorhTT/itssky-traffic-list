@@ -64,6 +64,7 @@ public class CardController extends BaseController {
             tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
             TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
             tableDataVo.setOperatorName(loginUserInfo.getUsername());
+            tableDataVo.setTitle(reportTitleName);
             return tableDataVo;
         } catch (Exception e) {
             throw new BizException("查询异常!", e);
@@ -111,6 +112,7 @@ public class CardController extends BaseController {
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         tableDataVo.setOperatorName(loginUserInfo.getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -157,6 +159,7 @@ public class CardController extends BaseController {
         tableDataVo.setConditionList(conditionList);
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         tableDataVo.setOperatorName(loginUserInfo.getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
@@ -185,6 +188,7 @@ public class CardController extends BaseController {
         tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         tableDataVo.setOperatorName(loginUserInfo.getUsername());
+        tableDataVo.setTitle(reportTitleName);
         return tableDataVo;
     }
 
