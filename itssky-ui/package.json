@@ -11,6 +11,8 @@
     "build:hsz": "vue-cli-service build --mode hsz",
     "build:nh": "vue-cli-service build --mode nh",
     "build:ntrc": "vue-cli-service build --mode ntrc",
+    "build:yj": "vue-cli-service build --mode yj",
+    "build:st": "vue-cli-service build --mode st",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src"
   },

@@ -1,0 +1,14 @@
+# 页面标题
+VUE_APP_TITLE = 统计报表
+
+# 生产环境配置
+ENV = 'production'
+
+#配置打包环境为生产模式
+NODE_ENV = production
+
+# itssky快速开发/生产环境
+VUE_APP_BASE_API = '/prod-api'
+
+#路公司
+VUE_APP_CORP_NAME = 苏台高速

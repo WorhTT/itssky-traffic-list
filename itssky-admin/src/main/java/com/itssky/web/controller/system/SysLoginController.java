@@ -44,6 +44,9 @@ public class SysLoginController {
     @Autowired
     private TbUserInfoService userInfoService;
 
+    @Autowired
+    private ITbMenuService menuService;
+
     /**
      * 登录方法
      *
@@ -99,9 +102,8 @@ public class SysLoginController {
      */
     @GetMapping("getRouters")
     public AjaxResult getRouters() {
-//        Long userId = SecurityUtils.getUserId();
-//        List<TbMenu> menus = menuService.selectMenuTreeByUserId(userId);
-//        return AjaxResult.success(menuService.buildMenus(menus));
-        return AjaxResult.success(new ArrayList<>());
+        Long userId = SecurityUtils.getUserId();
+        List<TbMenu> menus = menuService.selectMenuTreeByUserId(userId);
+        return AjaxResult.success(menuService.buildMenus(menus));
     }
 }
