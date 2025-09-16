@@ -37,7 +37,8 @@
       </el-row>
     </div>
 
-    <el-table v-loading="loading" :data="dataList" border ref="myTable" >
+    <el-table v-loading="loading" :data="dataList" border ref="myTable"
+              :cell-style="cellStyle">
       <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
       <el-table-column label="客一" align="center" prop="cust1"/>
       <el-table-column label="客二" align="center" prop="cust2"/>
@@ -130,12 +131,13 @@ export default {
         },
       },
       operatorName: '',
+      corpName: '',
     };
   },
   computed: {
-    corpName() {
-      return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
-    },
+    // corpName() {
+    //   return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    // },
     currentDateTime() {
       return this.getCurrentDateTime();
     },
@@ -153,6 +155,11 @@ export default {
   },
   watch: {},
   methods: {
+    cellStyle({row, column, rowIndex, columnIndex}) {
+      if (row.totalRow === true) {
+        return 'background:	#FFD040';
+      }
+    },
     getCurrentDateTime() {
       const now = new Date();
       const year = now.getFullYear();
@@ -169,6 +176,7 @@ export default {
       sdtStation(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.conditionList = response.conditionList;
+        this.corpName = response.title;
       }).finally(() => {
         this.loading = false;
       });

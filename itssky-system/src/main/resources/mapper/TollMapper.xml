@@ -343,10 +343,13 @@
         SELECT
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
-        IFNULL(CAST(sum(AddedToll)/100 as DECIMAL(10,2)), 0) as addedToll,
-        IFNULL(CAST(HandToll/100 as DECIMAL(10,2)), 0) as handToll
+        IFNULL(CAST(SUM(AddedToll)/100 as DECIMAL(10,2)), 0) as addedToll,
+        IFNULL(CAST(SUM(HandToll)/100 as DECIMAL(10,2)), 0) as handToll,
+        IFNUll(SUM(HandInCNum), 0) AS handInCNum,
+        IFNULL(SUM(HandOutCNum), 0) AS handOutCNum
         FROM `tbsh` a
         <where>
+            AND a.CancelFlag = 0
             AND a.StationID in
             <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
                 #{stationId}
@@ -365,8 +368,10 @@
     <select id="getTbShDataV2" resultType="com.itssky.system.domain.vo.TbShVo"
             parameterType="com.itssky.system.domain.dto.FtStationDto">
         SELECT
-        IFNULL(a.AddedToll/100,0) as addedToll,
-        IFNULL(CAST(a.HandToll/100 as DECIMAL(10,2)), 0) as handToll,
+        IFNULL(CAST(SUM(a.AddedToll)/100 as DECIMAL(10,2)) ,0) as addedToll,
+        IFNULL(CAST(SUM(a.HandToll)/100 as DECIMAL(10,2)), 0) as handToll,
+        IFNULL(SUM(a.HandInCNum), 0) AS handInCNum,
+        IFNULL(SUM(a.HandOutCNum), 0) AS handOutCNum,
         a.StaDate AS staDate,
         LEFT(a.StaDate, 6) AS monthDate,
         a.StationID AS stationId,
@@ -377,6 +382,7 @@
             *
             FROM ${tableName}
             <where>
+                AND CancelFlag = 0
                 AND StationID in
                 <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
                     #{stationId}

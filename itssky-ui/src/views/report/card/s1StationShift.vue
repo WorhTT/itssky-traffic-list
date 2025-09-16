@@ -72,6 +72,7 @@ export default {
       queryParams: {
         stationId: null,
         time: null,
+        shiftId: null
       },
       // 表单参数
       form: {},

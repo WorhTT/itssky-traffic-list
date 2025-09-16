@@ -37,7 +37,8 @@
       </el-row>
     </div>
 
-    <el-table v-loading="loading" :data="dataList" border ref="myTable" >
+    <el-table v-loading="loading" :data="dataList" border ref="myTable"
+              :span-method="arraySpanMethod" :cell-style="cellStyle">
       <el-table-column label="班次" align="center" prop="shiftId"/>
       <el-table-column label="工号" align="center" prop="operatorId" min-width="120"/>
       <el-table-column label="客一" align="center" prop="cust1"/>
@@ -131,12 +132,13 @@ export default {
       },
       conditionList: [],
       operatorName: '',
+      corpName: '',
     };
   },
   computed: {
-    corpName() {
-      return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
-    },
+    // corpName() {
+    //   return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    // },
     currentDateTime() {
       return this.getCurrentDateTime();
     },
@@ -154,6 +156,21 @@ export default {
   },
   watch: {},
   methods: {
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (row.totalRow  === true) {
+        row.shiftId = "合计";
+        if (columnIndex === 0) {
+          return [1, 2];
+        } else if (columnIndex === 1) {
+          return [0, 0];
+        }
+      }
+    },
+    cellStyle({row, column, rowIndex, columnIndex}) {
+      if (row.totalRow === true) {
+        return 'background:	#FFD040';
+      }
+    },
     getCurrentDateTime() {
       const now = new Date();
       const year = now.getFullYear();
@@ -171,6 +188,7 @@ export default {
         this.dataList = response.rows;
         this.conditionList = response.conditionList;
         this.total = response.total;
+        this.corpName = response.title;
       }).finally(() => {
         this.loading = false;
       });

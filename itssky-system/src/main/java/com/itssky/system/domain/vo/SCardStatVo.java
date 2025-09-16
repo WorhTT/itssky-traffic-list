@@ -13,10 +13,10 @@ import java.util.List;
 public class SCardStatVo {
 
     @Excel(name = "班次")
-    private Integer shiftId;
+    private String shiftId;
 
     @Excel(name = "工号")
-    private Integer operatorId;
+    private String operatorId;
 
     @Excel(name = "客一")
     private Integer cust1 = 0;

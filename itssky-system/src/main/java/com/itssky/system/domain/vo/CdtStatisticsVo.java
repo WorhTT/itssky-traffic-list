@@ -94,11 +94,11 @@ public class CdtStatisticsVo {
     @Excel(name = "优惠", mergeRow = 1, mergeColumn = 1, headerRow = 2)
     private Integer preferNum = 0;
 
-//    @Excel(name = "无卡", mergeRow = 1, mergeColumn = 1, headerRow = 2)
-//    private Integer noneNum = 0;
-//
-//    @Excel(name = "卡损", mergeRow = 1, mergeColumn = 1, headerRow = 2)
-//    private Integer badNum = 0;
+    @Excel(name = "无卡", mergeRow = 1, mergeColumn = 1, headerRow = 2)
+    private Integer noneNum = 0;
+
+    @Excel(name = "卡损", mergeRow = 1, mergeColumn = 1, headerRow = 2)
+    private Integer badNum = 0;
 
     @Excel(name = "ETC", mergeRow = 1, mergeColumn = 1, headerRow = 2)
     private Integer etcNum = 0;
@@ -114,4 +114,6 @@ public class CdtStatisticsVo {
 
     @Excel(name = "总流量", mergeRow = 1, mergeColumn = 1, headerRow = 2)
     private Integer totalFlow = 0;
+
+    private boolean totalRow;
 }

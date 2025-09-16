@@ -64,8 +64,8 @@ public class CardServiceImpl implements CardService {
                     TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
             List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
             if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                List<Integer> stationIdList = tbStationInfoList.stream().map(TbStationInfo::getStationid)
+                        .filter(Objects::nonNull).collect(Collectors.toList());
                 dto.setStationIdList(stationIdList);
             }
         } else {
@@ -98,10 +98,9 @@ public class CardServiceImpl implements CardService {
             for (TbStcVo tbStcVo : tbStcList) {
                 //卡损
                 if (cardStatisticsVo.getOperatorId().equals(tbStcVo.getBalanceOp())) {
+                    //S1
                     if (dto.getTableFlag() == 0) {
                         cardStatisticsVo.setRecoverNum(tbStcVo.getRecoverNum());
-                    } else if (dto.getTableFlag() == 1) {
-                        cardStatisticsVo.setBadNum(tbStcVo.getBadRecNum());
                     }
                 }
             }
@@ -109,7 +108,7 @@ public class CardServiceImpl implements CardService {
         for (CardStatisticsVo cardStatisticsVo : cardStatisticsVos) {
             for (TbShVo tbShVo : tbShData) {
                 //实际
-                if (cardStatisticsVo.getOperatorId().equals(tbShVo.getOperatorId())) {
+                if (cardStatisticsVo.getOperatorId().equals(tbShVo.getOperatorId().toString())) {
                     if (dto.getTableFlag() == 0) {
                         cardStatisticsVo.setActualNum(tbShVo.getHandOutCNum());
                     } else if (dto.getTableFlag() == 1) {
@@ -121,9 +120,50 @@ public class CardServiceImpl implements CardService {
         //计算应发卡和总流量
         cardStatisticsVos.forEach(i -> {
             i.setIssuedNum(i.getCustSubTotal() + i.getTruckSubTotal() + i.getSpecSubTotal());
-            i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getMilitaryNum() + i.getPreferNum() + i.getEtcNum());
+            i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getFleetNum() + i.getPreferNum() + i.getEtcNum() + i.getNoneNum() + i.getBadNum());
         });
+        //合计行
+        CardStatisticsVo totalRow = buildTotalRow(cardStatisticsVos);
+        cardStatisticsVos.add(totalRow);
         return cardStatisticsVos;
+    }
+
+    private static CardStatisticsVo buildTotalRow(List<CardStatisticsVo> cardStatisticsVos) {
+        CardStatisticsVo totalRow = new CardStatisticsVo();
+        totalRow.setShiftId("合计");
+        totalRow.setCust1(cardStatisticsVos.stream().map(CardStatisticsVo::getCust1).reduce(0, Integer::sum));
+        totalRow.setCust2(cardStatisticsVos.stream().map(CardStatisticsVo::getCust2).reduce(0, Integer::sum));
+        totalRow.setCust3(cardStatisticsVos.stream().map(CardStatisticsVo::getCust3).reduce(0, Integer::sum));
+        totalRow.setCust4(cardStatisticsVos.stream().map(CardStatisticsVo::getCust4).reduce(0, Integer::sum));
+        totalRow.setCustSubTotal(cardStatisticsVos.stream().map(CardStatisticsVo::getCustSubTotal).reduce(0, Integer::sum));
+        totalRow.setTruck1(cardStatisticsVos.stream().map(CardStatisticsVo::getTruck1).reduce(0, Integer::sum));
+        totalRow.setTruck2(cardStatisticsVos.stream().map(CardStatisticsVo::getTruck2).reduce(0, Integer::sum));
+        totalRow.setTruck3(cardStatisticsVos.stream().map(CardStatisticsVo::getTruck3).reduce(0, Integer::sum));
+        totalRow.setTruck4(cardStatisticsVos.stream().map(CardStatisticsVo::getTruck4).reduce(0, Integer::sum));
+        totalRow.setTruck5(cardStatisticsVos.stream().map(CardStatisticsVo::getTruck5).reduce(0, Integer::sum));
+        totalRow.setTruck6(cardStatisticsVos.stream().map(CardStatisticsVo::getTruck6).reduce(0, Integer::sum));
+        totalRow.setTruckSubTotal(cardStatisticsVos.stream().map(CardStatisticsVo::getTruckSubTotal).reduce(0, Integer::sum));
+        totalRow.setSpec1(cardStatisticsVos.stream().map(CardStatisticsVo::getSpec1).reduce(0, Integer::sum));
+        totalRow.setSpec2(cardStatisticsVos.stream().map(CardStatisticsVo::getSpec2).reduce(0, Integer::sum));
+        totalRow.setSpec3(cardStatisticsVos.stream().map(CardStatisticsVo::getSpec3).reduce(0, Integer::sum));
+        totalRow.setSpec4(cardStatisticsVos.stream().map(CardStatisticsVo::getSpec4).reduce(0, Integer::sum));
+        totalRow.setSpec5(cardStatisticsVos.stream().map(CardStatisticsVo::getSpec5).reduce(0, Integer::sum));
+        totalRow.setSpec6(cardStatisticsVos.stream().map(CardStatisticsVo::getSpec6).reduce(0, Integer::sum));
+        totalRow.setSpecSubTotal(cardStatisticsVos.stream().map(CardStatisticsVo::getSpecSubTotal).reduce(0, Integer::sum));
+        totalRow.setMilitaryNum(cardStatisticsVos.stream().map(CardStatisticsVo::getMilitaryNum).reduce(0, Integer::sum));
+        totalRow.setOfficialNum(cardStatisticsVos.stream().map(CardStatisticsVo::getOfficialNum).reduce(0, Integer::sum));
+        totalRow.setFleetNum(cardStatisticsVos.stream().map(CardStatisticsVo::getFleetNum).reduce(0, Integer::sum));
+        totalRow.setPreferNum(cardStatisticsVos.stream().map(CardStatisticsVo::getPreferNum).reduce(0, Integer::sum));
+        totalRow.setEtcNum(cardStatisticsVos.stream().map(CardStatisticsVo::getEtcNum).reduce(0, Integer::sum));
+        totalRow.setRecoverNum(cardStatisticsVos.stream().map(CardStatisticsVo::getRecoverNum).reduce(0, Integer::sum));
+        totalRow.setPaperNum(cardStatisticsVos.stream().map(CardStatisticsVo::getPaperNum).reduce(0, Integer::sum));
+        totalRow.setIssuedNum(cardStatisticsVos.stream().map(CardStatisticsVo::getIssuedNum).reduce(0, Integer::sum));
+        totalRow.setActualNum(cardStatisticsVos.stream().map(CardStatisticsVo::getActualNum).reduce(0, Integer::sum));
+        totalRow.setTotalFlow(cardStatisticsVos.stream().map(CardStatisticsVo::getTotalFlow).reduce(0, Integer::sum));
+        totalRow.setNoneNum(cardStatisticsVos.stream().map(CardStatisticsVo::getNoneNum).reduce(0, Integer::sum));
+        totalRow.setBadNum(cardStatisticsVos.stream().map(CardStatisticsVo::getBadNum).reduce(0, Integer::sum));
+        totalRow.setTotalRow(true);
+        return totalRow;
     }
 
     @Override
@@ -137,6 +177,9 @@ public class CardServiceImpl implements CardService {
         cardStatisticsVos.forEach(i -> {
             SCardStatVo sCardStatVo = new SCardStatVo();
             BeanUtils.copyProperties(i, sCardStatVo);
+            if (Objects.isNull(i.getOperatorId())) {
+                sCardStatVo.setOperatorId("");
+            }
             result.add(sCardStatVo);
         });
         ExportVo exportVo = new ExportVo();
@@ -175,6 +218,9 @@ public class CardServiceImpl implements CardService {
         cardStatisticsVos.forEach(i -> {
             SCardStatVo sCardStatVo = new SCardStatVo();
             BeanUtils.copyProperties(i, sCardStatVo);
+            if (Objects.isNull(i.getOperatorId())) {
+                i.setOperatorId("");
+            }
             result.add(sCardStatVo);
         });
         ExportVo exportVo = new ExportVo();
@@ -293,8 +339,8 @@ public class CardServiceImpl implements CardService {
                     TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
             List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
             if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                List<Integer> stationIdList = tbStationInfoList.stream().map(TbStationInfo::getStationid)
+                        .filter(Objects::nonNull).collect(Collectors.toList());
                 dto.setStationIdList(stationIdList);
             }
         } else {
@@ -329,7 +375,7 @@ public class CardServiceImpl implements CardService {
         for (CardStatisticsVo cardStatisticsVo : cardStatisticsVos) {
             for (TbShVo tbShVo : tbShData) {
                 //实发卡数量
-                if (cardStatisticsVo.getOperatorId().equals(tbShVo.getOperatorId())) {
+                if (cardStatisticsVo.getOperatorId().equals(tbShVo.getOperatorId().toString())) {
                     cardStatisticsVo.setActualNum(tbShVo.getHandOutCNum());
                 }
             }
@@ -337,7 +383,7 @@ public class CardServiceImpl implements CardService {
         //计算应发卡和总流量
         cardStatisticsVos.forEach(i -> {
             i.setIssuedNum(i.getCustSubTotal() + i.getTruckSubTotal() + i.getSpecSubTotal());
-            i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getMilitaryNum() + i.getPreferNum() + i.getEtcNum());
+            i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getFleetNum() + i.getPreferNum() + i.getEtcNum() + i.getNoneNum() + i.getBadNum());
         });
         return cardStatisticsVos;
     }
@@ -345,8 +391,6 @@ public class CardServiceImpl implements CardService {
     /**
      * SDT通行卡发放统计表
      *
-     * @param dto
-     * @return
      */
     @Override
     public List<CardStatisticsVo> sdtStationShift(CardStatisticsDtoV2 dto) {
@@ -359,8 +403,8 @@ public class CardServiceImpl implements CardService {
                     TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
             List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
             if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                List<Integer> stationIdList = tbStationInfoList.stream().map(TbStationInfo::getStationid)
+                        .filter(Objects::nonNull).collect(Collectors.toList());
                 dto.setStationIdList(stationIdList);
             }
         } else {
@@ -398,20 +442,20 @@ public class CardServiceImpl implements CardService {
         for (CardStatisticsVo cardStatisticsVo : cardStatisticsVos) {
             for (TbShVo tbSh : tbShDataV2) {
                 //日
-                if (dto.getStatisticsType().equals("0")) {
+                if ("0".equals(dto.getStatisticsType())) {
                     if (cardStatisticsVo.getStaDate().equals(tbSh.getStaDate())) {
                         cardStatisticsVo.setActualNum(tbSh.getHandOutCNum());
                     }
                 }
                 //月
-                else if (dto.getStatisticsType().equals("1")) {
+                else if ("1".equals(dto.getStatisticsType())) {
                     if (cardStatisticsVo.getMonthDate().equals(tbSh.getMonthDate())) {
                         //实缴金额
                         cardStatisticsVo.setActualNum(tbSh.getHandOutCNum());
                     }
                 }
                 //站
-                else if (dto.getStatisticsType().equals("2")) {
+                else if ("2".equals(dto.getStatisticsType())) {
                     if (cardStatisticsVo.getStationId().equals(tbSh.getStationId())) {
                         cardStatisticsVo.setActualNum(tbSh.getHandOutCNum());
                     }
@@ -421,20 +465,20 @@ public class CardServiceImpl implements CardService {
         for (CardStatisticsVo cardStatisticsVo : cardStatisticsVos) {
             for (TbStcVo tbStcVo : tbStcListV2) {
                 //日
-                if (dto.getStatisticsType().equals("0")) {
+                if ("0".equals(dto.getStatisticsType())) {
                     if (cardStatisticsVo.getStaDate().equals(tbStcVo.getStaDate())) {
                         cardStatisticsVo.setRecoverNum(tbStcVo.getRecoverNum());
                     }
                 }
                 //月
-                else if (dto.getStatisticsType().equals("1")) {
+                else if ("1".equals(dto.getStatisticsType())) {
                     if (cardStatisticsVo.getMonthDate().equals(tbStcVo.getMonthDate())) {
                         //实缴金额
                         cardStatisticsVo.setRecoverNum(tbStcVo.getRecoverNum());
                     }
                 }
                 //站
-                else if (dto.getStatisticsType().equals("2")) {
+                else if ("2".equals(dto.getStatisticsType())) {
                     if (cardStatisticsVo.getStationId().equals(tbStcVo.getStationId())) {
                         cardStatisticsVo.setRecoverNum(tbStcVo.getRecoverNum());
                     }
@@ -445,19 +489,23 @@ public class CardServiceImpl implements CardService {
         cardStatisticsVos.forEach(i -> {
             i.setIssuedNum(i.getCustSubTotal() + i.getTruckSubTotal() + i.getSpecSubTotal());
             i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getMilitaryNum() + i.getPreferNum() + i.getEtcNum());
-            if (dto.getStatisticsType().equals("0")) {
+            if ("0".equals(dto.getStatisticsType())) {
                 i.setStatType(i.getStaDate().toString());
             }
-            else if (dto.getStatisticsType().equals("1")) {
-                i.setStatType(i.getMonthDate());
+            else if ("1".equals(dto.getStatisticsType())) {
+                i.setStatType(i.getMonthDate().toString());
             }
-            else if (dto.getStatisticsType().equals("2")) {
+            else if ("2".equals(dto.getStatisticsType())) {
                 i.setStatType(i.getStationName());
             }
-            else if (dto.getStatisticsType().equals("3")) {
-                i.setStatType(i.getOperatorId().toString());
+            else if ("3".equals(dto.getStatisticsType())) {
+                i.setStatType(i.getOperatorId());
             }
         });
+        //合计行
+        CardStatisticsVo totalRow = buildTotalRow(cardStatisticsVos);
+        totalRow.setStatType("合计");
+        cardStatisticsVos.add(totalRow);
         return cardStatisticsVos;
     }
 
@@ -493,8 +541,8 @@ public class CardServiceImpl implements CardService {
                     TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
             List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
             if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                List<Integer> stationIdList = tbStationInfoList.stream().map(TbStationInfo::getStationid)
+                        .filter(Objects::nonNull).collect(Collectors.toList());
                 dto.setStationIdList(stationIdList);
             }
         } else {
@@ -523,22 +571,21 @@ public class CardServiceImpl implements CardService {
         for (CdtStatisticsVo cardStatisticsVo : cdtStatisticsVos) {
             for (TbShVo tbSh : tbShDataV2) {
                 //日
-                if (dto.getStatisticsType().equals("0")) {
+                if ("0".equals(dto.getStatisticsType())) {
                     if (cardStatisticsVo.getStaDate().equals(tbSh.getStaDate())) {
-                        cardStatisticsVo.setActualNum(tbSh.getHandOutCNum());
+                        cardStatisticsVo.setActualNum(tbSh.getHandInCNum());
                     }
                 }
                 //月
-                else if (dto.getStatisticsType().equals("1")) {
-                    if (cardStatisticsVo.getMonthDate().equals(tbSh.getMonthDate())) {
-                        //实缴金额
-                        cardStatisticsVo.setActualNum(tbSh.getHandOutCNum());
+                else if ("1".equals(dto.getStatisticsType())) {
+                    if (cardStatisticsVo.getMonthDate().equals(tbSh.getMonthDate().toString())) {
+                        cardStatisticsVo.setActualNum(tbSh.getHandInCNum());
                     }
                 }
                 //站
-                else if (dto.getStatisticsType().equals("2")) {
+                else if ("2".equals(dto.getStatisticsType())) {
                     if (cardStatisticsVo.getStationId().equals(tbSh.getStationId())) {
-                        cardStatisticsVo.setActualNum(tbSh.getHandOutCNum());
+                        cardStatisticsVo.setActualNum(tbSh.getHandInCNum());
                     }
                 }
             }
@@ -546,16 +593,50 @@ public class CardServiceImpl implements CardService {
         //计算应发卡和总流量
         cdtStatisticsVos.forEach(i -> {
             i.setIssuedNum(i.getCustSubTotal() + i.getTruckSubTotal() + i.getSpecSubTotal());
-            i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getMilitaryNum() + i.getPreferNum() + i.getEtcNum());
-            if (dto.getStatisticsType().equals("0")) {
+            i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getPreferNum()  + i.getFleetNum() + i.getEtcNum() +i.getNoneNum() + i.getBadNum());
+            if ("0".equals(dto.getStatisticsType())) {
                 i.setStatType(i.getStaDate().toString());
-            } else if (dto.getStatisticsType().equals("1")) {
+            } else if ("1".equals(dto.getStatisticsType())) {
                 i.setStatType(i.getMonthDate());
-            } else if (dto.getStatisticsType().equals("2")) {
+            } else if ("2".equals(dto.getStatisticsType())) {
                 i.setStatType(i.getStationName());
             }
         });
-
+        //添加合计行
+        CdtStatisticsVo total = new CdtStatisticsVo();
+        total.setStatType("合计");
+        total.setTotalRow(true);
+        total.setCust1(cdtStatisticsVos.stream().map(CdtStatisticsVo::getCust1).reduce(0, Integer::sum));
+        total.setCust2(cdtStatisticsVos.stream().map(CdtStatisticsVo::getCust2).reduce(0, Integer::sum));
+        total.setCust3(cdtStatisticsVos.stream().map(CdtStatisticsVo::getCust3).reduce(0, Integer::sum));
+        total.setCust4(cdtStatisticsVos.stream().map(CdtStatisticsVo::getCust4).reduce(0, Integer::sum));
+        total.setCustSubTotal(cdtStatisticsVos.stream().map(CdtStatisticsVo::getCustSubTotal).reduce(0, Integer::sum));
+        total.setTruck1(cdtStatisticsVos.stream().map(CdtStatisticsVo::getTruck1).reduce(0, Integer::sum));
+        total.setTruck2(cdtStatisticsVos.stream().map(CdtStatisticsVo::getTruck2).reduce(0, Integer::sum));
+        total.setTruck3(cdtStatisticsVos.stream().map(CdtStatisticsVo::getTruck3).reduce(0, Integer::sum));
+        total.setTruck4(cdtStatisticsVos.stream().map(CdtStatisticsVo::getTruck4).reduce(0, Integer::sum));
+        total.setTruck5(cdtStatisticsVos.stream().map(CdtStatisticsVo::getTruck5).reduce(0, Integer::sum));
+        total.setTruck6(cdtStatisticsVos.stream().map(CdtStatisticsVo::getTruck6).reduce(0, Integer::sum));
+        total.setTruckSubTotal(cdtStatisticsVos.stream().map(CdtStatisticsVo::getTruckSubTotal).reduce(0, Integer::sum));
+        total.setSpec1(cdtStatisticsVos.stream().map(CdtStatisticsVo::getSpec1).reduce(0, Integer::sum));
+        total.setSpec2(cdtStatisticsVos.stream().map(CdtStatisticsVo::getSpec2).reduce(0, Integer::sum));
+        total.setSpec3(cdtStatisticsVos.stream().map(CdtStatisticsVo::getSpec3).reduce(0, Integer::sum));
+        total.setSpec4(cdtStatisticsVos.stream().map(CdtStatisticsVo::getSpec4).reduce(0, Integer::sum));
+        total.setSpec5(cdtStatisticsVos.stream().map(CdtStatisticsVo::getSpec5).reduce(0, Integer::sum));
+        total.setSpec6(cdtStatisticsVos.stream().map(CdtStatisticsVo::getSpec6).reduce(0, Integer::sum));
+        total.setSpecSubTotal(cdtStatisticsVos.stream().map(CdtStatisticsVo::getSpecSubTotal).reduce(0, Integer::sum));
+        total.setMilitaryNum(cdtStatisticsVos.stream().map(CdtStatisticsVo::getMilitaryNum).reduce(0, Integer::sum));
+        total.setOfficialNum(cdtStatisticsVos.stream().map(CdtStatisticsVo::getOfficialNum).reduce(0, Integer::sum));
+        total.setFleetNum(cdtStatisticsVos.stream().map(CdtStatisticsVo::getFleetNum).reduce(0, Integer::sum));
+        total.setPreferNum(cdtStatisticsVos.stream().map(CdtStatisticsVo::getPreferNum).reduce(0, Integer::sum));
+        total.setNoneNum(cdtStatisticsVos.stream().map(CdtStatisticsVo::getNoneNum).reduce(0, Integer::sum));
+        total.setBadNum(cdtStatisticsVos.stream().map(CdtStatisticsVo::getBadNum).reduce(0, Integer::sum));
+        total.setEtcNum(cdtStatisticsVos.stream().map(CdtStatisticsVo::getEtcNum).reduce(0, Integer::sum));
+        total.setPaperNum(cdtStatisticsVos.stream().map(CdtStatisticsVo::getPaperNum).reduce(0, Integer::sum));
+        total.setIssuedNum(cdtStatisticsVos.stream().map(CdtStatisticsVo::getIssuedNum).reduce(0, Integer::sum));
+        total.setActualNum(cdtStatisticsVos.stream().map(CdtStatisticsVo::getActualNum).reduce(0, Integer::sum));
+        total.setTotalFlow(cdtStatisticsVos.stream().map(CdtStatisticsVo::getTotalFlow).reduce(0, Integer::sum));
+        cdtStatisticsVos.add(total);
         return cdtStatisticsVos;
     }
 

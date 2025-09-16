@@ -16,7 +16,7 @@ public class TbStcVo {
     /**
      * 月份
      */
-    private String monthDate;
+    private Integer monthDate;
 
     private Integer staDate;
 
@@ -77,7 +77,7 @@ public class TbStcVo {
     /**
      *  结算人员
      */
-    private Integer balanceOp;
+    private String balanceOp;
 
 
 }

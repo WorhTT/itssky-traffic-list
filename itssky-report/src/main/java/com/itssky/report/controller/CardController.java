@@ -174,7 +174,7 @@ public class CardController extends BaseController {
                 .collect(Collectors.toList());
         ExcelUtil<SdtCardStatVo> util = new ExcelUtil<SdtCardStatVo>(SdtCardStatVo.class);
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
-        return util.exportDynamic(result, "SDT通行卡发放统计表", exportVo.getConditionList(), 31, reportTitleName, loginUserInfo.getUsername());
+        return util.exportDynamic(result, "SDT通行卡发放统计表", exportVo.getConditionList(), 29, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**

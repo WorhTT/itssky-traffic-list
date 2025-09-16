@@ -19,7 +19,7 @@ public class CardStatisticsVo {
     /**
      * 班次ID
      */
-    private Integer shiftId;
+    private String shiftId;
 
     /**
      * 统计日期
@@ -34,7 +34,7 @@ public class CardStatisticsVo {
     /**
      * 月份
      */
-    private String monthDate;
+    private Integer monthDate;
 
     /**
      * 收费站ID
@@ -49,7 +49,7 @@ public class CardStatisticsVo {
     /**
      * 工号
      */
-    private Integer operatorId;
+    private String operatorId;
 
     /**
      * 客一
@@ -208,5 +208,10 @@ public class CardStatisticsVo {
      * 卡损
      */
     private Integer badNum = 0;
+
+    /**
+     * 是否合计
+     */
+    private boolean totalRow;
 
 }

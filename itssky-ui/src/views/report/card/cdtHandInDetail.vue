@@ -36,7 +36,8 @@
       </el-row>
     </div>
 
-    <el-table v-loading="loading" :data="dataList" border ref="myTable" >
+    <el-table v-loading="loading" :data="dataList" border ref="myTable"
+              :cell-style="cellStyle">
       <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
       <el-table-column label="客一" align="center" prop="cust1"/>
       <el-table-column label="客二" align="center" prop="cust2"/>
@@ -61,6 +62,8 @@
       <el-table-column label="公务" align="center" prop="officialNum"/>
       <el-table-column label="车队" align="center" prop="fleetNum"/>
       <el-table-column label="优惠" align="center" prop="preferNum"/>
+      <el-table-column label="无卡" align="center" prop="noneNum"/>
+      <el-table-column label="卡损" align="center" prop="badNum"/>
       <el-table-column label="ETC" align="center" prop="etcNum"/>
       <el-table-column label="纸券" align="center" prop="paperNum"/>
       <el-table-column label="应收卡" align="center" prop="issuedNum"/>
@@ -126,12 +129,13 @@ export default {
         },
       },
       operatorName: '',
+      corpName: '',
     };
   },
   computed: {
-    corpName() {
-      return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
-    },
+    // corpName() {
+    //   return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    // },
     currentDateTime() {
       return this.getCurrentDateTime();
     },
@@ -149,6 +153,11 @@ export default {
   },
   watch: {},
   methods: {
+    cellStyle({row, column, rowIndex, columnIndex}) {
+      if (row.totalRow === true) {
+        return 'background:	#FFD040';
+      }
+    },
     getCurrentDateTime() {
       const now = new Date();
       const year = now.getFullYear();
@@ -165,6 +174,7 @@ export default {
       cdtStation(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.conditionList = response.conditionList;
+        this.corpName = response.title;
       }).finally(() => {
         this.loading = false;
       })
@@ -209,7 +219,7 @@ export default {
         <style>
             /* 在这里添加你的样式 */
         .table-container {
-          zoom: 0.5
+          zoom: 0.48
         }
         .print-title {
           text-align: center;
