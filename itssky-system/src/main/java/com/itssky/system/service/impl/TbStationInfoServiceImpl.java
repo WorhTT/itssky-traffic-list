@@ -180,6 +180,67 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
         return result;
     }
 
+    @Override
+    public List<Map<String, Object>> listStationSelectV2(boolean needCenter) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        LoginUser loginUser = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof LoginUser) {
+            loginUser = (LoginUser) authentication.getPrincipal();
+        }
+        if (Objects.isNull(loginUser)) {
+            log.error("获取当前登录用户为空");
+            throw new RuntimeException("获取当前登录用户为空");
+        }
+        if (Objects.isNull(loginUser.getCorpNo())) {
+            log.error("当前登录用户的所属路公司CorpNo为空，请联系运维人员");
+            throw new RuntimeException("当前登录用户的所属路公司CorpNo为空，请联系运维人员");
+        }
+        String corpNo = loginUser.getCorpNo();
+        if (corpNo.length() %2 != 0) {
+            log.error("当前登录用户的所属路公司CorpNo位数有误，请联系运维人员");
+            throw new RuntimeException("当前登录用户的所属路公司CorpNo位数有误，请联系运维人员");
+        }
+        //顶层路公司用户
+        if (needCenter && (corpNo.length() == 2 || corpNo.length() == 4)) {
+            LambdaQueryWrapper<TbCorpInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.likeRight(TbCorpInfo::getCorpno, corpNo)
+                    .apply(" LENGTH(CorpNo) <= 4 ");
+            List<TbCorpInfo> tbCorpInfoList = tbCorpInfoMapper.selectList(lambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbCorpInfoList)) {
+                tbCorpInfoList.forEach(obj -> {
+                    Map<String, Object> map = new HashMap<>();
+                    if (obj.getCorpno().length() == 2) {
+                        map.put("value", -1);
+                        map.put("label", "中心");
+                    } else if (obj.getCorpno().length() == 4) {
+                        map.put("value", Integer.parseInt(obj.getCorpno()));
+                        map.put("label", obj.getCorpname());
+                    }
+                    result.add(map);
+                });
+            }
+        }
+        //获取站选项
+        LambdaQueryWrapper<TbStationInfo> stationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        stationInfoLambdaQueryWrapper.likeRight(TbStationInfo::getCorpno, corpNo)
+                .apply(" LENGTH(CorpNo) = 6 ");
+        //站级别的用户，EQ本站StationID
+        if (corpNo.length() == 6) {
+            stationInfoLambdaQueryWrapper.eq(TbStationInfo::getStationid, loginUser.getStationId());
+        }
+        List<TbStationInfo> tbStationInfoList = baseMapper.selectList(stationInfoLambdaQueryWrapper);
+        if (!CollectionUtils.isEmpty(tbStationInfoList)) {
+            tbStationInfoList.forEach(obj -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("value", obj.getStationid());
+                map.put("label", obj.getStationname());
+                result.add(map);
+            });
+        }
+        return result;
+    }
+
     /**
      * 当前所属收费站的stationId
      *

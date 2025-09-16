@@ -82,7 +82,7 @@
             parameterType="com.itssky.system.domain.dto.FtStationDto">
         SELECT
         a.StationID AS stationId,
-        (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=6 THEN CarNum ELSE 0 END),0) as officialIcCardCount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=8 THEN CarNum ELSE 0 END),0) as militaryIcCardCount,
         IFNULL(SUM(CASE WHEN DealStatus&amp;14=12 THEN CarNum ELSE 0 END),0) as freeIcCardCount,
@@ -145,7 +145,7 @@
             parameterType="com.itssky.system.domain.dto.VehicleClassStatDto">
         SELECT
         a.StationID AS stationId,
-        (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
         a.OperatorID AS operatorId,
         LEFT(a.StaDate, 6) AS monthDate,
         a.StaDate AS staDate,
@@ -225,7 +225,7 @@
             parameterType="com.itssky.system.domain.dto.VehicleClassStatDto">
         SELECT
             a.StationID AS stationId,
-            (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+            (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
             a.OperatorID AS operatorId,
             LEFT(a.StaDate, 6) AS monthDate,
             a.StaDate AS staDate,
@@ -468,11 +468,12 @@
 
     <select id="getF6TollEntry" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.F6TollVo">
         SELECT
+        a.TeamID AS teamId,
         a.OperatorID AS operatorId,
         (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
         IFNULL(SUM(CASE WHEN a.CardType=26 THEN 1 ELSE 0 END),0) AS yfIcCardNum,
         IFNULL(SUM(CASE WHEN a.CardType=254 THEN 1 ELSE 0 END),0) AS paperNum
-        FROM tbstatentry a
+        FROM tbrawentry a
         <where>
             AND a.CancelFlag = 0
             AND a.RecordType&amp;1=1
@@ -482,7 +483,7 @@
                 AND a.StationID = #{stationId}
             </if>
             <if test="timeFormat != null and timeFormat != ''">
-                AND a.StaDate = #{timeFormat}
+                AND a.EntryDate = #{timeFormat}
             </if>
             <if test="shiftId != null and shiftId != ''">
                 AND a.ShiftID = #{shiftId}
@@ -493,12 +494,13 @@
 
     <select id="getF6TollExit" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.F6TollVo">
         SELECT
+        a.TeamID AS teamId,
         a.OperatorID AS operatorId,
         (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
-        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14 IN (0,10) THEN a.TotalToll ELSE 0 END),0)/100 AS exitToll,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14 IN (0,10) AND a.IdentifyStatus = 0 THEN a.Toll ELSE 0 END),0)/100 AS exitToll,
         IFNULL(SUM(CASE WHEN a.CardType=26 THEN 1 ELSE 0 END),0) AS yjIcCardNum,
 		IFNULL(SUM(CASE WHEN a.CardType=254 THEN 1 ELSE 0 END),0) AS paperNum
-        FROM tbstatexit a
+        FROM tbrawexit a
         <where>
             AND a.CancelFlag=0
             AND a.RecordType&amp;3=3
@@ -509,7 +511,7 @@
                 AND a.StationID = #{stationId}
             </if>
             <if test="timeFormat != null and timeFormat != ''">
-                AND a.StaDate = #{timeFormat}
+                AND a.ExitDate = #{timeFormat}
             </if>
             <if test="shiftId != null and shiftId != ''">
                 AND a.ShiftID = #{shiftId}
@@ -567,7 +569,7 @@
     <select id="getCf1Vo" resultType="com.itssky.system.domain.vo.Cf1Vo" parameterType="com.itssky.system.domain.dto.StationShiftDto">
         SELECT
         a.StationID AS stationId,
-        (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END),0) AS officialIcCardCount,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END),0) AS militaryIcCardCount,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=12 THEN a.CarNum ELSE 0 END),0) AS freeIcCardCount,
@@ -601,7 +603,7 @@
         SELECT
         a.OperatorID AS operatorId,
         a.StationID AS stationId,
-        (SELECT stationname FROM dbtoms.stationcode WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
         a.StaDate AS staDate,
         LEFT(a.StaDate, 6) AS monthDate,
         IFNULL(SUM(CASE WHEN a.PayChannel=1 THEN a.CarNum ELSE 0 END),0) ylCount,

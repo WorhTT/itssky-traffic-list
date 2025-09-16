@@ -38,6 +38,7 @@
 
 
     <el-table v-loading="loading" :data="dataList" ref="myTable" :span-method="arraySpanMethod" :cell-style="cellStyle" border >
+      <el-table-column label="班组" align="center" prop="teamId"/>
       <el-table-column label="收费员工号" align="center" prop="operatorId"/>
       <el-table-column label="收费员姓名" align="center" prop="operatorName"/>
       <el-table-column label="应缴金额" align="center" prop="toll"/>
@@ -140,16 +141,16 @@ export default {
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     },
     cellStyle({row, column, rowIndex, columnIndex}) {
-      if (row.totalRow === true) {
-        return 'background:	#C0C0C0';
-      }
+      // if (row.totalRow === true) {
+      //   return 'background:	#C0C0C0';
+      // }
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.totalRow  === true) {
         row.operatorId = "合计";
         if (columnIndex === 0) {
-          return [1, 2];
-        } else if (columnIndex < 2) {
+          return [1, 3];
+        } else if (columnIndex < 3) {
           return [0, 0];
         }
       }

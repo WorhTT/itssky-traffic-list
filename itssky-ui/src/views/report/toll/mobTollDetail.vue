@@ -39,15 +39,15 @@
     <el-table v-loading="loading" :data="dataList" border style="width: 100%" fit ref="myTable">
       <el-table-column label="统计方式" align="center" prop="statType" min-width="100"/>
       <el-table-column label="银联支付" align="center">
-        <el-table-column label="笔数" align="center" prop="ylCount" min-width="50"/>
+        <el-table-column label="笔数" align="center" prop="ylCount" min-width="80"/>
         <el-table-column label="金额" align="center" prop="ylToll" min-width="100"/>
       </el-table-column>
       <el-table-column label="微信支付" align="center">
-        <el-table-column label="笔数" align="center" prop="wxCount" min-width="50"/>
+        <el-table-column label="笔数" align="center" prop="wxCount" min-width="80"/>
         <el-table-column label="金额" align="center" prop="wxToll" min-width="100"/>
       </el-table-column>
       <el-table-column label="支付宝支付" align="center">
-        <el-table-column label="笔数" align="center" prop="zfbCount" min-width="50"/>
+        <el-table-column label="笔数" align="center" prop="zfbCount" min-width="80"/>
         <el-table-column label="金额" align="center" prop="zfbToll" min-width="100"/>
       </el-table-column>
       <el-table-column label="百度支付" align="center">
@@ -71,7 +71,7 @@
         <el-table-column label="金额" align="center" prop="qtToll" min-width="100"/>
       </el-table-column>
       <el-table-column label="合计" align="center">
-        <el-table-column label="笔数" align="center" prop="hjCount" min-width="50"/>
+        <el-table-column label="笔数" align="center" prop="hjCount" min-width="80"/>
         <el-table-column label="金额" align="center" prop="hjToll" min-width="100"/>
       </el-table-column>
     </el-table>

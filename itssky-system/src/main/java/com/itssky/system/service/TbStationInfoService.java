@@ -28,6 +28,11 @@ public interface TbStationInfoService extends IService<TbStationInfo> {
      */
     public List<Map<String, Object>> listStationSelect(boolean needCenter);
 
+
+    public List<Map<String, Object>> listStationSelectV2(boolean needCenter);
+
+
+
     /**
      * 当前所属收费站的stationId
      *

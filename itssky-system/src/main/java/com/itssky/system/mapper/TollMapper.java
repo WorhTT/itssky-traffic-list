@@ -37,16 +37,16 @@ public interface TollMapper {
     @Dbedge
     public List<TbShVo> getTbShDataV2(FtStationDto dto);
 
-    @Dbstats
+    @Dbedge
     public List<F6TollVo> getF6TollEntry(StationShiftDto dto);
 
-    @Dbstats
+    @Dbedge
     public List<F6TollVo> getF6TollExit(StationShiftDto dto);
 
-    @ItsData
+    @Dbedge
     public List<F6TollVo> getF6TollExtra(StationShiftDto dto);
 
-    @ItsData
+    @Dbedge
     public List<TbShVo> getTbShGroupByStation(StationShiftDto dto);
 
     @Dbedge

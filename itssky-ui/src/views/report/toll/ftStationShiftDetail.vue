@@ -157,10 +157,10 @@ export default {
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     },
     cellStyle({row, column, rowIndex, columnIndex}) {
-      if (row.totalRow === true) {
-        row.statType = "合计"
-        return 'background:	#C0C0C0';
-      }
+      // if (row.totalRow === true) {
+      //   row.statType = "合计"
+      //   return 'background:	#FFD040';
+      // }
     },
     /** 查询公告列表 */
     getList() {

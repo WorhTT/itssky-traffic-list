@@ -17,11 +17,11 @@ public class CdtStatisticsVo {
     @Excel(name = "统计方式", mergeRow = 1, mergeColumn = 1, headerRow = 2)
     private String statType;
 
-    private Integer staDate;
+    private String staDate;
 
     private String monthDate;
 
-    private Integer stationId;
+    private String stationId;
 
     private String stationName;
 

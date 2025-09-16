@@ -27,22 +27,22 @@ public class VehicleClassStatVo {
     /**
      * 收费站ID
      */
-    private Integer stationId;
+    private String stationId;
 
     /**
      * 员工ID
      */
-    private Integer operatorId;
+    private String operatorId;
 
     /**
      * 统计日期
      */
-    private Integer StaDate;
+    private String StaDate;
 
     /**
      * 月份
      */
-    private Integer monthDate;
+    private String monthDate;
 
     /**
      * 客一

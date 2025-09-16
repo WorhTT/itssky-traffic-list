@@ -42,7 +42,7 @@
 
 <script>
 
-import {listStationSelect} from "@/api/system/station";
+import {listStationSelectV2} from "@/api/system/station";
 import F1StationShiftDetail from "@/views/report/toll/f1StationShiftDetail";
 import Router from "vue-router";
 import {getCurrentTime} from "@/utils/dateUtils";
@@ -101,7 +101,7 @@ export default {
   created() {
     this.queryParams.time = getCurrentTime();
     this.queryParams.shiftId = 1;
-    listStationSelect({needCenter:true}).then((res) => {
+    listStationSelectV2({needCenter:true}).then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue
       this.$set(this.queryParams, 'stationId', this.currentStationId);

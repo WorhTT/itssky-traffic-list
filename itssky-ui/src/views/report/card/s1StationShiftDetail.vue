@@ -167,9 +167,9 @@ export default {
       }
     },
     cellStyle({row, column, rowIndex, columnIndex}) {
-      if (row.totalRow === true) {
-        return 'background:	#FFD040';
-      }
+      // if (row.totalRow === true) {
+      //   return 'background:	#FFD040';
+      // }
     },
     getCurrentDateTime() {
       const now = new Date();

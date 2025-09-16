@@ -16,6 +16,15 @@ export function listStationSelect(query) {
   });
 }
 
+export function listStationSelectV2(query) {
+  return request({
+    url: "/tbstation/listStationSelect/v2",
+    method: "get",
+    params: query
+  });
+}
+
+
 //根据权限返回的中心及分中心下拉框
 export function centerOptions() {
   return request({

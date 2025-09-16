@@ -15,13 +15,13 @@ import java.math.BigDecimal;
 public class F1StationShiftTollVo {
 
     @Excel(name = "班次",  mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private Integer shiftId;
+    private String shiftId;
 
     @Excel(name = "班组", mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private Integer teamId;
+    private String teamId;
 
     @Excel(name = "工号", mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private Integer operatorId;
+    private String operatorId;
 
     @Excel(name = "通行费收入总额", mergeColumn = 6, headerRow = 2, mergeRow = 1, onlyHeader = true)
     private String tollAmount;

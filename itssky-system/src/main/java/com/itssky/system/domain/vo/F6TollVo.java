@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 @Data
 public class F6TollVo {
 
+    @Excel(name = "班组")
+    private String teamId = "";
+
     @Excel(name = "收费员工号")
     private String operatorId = "";
 

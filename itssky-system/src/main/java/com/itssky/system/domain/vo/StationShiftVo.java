@@ -22,7 +22,7 @@ public class StationShiftVo {
     /**
      * 收费站ID
      */
-    private Integer stationId;
+    private String stationId;
 
     /**
      * 收费站名称
@@ -33,7 +33,7 @@ public class StationShiftVo {
     /**
      * 班次ID
      */
-    private Integer shiftId;
+    private String shiftId;
 
     /**
      * 班次
@@ -43,7 +43,7 @@ public class StationShiftVo {
     /**
      * 班组ID
      */
-    private Integer teamId;
+    private String teamId;
 
     /**
      * 班组
@@ -53,7 +53,7 @@ public class StationShiftVo {
     /**
      * 工号
      */
-    private Integer operatorId;
+    private String operatorId;
 
     /**
      * 统计金额
@@ -148,7 +148,7 @@ public class StationShiftVo {
     /**
      * 统计方式 月份
      */
-    private Integer monthDate;
+    private String monthDate;
 
-    private Integer staDate;
+    private String staDate;
 }

@@ -16,13 +16,13 @@ public class TbStcVo {
     /**
      * 月份
      */
-    private Integer monthDate;
+    private String monthDate;
 
-    private Integer staDate;
+    private String staDate;
 
-    private Integer shiftId;
+    private String shiftId;
 
-    private Integer stationId;
+    private String stationId;
 
     /**
      * 正常卡库存

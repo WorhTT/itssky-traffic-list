@@ -19,12 +19,12 @@ public class TbShVo {
     /**
      * 收费员工号
      */
-    private Integer operatorId;
+    private String operatorId;
 
     /**
      * 班次ID
      */
-    private Integer shiftId;
+    private String shiftId;
 
     /**
      * 实缴金额
@@ -39,17 +39,17 @@ public class TbShVo {
     /**
      * 统计日期
      */
-    private Integer staDate;
+    private String staDate;
 
     /**
      * 统计方式 月份
      */
-    private Integer monthDate;
+    private String monthDate;
 
     /**
      * 收费站ID
      */
-    private Integer stationId;
+    private String stationId;
 
     /**
      * 通行卡实收数

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 public class Cf1Vo {
 
-    private Integer stationId;
+    private String stationId;
 
     @Excel(name = "收费站", mergeRow = 3)
     private String stationName;

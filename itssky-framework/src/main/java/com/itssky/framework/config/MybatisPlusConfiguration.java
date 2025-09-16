@@ -27,7 +27,7 @@ public class MybatisPlusConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MybatisPlusConfiguration.class);
 
-    private static final List<String> dynamicTableNames = Lists.newArrayList("tbstatexit", "tbstatentry", "tbsh", "tbstc", "extrapay");
+    private static final List<String> dynamicTableNames = Lists.newArrayList("tbstatexit", "tbstatentry", "tbsh", "tbstc", "extrapay", "tbrawentry", "tbrawexit");
 
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {

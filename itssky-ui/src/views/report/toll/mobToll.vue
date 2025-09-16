@@ -53,7 +53,7 @@
 
 <script>
 
-import {listStationSelect} from "@/api/system/station";
+import {listStationSelectV2} from "@/api/system/station";
 import eefEPayTollDetail from "@/views/report/toll/eefEPayTollDetail";
 import Router from "vue-router";
 import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
@@ -113,7 +113,7 @@ export default {
     this.queryParams.beginTime = getMidnightTime();
     this.queryParams.endTime = getCurrentTime();
     //获取收费站下拉框
-    listStationSelect({needCenter: true}).then((res) => {
+    listStationSelectV2({needCenter: true}).then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue
       this.$set(this.queryParams, 'stationId', this.currentStationId);

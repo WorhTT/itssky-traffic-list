@@ -49,7 +49,6 @@ public class CardServiceImpl implements CardService {
     /**
      * S1收费站通行卡发放班统计表
      *
-     * @param dto
      */
     @Override
     @DynamicTableName(dateParam = "#dto.time")
@@ -108,7 +107,7 @@ public class CardServiceImpl implements CardService {
         for (CardStatisticsVo cardStatisticsVo : cardStatisticsVos) {
             for (TbShVo tbShVo : tbShData) {
                 //实际
-                if (cardStatisticsVo.getOperatorId().equals(tbShVo.getOperatorId().toString())) {
+                if (cardStatisticsVo.getOperatorId().equals(tbShVo.getOperatorId())) {
                     if (dto.getTableFlag() == 0) {
                         cardStatisticsVo.setActualNum(tbShVo.getHandOutCNum());
                     } else if (dto.getTableFlag() == 1) {
@@ -375,7 +374,7 @@ public class CardServiceImpl implements CardService {
         for (CardStatisticsVo cardStatisticsVo : cardStatisticsVos) {
             for (TbShVo tbShVo : tbShData) {
                 //实发卡数量
-                if (cardStatisticsVo.getOperatorId().equals(tbShVo.getOperatorId().toString())) {
+                if (cardStatisticsVo.getOperatorId().equals(tbShVo.getOperatorId())) {
                     cardStatisticsVo.setActualNum(tbShVo.getHandOutCNum());
                 }
             }
@@ -490,10 +489,10 @@ public class CardServiceImpl implements CardService {
             i.setIssuedNum(i.getCustSubTotal() + i.getTruckSubTotal() + i.getSpecSubTotal());
             i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getMilitaryNum() + i.getPreferNum() + i.getEtcNum());
             if ("0".equals(dto.getStatisticsType())) {
-                i.setStatType(i.getStaDate().toString());
+                i.setStatType(i.getStaDate());
             }
             else if ("1".equals(dto.getStatisticsType())) {
-                i.setStatType(i.getMonthDate().toString());
+                i.setStatType(i.getMonthDate());
             }
             else if ("2".equals(dto.getStatisticsType())) {
                 i.setStatType(i.getStationName());
@@ -578,7 +577,7 @@ public class CardServiceImpl implements CardService {
                 }
                 //月
                 else if ("1".equals(dto.getStatisticsType())) {
-                    if (cardStatisticsVo.getMonthDate().equals(tbSh.getMonthDate().toString())) {
+                    if (cardStatisticsVo.getMonthDate().equals(tbSh.getMonthDate())) {
                         cardStatisticsVo.setActualNum(tbSh.getHandInCNum());
                     }
                 }

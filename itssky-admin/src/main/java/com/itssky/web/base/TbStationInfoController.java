@@ -65,6 +65,31 @@ public class TbStationInfoController {
     }
 
     /**
+     * 根据用户权限去穿透获取可以管理的站点，如果是中心用户，
+     * 可以穿透获取分中心及站点，如果是分中心用户，则顶层为分中心，下面为站点，如果是站点用户，只能看到该站点选项
+     */
+    @GetMapping(value = "/listStationSelect/v2")
+    public AjaxResult listStationSelectV2(@RequestParam(required = false, value = "needCenter") boolean needCenter) {
+        HashMap<String, Object> tempMap = new HashMap<>();
+        List<Map<String, Object>> tempList = tbStationInfoService.listStationSelectV2(needCenter);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        tempMap.put("array", tempList);
+        if (Objects.nonNull(loginUser.getStationId()) && Objects.nonNull(loginUser.getCorpNo())) {
+            if (loginUser.getStationId() == 0) {
+                if (loginUser.getCorpNo().length() == 2) {
+                    tempMap.put("defaultValue", -1);
+                } else if (loginUser.getCorpNo().length() == 4){
+                    tempMap.put("defaultValue", Integer.parseInt(loginUser.getCorpNo()));
+                }
+            } else {
+                tempMap.put("defaultValue", loginUser.getStationId());
+            }
+        }
+        return AjaxResult.success(tempMap);
+    }
+
+    /**
      * <p>前端下拉框站选择</p>
      *
      * @return {@link AjaxResult }

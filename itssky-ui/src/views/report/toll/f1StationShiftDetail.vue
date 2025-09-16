@@ -37,7 +37,8 @@
     </div>
 
 
-    <el-table v-loading="loading" :data="dataList" ref="myTable" style="width: 100%;table-layout: auto;" >
+    <el-table v-loading="loading" :data="dataList" ref="myTable" style="width: 100%;table-layout: auto;"
+              :span-method="arraySpanMethod" :cell-style="cellStyle">
       <el-table-column label="班次" align="center" prop="shiftId"/>
       <el-table-column label="班组" align="center" prop="teamId"/>
       <el-table-column label="工号" align="center" prop="operatorId"/>
@@ -139,6 +140,24 @@ export default {
     console.log('当前公司:', process.env.VUE_APP_CORP_NAME)
   },
   methods: {
+    cellStyle({row, column, rowIndex, columnIndex}) {
+      if (row.subTotalRow === true) {
+        return 'background:	#C0C0C0';
+      }
+      // if (row.totalRow === true) {
+      //   return 'background:	#FFD040'
+      // }
+    },
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (row.totalRow === true) {
+        row.shiftId = "合计"
+        if (columnIndex === 0) {
+          return [1, 3];
+        } else if (columnIndex === 1 || columnIndex === 2) {
+          return [0, 0];
+        }
+      }
+    },
     // 获取当前日期时间的方法 (yyyy-MM-dd HH:mm:ss)
     getCurrentDateTime() {
       const now = new Date();

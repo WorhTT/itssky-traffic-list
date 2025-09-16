@@ -24,22 +24,22 @@ public class CardStatisticsVo {
     /**
      * 统计日期
      */
-    private Integer StaDate;
+    private String StaDate;
 
     /**
      * 班组ID
      */
-    private Integer teamId;
+    private String teamId;
 
     /**
      * 月份
      */
-    private Integer monthDate;
+    private String monthDate;
 
     /**
      * 收费站ID
      */
-    private Integer stationId;
+    private String stationId;
 
     /**
      * 收费站名称

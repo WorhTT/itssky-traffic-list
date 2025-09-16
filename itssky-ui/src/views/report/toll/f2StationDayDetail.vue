@@ -159,6 +159,9 @@ export default {
       if (row.subTotalRow === true) {
         return 'background:	#C0C0C0';
       }
+      // if (row.totalRow === true) {
+      //   return 'background:	#FFD040'
+      // }
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.subTotalRow === true) {

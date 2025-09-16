@@ -15,16 +15,16 @@ public class ExtraPayVo {
     /**
      * 统计日期
      */
-    private Integer staDate;
+    private String staDate;
 
     /**
      * 统计方式 月份
      */
-    private Integer monthDate;
+    private String monthDate;
 
-    private Integer operatorId;
+    private String operatorId;
 
-    private Integer stationId;
+    private String stationId;
 
     /**
      * 加收
