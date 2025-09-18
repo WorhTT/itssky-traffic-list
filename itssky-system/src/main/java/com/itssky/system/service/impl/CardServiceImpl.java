@@ -198,6 +198,9 @@ public class CardServiceImpl implements CardService {
         cardStatisticsVos.forEach(i -> {
             CCardStatVo cCardStatVo = new CCardStatVo();
             BeanUtils.copyProperties(i, cCardStatVo);
+            if (Objects.isNull(i.getOperatorId())) {
+                cCardStatVo.setOperatorId("");
+            }
             result.add(cCardStatVo);
         });
         ExportVo exportVo = new ExportVo();

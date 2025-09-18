@@ -199,10 +199,10 @@ export default {
         <html>
         <head>
         <title>Print</title>
-        <style>
-        /* 在这里添加你的样式 */
+      <style>
+            /* 在这里添加你的样式 */
         .table-container {
-          zoom: 0.4;
+          zoom: 0.48;
           margin-top: 20px;
         }
         .print-title {
@@ -252,16 +252,16 @@ export default {
         }
         .el-table td {
           border: 1px solid #000000 !important;
-          font-size: 20px;
-          padding: 1px 0;
+          font-size: 24px;
+          padding: 20px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
-          line-height: 2.5;
+          line-height: 3;
         }
         .el-table th {
           border: 1px solid #000000 !important;
-          font-size: 22px;
+          font-size: 32px;
           padding: 4px; /* Reduce padding to make cells more compact */
           text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */
@@ -277,10 +277,6 @@ export default {
             /*transform: scale(0.85);  !* 初始缩放系数 *!*/
             transform-origin: top left;
           }
-          /* 确保表头表体使用相同的字体尺寸 */
-         .el-table th {
-            font-size: 22px; /* 与td保持一致 */
-         }
         }
         @page {
           size: auto;

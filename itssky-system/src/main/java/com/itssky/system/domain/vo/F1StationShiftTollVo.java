@@ -15,40 +15,40 @@ import java.math.BigDecimal;
 public class F1StationShiftTollVo {
 
     @Excel(name = "班次",  mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private String shiftId;
+    private String shiftId = "";
 
     @Excel(name = "班组", mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private String teamId;
+    private String teamId = "";
 
     @Excel(name = "工号", mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private String operatorId;
+    private String operatorId = "";
 
     @Excel(name = "通行费收入总额", mergeColumn = 6, headerRow = 2, mergeRow = 1, onlyHeader = true)
     private String tollAmount;
 
     @Excel(name = "统计金额", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 4)
-    private BigDecimal statAmount;
+    private BigDecimal statAmount = BigDecimal.ZERO;
 
     @Excel(name = "应缴金额", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 5)
-    private BigDecimal dueAmount;
+    private BigDecimal dueAmount = BigDecimal.ZERO;
 
     @Excel(name = "实缴金额", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 6)
-    private BigDecimal paidAmount;
+    private BigDecimal paidAmount = BigDecimal.ZERO;
 
     @Excel(name = "金额差异", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 7)
-    private BigDecimal amountDiff;
+    private BigDecimal amountDiff = BigDecimal.ZERO;
 
     @Excel(name = "欠款", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 8)
-    private BigDecimal arrearsAmount;
+    private BigDecimal arrearsAmount = BigDecimal.ZERO;
 
     @Excel(name = "加收款", mergeRow = 2, headerRow = 3, mergeColumn = 1, startColumn = 9)
-    private BigDecimal extraTotal;
+    private BigDecimal extraTotal = BigDecimal.ZERO;
 
     @Excel(name = "移动支付", mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private BigDecimal mobilePaymentAmount;
+    private BigDecimal mobilePaymentAmount = BigDecimal.ZERO;
 
     @Excel(name = "电子支付", mergeRow = 3, headerRow = 2, mergeColumn = 1)
-    private BigDecimal ePaymentAmount;
+    private BigDecimal ePaymentAmount = BigDecimal.ZERO;
 
     @Excel(name = "公务IC卡", mergeRow = 3, headerRow = 2, mergeColumn = 1)
     private Integer officialIcCardCount = 0;

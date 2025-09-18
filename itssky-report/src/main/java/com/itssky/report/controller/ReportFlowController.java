@@ -229,10 +229,29 @@ public class ReportFlowController extends BaseController {
         return util.exportDynamic(list, sheetName, conditionList, 29, reportTitleName, loginUserInfo.getUsername());
     }
 
+    /**
+     * TK入出口(MTC)交通流量按车种统计表
+     * @param dto
+     * @return
+     */
     @PostMapping(value = "/tkflow")
     public TableDataVo tkFlow(@RequestBody @Valid FlowStatisticsDto dto) {
         TableDataVo data = new TableDataVo();
-        data.setRows(reportFlowService.tkFlow(dto));
+        data.setRows(reportFlowService.tkFlow(dto, 1));
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        data.setOperatorName(loginUserInfo.getUsername());
+        data.setTitle(reportTitleName);
+        return data;
+    }
+
+    /**
+     * TK入出口(MTC+ETC)交通流量按车种统计表
+     */
+    @PostMapping(value = "/tkflow/all")
+    public TableDataVo tkFlowAll(@RequestBody @Valid FlowStatisticsDto dto) {
+        TableDataVo data = new TableDataVo();
+        data.setRows(reportFlowService.tkFlow(dto, 2));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         data.setOperatorName(loginUserInfo.getUsername());
@@ -242,11 +261,20 @@ public class ReportFlowController extends BaseController {
 
     @PostMapping(value = "/export/tkflow")
     public AjaxResult exportTkFlow(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
-        List<TkFlowVo> list = reportFlowService.tkFlow(dto);
+        List<TkFlowVo> list = reportFlowService.tkFlow(dto, 1);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<TkFlowVo> util = new ExcelUtil<TkFlowVo>(TkFlowVo.class);
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
-        return util.exportDynamic(list, "TK入出口(MTC)交通流量按车种统计表", conditionList, 22, reportTitleName, loginUserInfo.getUsername());
+        return util.exportDynamic(list, "TK入出口(MTC)交通流量按车种统计表", conditionList, 18, reportTitleName, loginUserInfo.getUsername());
+    }
+
+    @PostMapping(value = "/export/tkflow/all")
+    public AjaxResult exportTkFlowAll(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
+        List<TkFlowVo> list = reportFlowService.tkFlow(dto, 2);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<TkFlowVo> util = new ExcelUtil<TkFlowVo>(TkFlowVo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "TK入出口(MTC+ETC)交通流量按车种统计表", conditionList, 18, reportTitleName, loginUserInfo.getUsername());
     }
 
 //    @PostMapping(value = "/od")

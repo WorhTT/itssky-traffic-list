@@ -52,11 +52,11 @@
 
 <script>
 
-import {listStationSelectV2} from "@/api/system/station";
+import {listStationSelect} from "@/api/system/station";
 import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
 
 export default {
-  name: "RJFlow",
+  name: "TKFlowAll",
   data() {
     return {
       props: {multiple: true},
@@ -84,7 +84,6 @@ export default {
         beginTime: null,
         endTime: null,
         statisticsType: '0',
-        flag: 0
       },
       // 表单参数
       form: {},
@@ -105,7 +104,7 @@ export default {
     //获取收费站下拉框
     this.queryParams.beginTime = getMidnightTime();
     this.queryParams.endTime = getCurrentTime();
-    listStationSelectV2({needCenter: true}).then((res) => {
+    listStationSelect({needCenter: true}).then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue
       this.$set(this.queryParams, 'stationId', this.currentStationId);
@@ -114,7 +113,7 @@ export default {
   methods: {
     openChildPage() {
       const route = {
-        path: '/rjFlowDetail',
+        path: '/tkFlowAllDetail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);

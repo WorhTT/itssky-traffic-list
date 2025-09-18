@@ -111,3 +111,19 @@ export function exportTkFlow(data) {
     data: data
   })
 }
+
+export function tkFlowAll(data) {
+  return request({
+    url: '/report/tkflow/all',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportTkFlowAll(data) {
+  return request({
+    url: '/report/export/tkflow',
+    method: 'post',
+    data: data
+  })
+}

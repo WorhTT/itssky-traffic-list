@@ -180,6 +180,58 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
         return result;
     }
 
+    /**
+     * 获取权限涉及范围内的StationIdList
+     */
+    public List<Integer> getAuthRangeStationIdList(Integer stationId, LoginUser loginUser) {
+        //-1是中心
+        //三位数的是分中心需要补零，四位数的也是分中心
+        //其余的都考虑是站ID
+
+        boolean isRoot = loginUser.getCorpNo().length() == 2;
+        if (stationId == -1) {
+            String corpNo = loginUser.getCorpNo();
+            LambdaQueryWrapper<TbStationInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.likeRight(TbStationInfo::getCorpno, corpNo);
+            List<TbStationInfo> tbStationInfos = baseMapper.selectList(lambdaQueryWrapper);
+            if (!CollectionUtils.isEmpty(tbStationInfos)) {
+                return tbStationInfos.stream().map(TbStationInfo::getStationid).collect(Collectors.toList());
+            }
+
+        }
+        //需要判断是否是中心用户 中心用户则取这个传参(如果位数不对需补0) ,分中心用户则直接获取corpNo下的所有tbStationInfo
+        else if (stationId <= 9999) {
+            //中心用户
+            if (isRoot) {
+                String corpNo;
+                if (stationId < 1000) {
+                    corpNo = "0" + stationId;
+                } else {
+                    corpNo = String.valueOf(stationId);
+                }
+                LambdaQueryWrapper<TbStationInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+                lambdaQueryWrapper.likeRight(TbStationInfo::getCorpno, corpNo);
+                List<TbStationInfo> tbStationInfos = baseMapper.selectList(lambdaQueryWrapper);
+                if (!CollectionUtils.isEmpty(tbStationInfos)) {
+                    return tbStationInfos.stream().map(TbStationInfo::getStationid).collect(Collectors.toList());
+                }
+            }
+            //非顶层中心用户
+            else {
+                LambdaQueryWrapper<TbStationInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+                lambdaQueryWrapper.likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
+                List<TbStationInfo> tbStationInfos = baseMapper.selectList(lambdaQueryWrapper);
+                if (!CollectionUtils.isEmpty(tbStationInfos)) {
+                    return tbStationInfos.stream().map(TbStationInfo::getStationid).collect(Collectors.toList());
+                }
+            }
+        }
+        else {
+            return Collections.singletonList(stationId);
+        }
+        return new ArrayList<>();
+    }
+
     @Override
     public List<Map<String, Object>> listStationSelectV2(boolean needCenter) {
         List<Map<String, Object>> result = new ArrayList<>();

@@ -147,7 +147,6 @@ export default {
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.totalRow  === true) {
-        row.operatorId = "合计";
         if (columnIndex === 0) {
           return [1, 3];
         } else if (columnIndex < 3) {
@@ -199,100 +198,190 @@ export default {
       <span class="print-time">打印时间：${printTime}</span>
     </div>
   `;
+      // 创建一个新的表格结构，避免样式冲突
+      let tableHtml = `
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th>班组</th>
+              <th>收费员工号</th>
+              <th>收费员姓名</th>
+              <th>应缴金额</th>
+              <th>应缴IC卡张数</th>
+              <th>纸券</th>
+              <th>应发IC卡张数</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      // 填充表格数据
+      this.dataList.forEach(row => {
+        // 处理可能为0的数值，确保0也能正确显示
+        const teamId = row.teamId !== undefined && row.teamId !== null ? row.teamId : '';
+        const operatorId = row.operatorId !== undefined && row.operatorId !== null ? row.operatorId : '';
+        const operatorName = row.operatorName !== undefined && row.operatorName !== null ? row.operatorName : '';
+        const toll = row.toll !== undefined && row.toll !== null ? row.toll : '';
+        const yjIcCardNum = row.yjIcCardNum !== undefined && row.yjIcCardNum !== null ? row.yjIcCardNum : '';
+        const paperNum = row.paperNum !== undefined && row.paperNum !== null ? row.paperNum : '';
+        const yfIcCardNum = row.yfIcCardNum !== undefined && row.yfIcCardNum !== null ? row.yfIcCardNum : '';
+        
+        // 对于合计行，收费员工号应为空
+        const displayOperatorId = row.totalRow === true ? '' : operatorId;
+        
+        tableHtml += `
+          <tr>
+            <td>${teamId}</td>
+            <td>${displayOperatorId}</td>
+            <td>${operatorName}</td>
+            <td>${toll}</td>
+            <td>${yjIcCardNum}</td>
+            <td>${paperNum}</td>
+            <td>${yfIcCardNum}</td>
+          </tr>
+        `;
+      });
+      
+      tableHtml += `
+          </tbody>
+        </table>
+      `;
+      
       let htmlContent = `
-        <!DOCTYPE html>
+      <!DOCTYPE html>
         <html>
         <head>
         <title>Print</title>
         <style>
-        .table-container {
-            zoom: 0.78 !important;
-            width: 100% !important;
-            max-width: 100vw !important;
-            overflow: visible !important;
+        body {
+          margin: 0;
+          padding: 15px;
+          font-family: "Microsoft YaHei", SimHei, Arial, sans-serif;
+          box-sizing: border-box;
+          font-size: 14px;
         }
-         .print-title {
+        .print-title {
           text-align: center;
           font-size: 20px;
           font-weight: bold;
-          margin-bottom: 5px;
-        }
-        body {
-          margin: 0;
-          padding: 20px;
-          font-family: Arial, sans-serif;
-          box-sizing: border-box;
+          margin-bottom: 10px;
         }
         .container {
           display: flex;
+          margin-bottom: 15px;
         }
         .container span {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 15px;
+        }
+        .table-container {
+          margin-top: 10px;
+          width: 100%;
         }
         .el-table {
-            width: max-content !important; /* 允许表格根据内容扩展 */
-            min-width: 100% !important;
-            table-layout: auto !important; /* 自动列宽模式 */
-            font-size: 12px !important;     /* 基础字号缩小 */
+          width: 100%;
+          border-collapse: collapse;
+          table-layout: fixed;
         }
-        .el-table__body-wrapper, .el-table__header-wrapper {
-        border: none !important; /* 移除容器边框 */
+        .el-table thead tr {
+          background-color: #ebeef5;
         }
-
-        .el-table td, .el-table th {
-        border: 1px solid #000 !important; /* 保留单元格边框 */
-        }
-        .el-table td {
-          border: 1px solid #000 !important;
-          font-size: 16px;
-          padding: 1px 0;
-          text-align: center; /* Center text */
+        .el-table th, .el-table td {
+          border: 1px solid #000;
+          padding: 8px 5px;
+          text-align: center;
           word-wrap: break-word;
-          white-space: normal; /* Prevent text from wrapping */
+          white-space: normal;
+          font-size: 13px;
         }
-        /* 强制列宽生效 */
-/*.el-table__header colgroup col {*/
-/*  width: 10px !important;*/
-/*  min-width: 10px !important;*/
-/*}*/
         .el-table th {
-          border: 1px solid #000 !important;
-          font-size: 22px;
-          padding: 4px; /* Reduce padding to make cells more compact */
-          /*text-align: center; !* Center text *!*/
-          word-wrap: break-word; /* Ensure text wraps within cells */
-          white-space: pre-wrap; /* Allow text to wrap */
-          /*writing-mode: vertical-rl;*/
+          font-weight: bold;
+          font-size: 14px;
+          background-color: #f5f7fa;
         }
-     .footer-info {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-      font-size: 14px;
-    }
-    .operator {
-      text-align: left;
-    }
-    .print-time {
-      text-align: right;
-    }
+        /* 防止表格跨页截断 */
+        thead {
+          display: table-header-group;
+        }
+        tfoot {
+          display: table-footer-group;
+        }
+        tbody {
+          display: table-row-group;
+        }
+        tr {
+          page-break-inside: avoid;
+          page-break-after: auto;
+        }
+        td, th {
+          page-break-inside: avoid;
+        }
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        .operator {
+            text-align: left;
+        }
+        .print-time {
+            text-align: right;
+        }
         @media print {
+          @page {
+            size: A4 portrait;
+            margin: 10mm;
+          }
           body {
             -webkit-print-color-adjust: exact;
             color-adjust: exact;
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100vw !important; /* 强制占据全部视口宽度 */
-            /*transform: scale(0.85);  !* 初始缩放系数 *!*/
-            transform-origin: top left;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            font-size: 12px;
           }
-        }
-        @page {
-          size: auto;
-          margin: 5mm 2mm !important;    /* 减少边距 */
+          .el-table {
+            width: 100% !important;
+            table-layout: fixed !important;
+          }
+          .el-table th, .el-table td {
+            padding: 6px 4px;
+            font-size: 12px;
+          }
+          .el-table th {
+            font-size: 13px;
+          }
+          .container span {
+            font-size: 13px;
+          }
+          .print-title {
+            font-size: 18px;
+          }
+          .footer-info {
+            margin-top: 15px;
+            font-size: 12px;
+          }
+          /* 防止表格跨页截断 */
+          thead {
+            display: table-header-group;
+          }
+          tfoot {
+            display: table-footer-group;
+          }
+          tbody {
+            display: table-row-group;
+          }
+          tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+          }
+          td, th {
+            page-break-inside: avoid;
+          }
         }
         </style>
         </head>
@@ -300,11 +389,11 @@ export default {
             <div class="print-title">${corpName}</div>
             <div class="print-title">F6收费站通行费收入班对账表</div>
             <div class="container">${conditionListHtml}</div>
-            <div class="table-container">${elTable.outerHTML}</div>
-                        ${footerHtml}
+            <div class="table-container">${tableHtml}</div>
+            ${footerHtml}
         </body>
         </html>
-        `
+      `
       printDocument.write(htmlContent);
       printDocument.close();
 

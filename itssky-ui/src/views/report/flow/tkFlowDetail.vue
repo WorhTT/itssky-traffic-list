@@ -36,9 +36,8 @@
     <el-table v-loading="loading" :data="dataList" border ref="myTable" >
       <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
       <el-table-column label="入口" align="center" prop="entry">
-        <el-table-column label="客车" align="center" prop="rkc"/>
-        <el-table-column label="货车" align="center" prop="rhc"/>
-        <el-table-column label="专车" align="center" prop="rzc"/>
+        <el-table-column label="现金" align="center" prop="rxj"/>
+        <el-table-column label="电子支付" align="center" prop="rdz"/>
         <el-table-column label="公务车" align="center" prop="rgw"/>
         <el-table-column label="军车" align="center" prop="rjc"/>
         <el-table-column label="优惠车" align="center" prop="ryh"/>
@@ -46,12 +45,9 @@
         <el-table-column label="入口小计" align="center" prop="rsum"/>
       </el-table-column>
       <el-table-column label="出口" align="center" prop="exit">
-        <el-table-column label="客车" align="center" prop="ckc"/>
-        <el-table-column label="货车" align="center" prop="chc"/>
-        <el-table-column label="专车" align="center" prop="czc"/>
         <el-table-column label="现金" align="center" prop="cxj"/>
-        <el-table-column label="电子支付" align="center" prop="cepay"/>
-        <el-table-column label="移动支付" align="center" prop="cmpay"/>
+        <el-table-column label="电子支付" align="center" prop="cdz"/>
+        <el-table-column label="移动支付" align="center" prop="cyd"/>
         <el-table-column label="公务车" align="center" prop="cgw"/>
         <el-table-column label="军车" align="center" prop="cjc"/>
         <el-table-column label="优惠车" align="center" prop="cyh"/>
@@ -72,7 +68,7 @@
 
 <script>
 
-import {tkFlow, exportTkFlow} from "@/api/report/exitFlow"
+import {exportTkFlowAll, tkFlowAll} from "@/api/report/exitFlow"
 import {getLoginUser} from "@/api/login";
 
 export default {
@@ -150,7 +146,7 @@ export default {
     },
     getList() {
       this.loading = true;
-      tkFlow(this.queryParams).then(response => {
+      tkFlowAll(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
         this.conditionList = response.conditionList;
@@ -163,12 +159,12 @@ export default {
     handleExport() {
       this.loading = true;
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出TK入出口(MTC)交通流量按车种统计表?', "警告", {
+      this.$confirm('是否确认导出TK入出口(MTC+ETC)交通流量按车种统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportTkFlow(queryParams);
+        return exportTkFlowAll(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       }).finally(() => {
@@ -199,7 +195,7 @@ export default {
         <style>
         /* 在这里添加你的样式 */
         .table-container {
-          zoom: 0.6;
+          zoom: 0.8;
           margin-top: 20px;
         }
         .print-title {

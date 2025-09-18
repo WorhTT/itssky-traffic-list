@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
       <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
-      <h3 style="font-weight: bolder;margin: 1vh 0">CSJ出口机器人交通流量统计表</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">TK入出口(MTC+ETC)交通流量按车种统计表</h3>
     </div>
     <div style="display: flex">
       <span v-for="item in conditionList" style="flex: 1;
@@ -35,31 +35,27 @@
 
     <el-table v-loading="loading" :data="dataList" border ref="myTable" >
       <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
-      <el-table-column label="客一" align="center" prop="k1"/>
-      <el-table-column label="客二" align="center" prop="k2"/>
-      <el-table-column label="客三" align="center" prop="k3"/>
-      <el-table-column label="客四" align="center" prop="k4"/>
-      <el-table-column label="客车小计" align="center" prop="kamount"/>
-      <el-table-column label="货一" align="center" prop="h1"/>
-      <el-table-column label="货二" align="center" prop="h2"/>
-      <el-table-column label="货三" align="center" prop="h3"/>
-      <el-table-column label="货四" align="center" prop="h4"/>
-      <el-table-column label="货五" align="center" prop="h5"/>
-      <el-table-column label="货六" align="center" prop="h6"/>
-      <el-table-column label="货车小计" align="center" prop="hamount"/>
-      <el-table-column label="专一" align="center" prop="z1"/>
-      <el-table-column label="专二" align="center" prop="z2"/>
-      <el-table-column label="专三" align="center" prop="z3"/>
-      <el-table-column label="专四" align="center" prop="z4"/>
-      <el-table-column label="专五" align="center" prop="z5"/>
-      <el-table-column label="专六" align="center" prop="z6"/>
-      <el-table-column label="专车小计" align="center" prop="zamount"/>
-      <el-table-column label="公务" align="center" prop="official"/>
-      <el-table-column label="军车" align="center" prop="military"/>
-      <el-table-column label="优惠" align="center" prop="discount"/>
-      <el-table-column label="免费" align="center" prop="free"/>
-      <el-table-column label="车队" align="center" prop="fleet"/>
-      <el-table-column label="总计" align="center" prop="allAmount"/>
+      <el-table-column label="入口" align="center" prop="entry">
+        <el-table-column label="现金" align="center" prop="rxj"/>
+        <el-table-column label="电子支付" align="center" prop="rdz"/>
+        <el-table-column label="公务车" align="center" prop="rgw"/>
+        <el-table-column label="军车" align="center" prop="rjc"/>
+        <el-table-column label="优惠车" align="center" prop="ryh"/>
+        <el-table-column label="车队" align="center" prop="rcd"/>
+        <el-table-column label="入口小计" align="center" prop="rsum"/>
+      </el-table-column>
+      <el-table-column label="出口" align="center" prop="exit">
+        <el-table-column label="现金" align="center" prop="cxj"/>
+        <el-table-column label="电子支付" align="center" prop="cdz"/>
+        <el-table-column label="移动支付" align="center" prop="cyd"/>
+        <el-table-column label="公务车" align="center" prop="cgw"/>
+        <el-table-column label="军车" align="center" prop="cjc"/>
+        <el-table-column label="优惠车" align="center" prop="cyh"/>
+        <el-table-column label="免费车" align="center" prop="cmf"/>
+        <el-table-column label="车队" align="center" prop="rcd"/>
+        <el-table-column label="出口小计" align="center" prop="csum"/>
+      </el-table-column>
+      <el-table-column label="总计" align="center" prop="sumCount"/>
     </el-table>
     <!-- 添加底部信息区域 -->
     <div style="display: flex; justify-content: space-between; margin-top: 20px;">
@@ -72,11 +68,11 @@
 
 <script>
 
-import {getCsjRobot, exportCsjRobot} from "@/api/report/exitFlow"
+import {tkFlowAll, exportTkFlowAll} from "@/api/report/exitFlow"
 import {getLoginUser} from "@/api/login";
 
 export default {
-  name: "RSJRobotDetail",
+  name: "TKFlowAllDetail",
   data() {
     return {
       props: {multiple: true},
@@ -150,7 +146,7 @@ export default {
     },
     getList() {
       this.loading = true;
-      getCsjRobot(this.queryParams).then(response => {
+      tkFlowAll(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
         this.conditionList = response.conditionList;
@@ -163,12 +159,12 @@ export default {
     handleExport() {
       this.loading = true;
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出CSJ出口机器人交通流量统计表?', "警告", {
+      this.$confirm('是否确认导出TK入出口(MTC+ETC)交通流量按车种统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportCsjRobot(queryParams);
+        return exportTkFlowAll(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       }).finally(() => {
@@ -196,17 +192,17 @@ export default {
         <html>
         <head>
         <title>Print</title>
-              <style>
-            /* 在这里添加你的样式 */
+        <style>
+        /* 在这里添加你的样式 */
         .table-container {
-          zoom: 0.58;
+          zoom: 0.8;
           margin-top: 20px;
         }
         .print-title {
           text-align: center;
-          font-size: 20px;
+          font-size: 24px;
           font-weight: bold;
-          margin-bottom: 5px;
+          margin-bottom: 20px;
         }
         body {
           margin: 0;
@@ -249,8 +245,8 @@ export default {
         }
         .el-table td {
           border: 1px solid #000000 !important;
-          font-size: 24px;
-          padding: 20px 0;
+          font-size: 20px;
+          padding: 1px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
@@ -258,7 +254,7 @@ export default {
         }
         .el-table th {
           border: 1px solid #000000 !important;
-          font-size: 32px;
+          font-size: 22px;
           padding: 4px; /* Reduce padding to make cells more compact */
           text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */
@@ -283,7 +279,7 @@ export default {
         </head>
         <body>
             <div class="print-title">${corpName}</div>
-            <div class="print-title">CSJ出口机器人交通流量统计表</div>
+            <div class="print-title">TK入出口(MTC+ETC)交通流量按车种统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${elTable.outerHTML}</div>
             ${footerHtml}

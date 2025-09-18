@@ -17,43 +17,43 @@ public class StationShiftVo {
     /**
      * 统计方式
      */
-    private String statType;
+    private String statType = "";
 
     /**
      * 收费站ID
      */
-    private String stationId;
+    private String stationId = "";
 
     /**
      * 收费站名称
      */
-    private String stationName;
+    private String stationName = "";
 
 
     /**
      * 班次ID
      */
-    private String shiftId;
+    private String shiftId = "";
 
     /**
      * 班次
      */
-    private String shiftName;
+    private String shiftName = "";
 
     /**
      * 班组ID
      */
-    private String teamId;
+    private String teamId = "";
 
     /**
      * 班组
      */
-    private String teamName;
+    private String teamName = "";
 
     /**
      * 工号
      */
-    private String operatorId;
+    private String operatorId = "";
 
     /**
      * 统计金额

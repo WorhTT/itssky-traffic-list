@@ -16,9 +16,9 @@
         IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
         AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
         OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
-        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
-        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
-        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
+        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) as douTotalToll,
+        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END)/100 AS DECIMAL(10,2)), 0) as arrearsAmount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) as arrearsTrips,
         IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
         IFNULL(CAST(SUM(CASE WHEN PayType=2 THEN TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount
         FROM
@@ -53,10 +53,10 @@
         IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
         AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
         OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
-        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
-        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
-        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
-        IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
+        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS douTotalToll,
+        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END)/100 AS DECIMAL(10,2)), 0) AS arrearsAmount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) AS arrearsTrips,
+        IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS mobilePaymentAmount,
         IFNULL(CAST(SUM(CASE WHEN PayType=2 THEN TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount
         FROM
         `tbstatexit` a
@@ -89,10 +89,10 @@
         IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
         AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
         OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
-        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
-        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
-        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) arrearsTrips,
-        IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
+        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS douTotalToll,
+        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END)/100 AS DECIMAL(10,2)), 0) AS arrearsAmount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) AS arrearsTrips,
+        IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS mobilePaymentAmount,
         IFNULL(CAST(SUM(CASE WHEN PayType=2 THEN TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount,
         LEFT(a.StaDate, 6) AS monthDate,
         a.StaDate AS staDate
@@ -149,26 +149,26 @@
         a.OperatorID AS operatorId,
         LEFT(a.StaDate, 6) AS monthDate,
         a.StaDate AS staDate,
-        IFNULL(SUM(a.TotalToll / 100), 0) as totalAmount,
-        SUM(CASE WHEN a.VehicleClass = 1 THEN a.TotalToll / 100 ELSE 0 END) AS cust1,
-        SUM(CASE WHEN a.VehicleClass = 2 THEN a.TotalToll / 100 ELSE 0 END) AS cust2,
-        SUM(CASE WHEN a.VehicleClass = 3 THEN a.TotalToll / 100 ELSE 0 END) AS cust3,
-        SUM(CASE WHEN a.VehicleClass = 4 THEN a.TotalToll / 100 ELSE 0 END) AS cust4,
-        SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 THEN a.TotalToll / 100 ELSE 0 END) AS custSubTotal,
-        SUM(CASE WHEN a.VehicleClass = 11 THEN a.TotalToll / 100 ELSE 0 END) AS truck1,
-        SUM(CASE WHEN a.VehicleClass = 12 THEN a.TotalToll / 100 ELSE 0 END) AS truck2,
-        SUM(CASE WHEN a.VehicleClass = 13 THEN a.TotalToll / 100 ELSE 0 END) AS truck3,
-        SUM(CASE WHEN a.VehicleClass = 14 THEN a.TotalToll / 100 ELSE 0 END) AS truck4,
-        SUM(CASE WHEN a.VehicleClass = 15 THEN a.TotalToll / 100 ELSE 0 END) AS truck5,
-        SUM(CASE WHEN a.VehicleClass = 16 THEN a.TotalToll / 100 ELSE 0 END) AS truck6,
-        SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 THEN a.TotalToll / 100 ELSE 0 END) AS truckSubTotal,
-        SUM(CASE WHEN a.VehicleClass = 21 THEN a.TotalToll / 100 ELSE 0 END) AS spec1,
-        SUM(CASE WHEN a.VehicleClass = 22 THEN a.TotalToll / 100 ELSE 0 END) AS spec2,
-        SUM(CASE WHEN a.VehicleClass = 23 THEN a.TotalToll / 100 ELSE 0 END) AS spec3,
-        SUM(CASE WHEN a.VehicleClass = 24 THEN a.TotalToll / 100 ELSE 0 END) AS spec4,
-        SUM(CASE WHEN a.VehicleClass = 25 THEN a.TotalToll / 100 ELSE 0 END) AS spec5,
-        SUM(CASE WHEN a.VehicleClass = 26 THEN a.TotalToll / 100 ELSE 0 END) AS spec6,
-        SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 THEN a.TotalToll / 100 ELSE 0 END) AS specSubTotal
+        IFNULL(CAST(SUM(a.TotalToll)/100 AS DECIMAL(10,2)), 0) as totalAmount,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 1 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS cust1,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 2 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS cust2,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 3 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS cust3,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 4 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS cust4,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS custSubTotal,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 11 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS truck1,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 12 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS truck2,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 13 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS truck3,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 14 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS truck4,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 15 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS truck5,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 16 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS truck6,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS truckSubTotal,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 21 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS spec1,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 22 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS spec2,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 23 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS spec3,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 24 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS spec4,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 25 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS spec5,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass = 26 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS spec6,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS specSubTotal
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
             SELECT
@@ -229,66 +229,66 @@
             a.OperatorID AS operatorId,
             LEFT(a.StaDate, 6) AS monthDate,
             a.StaDate AS staDate,
-            SUM(CASE WHEN a.VehicleClass = 1 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust1C,
-            SUM(CASE WHEN a.VehicleClass = 2 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust2C,
-            SUM(CASE WHEN a.VehicleClass = 3 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust3C,
-            SUM(CASE WHEN a.VehicleClass = 4 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust4C,
-            SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS custCSubTotal,
-            SUM(CASE WHEN a.VehicleClass = 1 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust1D,
-            SUM(CASE WHEN a.VehicleClass = 2 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust2D,
-            SUM(CASE WHEN a.VehicleClass = 3 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust3D,
-            SUM(CASE WHEN a.VehicleClass = 4 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust4D,
-            SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS custDSubTotal,
-            SUM(CASE WHEN a.VehicleClass = 1 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust1Sum,
-            SUM(CASE WHEN a.VehicleClass = 2 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust2Sum,
-            SUM(CASE WHEN a.VehicleClass = 3 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust3Sum,
-            SUM(CASE WHEN a.VehicleClass = 4 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cust4Sum,
-            SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS custSubSum,
-            SUM(CASE WHEN a.VehicleClass = 11 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust1C,
-            SUM(CASE WHEN a.VehicleClass = 12 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust2C,
-            SUM(CASE WHEN a.VehicleClass = 13 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust3C,
-            SUM(CASE WHEN a.VehicleClass = 14 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust4C,
-            SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust5C,
-            SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust6C,
-            SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trustCSubTotal,
-            SUM(CASE WHEN a.VehicleClass = 11 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust1D,
-            SUM(CASE WHEN a.VehicleClass = 12 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust2D,
-            SUM(CASE WHEN a.VehicleClass = 13 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust3D,
-            SUM(CASE WHEN a.VehicleClass = 14 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust4D,
-            SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust5D,
-            SUM(CASE WHEN a.VehicleClass = 16 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust6D,
-            SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trustDSubTotal,
-            SUM(CASE WHEN a.VehicleClass = 11 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust1Sum,
-            SUM(CASE WHEN a.VehicleClass = 12 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust2Sum,
-            SUM(CASE WHEN a.VehicleClass = 13 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust3Sum,
-            SUM(CASE WHEN a.VehicleClass = 14 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust4Sum,
-            SUM(CASE WHEN a.VehicleClass = 15 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust5Sum,
-            SUM(CASE WHEN a.VehicleClass = 16 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trust6Sum,
-            SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS trustSubSum,
-            SUM(CASE WHEN a.VehicleClass = 11 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec1C,
-            SUM(CASE WHEN a.VehicleClass = 12 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec2C,
-            SUM(CASE WHEN a.VehicleClass = 13 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec3C,
-            SUM(CASE WHEN a.VehicleClass = 14 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec4C,
-            SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec5C,
-            SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec6C,
-            SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS specCSubTotal,
-            SUM(CASE WHEN a.VehicleClass = 21 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec1D,
-            SUM(CASE WHEN a.VehicleClass = 22 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec2D,
-            SUM(CASE WHEN a.VehicleClass = 23 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec3D,
-            SUM(CASE WHEN a.VehicleClass = 24 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec4D,
-            SUM(CASE WHEN a.VehicleClass = 25 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec5D,
-            SUM(CASE WHEN a.VehicleClass = 26 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec6D,
-            SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS specDSubTotal,
-            SUM(CASE WHEN a.VehicleClass = 21 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec1Sum,
-            SUM(CASE WHEN a.VehicleClass = 22 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec2Sum,
-            SUM(CASE WHEN a.VehicleClass = 23 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec3Sum,
-            SUM(CASE WHEN a.VehicleClass = 24 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec4Sum,
-            SUM(CASE WHEN a.VehicleClass = 25 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec5Sum,
-            SUM(CASE WHEN a.VehicleClass = 26 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS spec6Sum,
-            SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS specSubSum,
-            SUM(CASE WHEN a.CardType = 22 OR a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS totalSum,
-            SUM(CASE WHEN a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS cTotal,
-            SUM(CASE WHEN a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END) AS dTotal
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 1 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust1C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 2 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust2C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 3 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust3C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 4 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust4C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS custCSubTotal,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 1 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust1D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 2 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust2D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 3 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust3D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 4 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust4D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS custDSubTotal,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 1 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust1Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 2 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust2Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 3 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust3Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 4 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cust4Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass <![CDATA[<]]> 10 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS custSubSum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 11 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust1C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 12 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust2C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 13 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust3C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 14 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust4C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust5C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust6C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trustCSubTotal,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 11 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust1D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 12 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust2D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 13 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust3D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 14 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust4D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust5D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 16 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust6D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trustDSubTotal,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 11 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust1Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 12 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust2Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 13 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust3Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 14 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust4Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 15 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust5Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 16 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trust6Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass > 10 AND a.VehicleClass <![CDATA[<]]> 20 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS trustSubSum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 11 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec1C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 12 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec2C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 13 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec3C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 14 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec4C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec5C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 15 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec6C,
+            IFNULL(SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 AND a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS specCSubTotal,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 21 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec1D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 22 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec2D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 23 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec3D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 24 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec4D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 25 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec5D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 26 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec6D,
+            IFNULL(SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 AND a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS specDSubTotal,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 21 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec1Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 22 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec2Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 23 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec3Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 24 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec4Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 25 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec5Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass = 26 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS spec6Sum,
+            IFNULL(SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 AND (a.CardType = 22 OR a.CardType = 23) THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS specSubSum,
+            IFNULL(SUM(CASE WHEN a.CardType = 22 OR a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS totalSum,
+            IFNULL(SUM(CASE WHEN a.CardType = 22 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS cTotal,
+            IFNULL(SUM(CASE WHEN a.CardType = 23 THEN CAST(a.TotalToll/100 as DECIMAL(10,2)) ELSE 0 END), 0) AS dTotal
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
             SELECT
@@ -419,7 +419,7 @@
         LEFT(a.StaDate, 6) AS monthDate,
         a.OperatorID AS operatorId,
         a.StationID AS stationId,
-        IFNULL(SUM(a.AddedToll),0)/100 AS extAddToll,
+        IFNULL(CAST(SUM(a.AddedToll)/100 as DECIMAL(10,2)) ,0) AS extAddToll,
         IFNULL(SUM(CASE WHEN a.payType=0 THEN a.AddedToll ELSE 0 END),0) as xjMoney,
         IFNULL(SUM(CASE WHEN a.payType=16 THEN a.AddedToll ELSE 0 END),0) as ydzfMoney
         FROM
@@ -497,7 +497,7 @@
         a.TeamID AS teamId,
         a.OperatorID AS operatorId,
         (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
-        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14 IN (0,10) AND a.IdentifyStatus = 0 THEN a.Toll ELSE 0 END),0)/100 AS exitToll,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus&amp;14 IN (0,10) AND a.IdentifyStatus = 0 THEN a.Toll ELSE 0 END)/100 AS DECIMAL(10,2)),0) AS exitToll,
         IFNULL(SUM(CASE WHEN a.CardType=26 THEN 1 ELSE 0 END),0) AS yjIcCardNum,
 		IFNULL(SUM(CASE WHEN a.CardType=254 THEN 1 ELSE 0 END),0) AS paperNum
         FROM tbrawexit a
@@ -524,7 +524,7 @@
         SELECT
         a.OperatorID AS operatorId,
         (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
-        SUM(a.addedtoll) / 100 AS addedToll
+        IFNULL(CAST(SUM(a.addedtoll) /100 AS DECIMAL(10, 2)) ,0) AS addedToll
         FROM ${tableName} a
         <where>
             AND a.CancelFlag=0
@@ -577,8 +577,8 @@
             AND a.DealStatus&amp;0x1000000=0 AND a.DealStatus&amp;32 != 32 AND a.CardType=0)
             OR (a.CardType=26 AND a.DealStatus&amp;32 != 32) THEN a.CardNum ELSE 0 END),0) AS dueIcCardCount,
         IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) douTotalToll,
-        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=4 THEN a.TotalArrearage ELSE 0 END),0)/100 arrearsAmount,
-        SUM(CASE WHEN a.PayType = 0 THEN a.TotalToll / 100 ELSE 0 END) AS dueAmount,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus&amp;14=4 THEN a.TotalArrearage ELSE 0 END)/100 AS DECIMAL(10,2)),0) arrearsAmount,
+        IFNULL(CAST(SUM(CASE WHEN a.PayType = 0 THEN a.TotalToll ELSE 0 END)/ 100 AS DECIMAL(10,2)), 0) AS dueAmount,
         IFNULL(CAST(SUM(CASE WHEN a.PayType=16 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) mobilePaymentAmount,
         IFNULL(CAST(SUM(CASE WHEN a.PayType=2 THEN a.TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount
         FROM ${tableName} a
@@ -656,6 +656,20 @@
             </when>
             <when test="statisticsType != null and statisticsType != '' and statisticsType == 3">
                 GROUP BY OperatorID
+            </when>
+        </choose>
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                ORDER BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                ORDER BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                ORDER BY StationID
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 3">
+                ORDER BY OperatorID
             </when>
         </choose>
     </select>

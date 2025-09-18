@@ -252,7 +252,7 @@ export default {
         }
         .el-table td {
           border: 1px solid #000000 !important;
-          font-size: 20px;
+          font-size: 24px;
           padding: 20px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;

@@ -117,7 +117,7 @@ public class ExamineServiceImpl {
     public List<FD27Vo> getFd27(FD27Dto dto) {
         dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
         dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
-        dto.setTableName("exit" + DateUtil.format(dto.getBeginTime(), DatePattern.SIMPLE_MONTH_PATTERN));
+        dto.setTableName("tbrawexit" + DateUtil.format(dto.getBeginTime(), DatePattern.SIMPLE_MONTH_PATTERN));
         List<FD27Vo> list = examineMapper.getFd27(dto);
         if (CollectionUtils.isEmpty(list)) {
             return new ArrayList<>();
@@ -130,8 +130,8 @@ public class ExamineServiceImpl {
             //增加总记录数行
             FD27Vo total = new FD27Vo();
             total.setStatDate("总记录数");
-            Double totalToll = list.stream().map(i -> BigDecimal.valueOf(i.getToll()))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue();
+            BigDecimal totalToll = list.stream().map(FD27Vo::getToll)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
             total.setToll(totalToll);
             total.setTradeVehicleClass(String.valueOf(list.size()));
             total.setTotalRow(true);
@@ -151,15 +151,15 @@ public class ExamineServiceImpl {
                     TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
             List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
             if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
+                List<Integer> stationIdList = tbStationInfoList.stream().map(TbStationInfo::getStationid)
+                        .filter(Objects::nonNull).collect(Collectors.toList());
                 dto.setStationIdList(stationIdList);
             }
         } else {
             dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         }
         dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
-        dto.setTableName("exit" + DateUtil.format(dto.getTime(), DatePattern.SIMPLE_MONTH_PATTERN));
+        dto.setTableName("tbrawexit" + DateUtil.format(dto.getTime(), DatePattern.SIMPLE_MONTH_PATTERN));
         List<FD26Vo> list = examineMapper.getFd26(dto);
         if (CollectionUtils.isEmpty(list)) {
             return new ArrayList<>();
@@ -172,8 +172,8 @@ public class ExamineServiceImpl {
             //增加总记录数行
             FD26Vo total = new FD26Vo();
             total.setStatDate("总记录数");
-            Double totalToll = list.stream().map(i -> BigDecimal.valueOf(i.getToll()))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).doubleValue();
+            BigDecimal totalToll = list.stream().map(FD26Vo::getToll)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
             total.setToll(totalToll);
             total.setTradeVehicleClass(String.valueOf(list.size()));
             total.setTotalRow(true);
@@ -186,7 +186,7 @@ public class ExamineServiceImpl {
     public List<FD29Vo> getFd29(FD06Dto dto) {
         dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
         dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
-        dto.setTableName("exit" + DateUtil.format(dto.getBeginTime(), DatePattern.SIMPLE_MONTH_PATTERN));
+        dto.setTableName("tbrawexit" + DateUtil.format(dto.getBeginTime(), DatePattern.SIMPLE_MONTH_PATTERN));
         List<FD29Vo> list = examineMapper.getFd29(dto);
         if (CollectionUtils.isEmpty(list)) {
             return new ArrayList<>();

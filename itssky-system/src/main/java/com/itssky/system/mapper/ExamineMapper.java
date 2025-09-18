@@ -27,12 +27,12 @@ public interface ExamineMapper {
 
     public List<FD07Vo> getFd07(FD06Dto dto);
 
-    @ItsData
+    @Dbedge
     public List<FD27Vo> getFd27(FD27Dto dto);
 
-    @ItsData
+    @Dbedge
     public List<FD29Vo> getFd29(FD06Dto dto);
 
-    @ItsData
+    @Dbedge
     public List<FD26Vo> getFd26(FD26Dto dto);
 }

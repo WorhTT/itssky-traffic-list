@@ -192,96 +192,208 @@ export default {
       <span class="print-time">打印时间：${printTime}</span>
     </div>
   `;
+      // 创建一个新的表格结构，避免样式冲突
+      let tableHtml = `
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th rowspan="2">收费站名称</th>
+              <th colspan="6">通行费收入总额</th>
+              <th rowspan="2">移动支付</th>
+              <th rowspan="2">电子支付</th>
+              <th rowspan="2">公务IC卡</th>
+              <th rowspan="2">军车IC卡</th>
+              <th rowspan="2">免费IC卡</th>
+              <th rowspan="2">应缴IC卡</th>
+            </tr>
+            <tr>
+              <th>统计金额</th>
+              <th>应缴金额</th>
+              <th>实缴金额</th>
+              <th>金额差异</th>
+              <th>欠款</th>
+              <th>加收款</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      // 填充表格数据
+      this.dataList.forEach(row => {
+        // 处理可能为0的数值，确保0也能正确显示
+        const stationName = row.stationName !== undefined && row.stationName !== null ? row.stationName : '';
+        const statAmount = row.statAmount !== undefined && row.statAmount !== null ? row.statAmount : '';
+        const dueAmount = row.dueAmount !== undefined && row.dueAmount !== null ? row.dueAmount : '';
+        const paidAmount = row.paidAmount !== undefined && row.paidAmount !== null ? row.paidAmount : '';
+        const amountDiff = row.amountDiff !== undefined && row.amountDiff !== null ? row.amountDiff : '';
+        const arrearsAmount = row.arrearsAmount !== undefined && row.arrearsAmount !== null ? row.arrearsAmount : '';
+        const extraTotal = row.extraTotal !== undefined && row.extraTotal !== null ? row.extraTotal : '';
+        const mobilePaymentAmount = row.mobilePaymentAmount !== undefined && row.mobilePaymentAmount !== null ? row.mobilePaymentAmount : '';
+        const epaymentAmount = row.epaymentAmount !== undefined && row.epaymentAmount !== null ? row.epaymentAmount : '';
+        const officialIcCardCount = row.officialIcCardCount !== undefined && row.officialIcCardCount !== null ? row.officialIcCardCount : '';
+        const militaryIcCardCount = row.militaryIcCardCount !== undefined && row.militaryIcCardCount !== null ? row.militaryIcCardCount : '';
+        const freeIcCardCount = row.freeIcCardCount !== undefined && row.freeIcCardCount !== null ? row.freeIcCardCount : '';
+        const dueIcCardCount = row.dueIcCardCount !== undefined && row.dueIcCardCount !== null ? row.dueIcCardCount : '';
+        
+        tableHtml += `
+          <tr>
+            <td>${stationName}</td>
+            <td>${statAmount}</td>
+            <td>${dueAmount}</td>
+            <td>${paidAmount}</td>
+            <td>${amountDiff}</td>
+            <td>${arrearsAmount}</td>
+            <td>${extraTotal}</td>
+            <td>${mobilePaymentAmount}</td>
+            <td>${epaymentAmount}</td>
+            <td>${officialIcCardCount}</td>
+            <td>${militaryIcCardCount}</td>
+            <td>${freeIcCardCount}</td>
+            <td>${dueIcCardCount}</td>
+          </tr>
+        `;
+      });
+      
+      tableHtml += `
+          </tbody>
+        </table>
+      `;
+      
       let htmlContent = `
-        <!DOCTYPE html>
+      <!DOCTYPE html>
         <html>
         <head>
         <title>Print</title>
         <style>
-        .table-container {
-            zoom: 0.75 !important;
-            width: 100% !important;
-            max-width: 100vw !important;
-            overflow: visible !important;
+        body {
+          margin: 0;
+          padding: 15px;
+          font-family: "Microsoft YaHei", SimHei, Arial, sans-serif;
+          box-sizing: border-box;
+          font-size: 14px;
         }
-         .print-title {
+        .print-title {
           text-align: center;
           font-size: 20px;
           font-weight: bold;
-          margin-bottom: 5px;
-        }
-        body {
-          margin: 0;
-          padding: 20px;
-          font-family: Arial, sans-serif;
-          box-sizing: border-box;
+          margin-bottom: 10px;
         }
         .container {
           display: flex;
+          margin-bottom: 15px;
         }
         .container span {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 15px;
+        }
+        .table-container {
+          margin-top: 10px;
+          width: 100%;
         }
         .el-table {
-            width: max-content !important; /* 允许表格根据内容扩展 */
-            min-width: 100% !important;
-            table-layout: auto !important; /* 自动列宽模式 */
-            font-size: 12px !important;     /* 基础字号缩小 */
-            margin-top: 20px;
+          width: 100%;
+          border-collapse: collapse;
+          table-layout: fixed;
         }
-        .el-table__body-wrapper, .el-table__header-wrapper {
-        border: none !important; /* 移除容器边框 */
+        .el-table thead tr {
+          background-color: #ebeef5;
         }
-
-        .el-table td, .el-table th {
-        border: 1px solid #000 !important; /* 保留单元格边框 */
-        }
-        .el-table td {
-          border: 1px solid #000 !important;
-          font-size: 16px;
-          padding: 1px 0;
-          text-align: center; /* Center text */
+        .el-table th, .el-table td {
+          border: 1px solid #000;
+          padding: 8px 5px;
+          text-align: center;
           word-wrap: break-word;
-          white-space: normal; /* Prevent text from wrapping */
+          white-space: normal;
+          font-size: 13px;
         }
         .el-table th {
-          border: 1px solid #000 !important;
-          font-size: 22px;
-          padding: 4px; /* Reduce padding to make cells more compact */
-          /*text-align: center; !* Center text *!*/
-          word-wrap: break-word; /* Ensure text wraps within cells */
-          white-space: pre-wrap; /* Allow text to wrap */
-          /*writing-mode: vertical-rl;*/
+          font-weight: bold;
+          font-size: 14px;
+          background-color: #f5f7fa;
         }
-.footer-info {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    font-size: 14px;
-}
-.operator {
-    text-align: left;
-}
-.print-time {
-    text-align: right;
-}
+        /* 防止表格跨页截断 */
+        thead {
+          display: table-header-group;
+        }
+        tfoot {
+          display: table-footer-group;
+        }
+        tbody {
+          display: table-row-group;
+        }
+        tr {
+          page-break-inside: avoid;
+          page-break-after: auto;
+        }
+        td, th {
+          page-break-inside: avoid;
+        }
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        .operator {
+            text-align: left;
+        }
+        .print-time {
+            text-align: right;
+        }
         @media print {
+          @page {
+            size: A4 portrait;
+            margin: 10mm;
+          }
           body {
             -webkit-print-color-adjust: exact;
             color-adjust: exact;
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100vw !important; /* 强制占据全部视口宽度 */
-            /*transform: scale(0.85);  !* 初始缩放系数 *!*/
-            transform-origin: top left;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            font-size: 12px;
           }
-        }
-        @page {
-          size: auto;
-          margin: 5mm 2mm !important;    /* 减少边距 */
+          .el-table {
+            width: 100% !important;
+            table-layout: fixed !important;
+          }
+          .el-table th, .el-table td {
+            padding: 6px 4px;
+            font-size: 12px;
+          }
+          .el-table th {
+            font-size: 13px;
+          }
+          .container span {
+            font-size: 13px;
+          }
+          .print-title {
+            font-size: 18px;
+          }
+          .footer-info {
+            margin-top: 15px;
+            font-size: 12px;
+          }
+          /* 防止表格跨页截断 */
+          thead {
+            display: table-header-group;
+          }
+          tfoot {
+            display: table-footer-group;
+          }
+          tbody {
+            display: table-row-group;
+          }
+          tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+          }
+          td, th {
+            page-break-inside: avoid;
+          }
         }
         </style>
         </head>
@@ -289,11 +401,11 @@ export default {
             <div class="print-title">${corpName}</div>
             <div class="print-title">CF1收费中心通行费收入班统计表</div>
             <div class="container">${conditionListHtml}</div>
-            <div class="table-container">${elTable.outerHTML}</div>
+            <div class="table-container">${tableHtml}</div>
             ${footerHtml}
         </body>
         </html>
-        `
+      `
       printDocument.write(htmlContent);
       printDocument.close();
 

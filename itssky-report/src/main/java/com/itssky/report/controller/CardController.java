@@ -121,7 +121,7 @@ public class CardController extends BaseController {
      */
     @PostMapping(value = "/export/s2station")
     public AjaxResult exportS2CardStation(@RequestBody @Valid CardStatisticsDto dto) throws IOException {
-        ExportVo exportVo = cardService.getSCardStationDay(dto);
+        ExportVo exportVo = cardService.getSCardStationShift(dto);
         List<SCardStatVo> result = exportVo.getResult().stream().filter(i -> i instanceof SCardStatVo)
                 .map(i -> (SCardStatVo) i)
                 .collect(Collectors.toList());
@@ -137,7 +137,7 @@ public class CardController extends BaseController {
      */
     @PostMapping(value = "/export/c2station")
     public AjaxResult exportC2CardStation(@RequestBody @Valid CardStatisticsDto dto) throws IOException {
-        ExportVo exportVo = cardService.getCCardStationDay(dto);
+        ExportVo exportVo = cardService.getCCardStationShift(dto);
         List<CCardStatVo> result = exportVo.getResult().stream().filter(i -> i instanceof CCardStatVo)
                 .map(i -> (CCardStatVo) i)
                 .collect(Collectors.toList());
@@ -203,6 +203,6 @@ public class CardController extends BaseController {
                 .collect(Collectors.toList());
         ExcelUtil<CdtCardStatVo> util = new ExcelUtil<CdtCardStatVo>(CdtCardStatVo.class);
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
-        return util.exportDynamic(result, "CDT通行卡回收统计表", exportVo.getConditionList(), 32, reportTitleName, loginUserInfo.getUsername());
+        return util.exportDynamic(result, "CDT通行卡回收统计表", exportVo.getConditionList(), 29, reportTitleName, loginUserInfo.getUsername());
     }
 }

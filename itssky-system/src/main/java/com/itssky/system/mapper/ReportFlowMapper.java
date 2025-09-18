@@ -1,5 +1,6 @@
 package com.itssky.system.mapper;
 
+import com.itssky.db.Dbedge;
 import com.itssky.db.Dbstats;
 import com.itssky.system.domain.*;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
@@ -40,5 +41,7 @@ public interface ReportFlowMapper {
 
 //    public List<ODFlowVo> getFlowOd(FlowStatisticsDto dto);
 
-    public List<TkFlowVo>  getTkFlow(FlowStatisticsDto dto);
+    public List<TkFlowVo> getTkFlow(FlowStatisticsDto dto);
+
+    public List<TkFlowVo> getTkFlowAll(FlowStatisticsDto dto);
 }

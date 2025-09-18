@@ -196,17 +196,17 @@ export default {
         <html>
         <head>
         <title>Print</title>
-        <style>
+      <style>
             /* 在这里添加你的样式 */
         .table-container {
-          zoom: 0.5;
+          zoom: 0.58;
           margin-top: 20px;
         }
         .print-title {
           text-align: center;
-          font-size: 24px;
+          font-size: 20px;
           font-weight: bold;
-          margin-bottom: 20px;
+          margin-bottom: 5px;
         }
         body {
           margin: 0;
@@ -227,7 +227,6 @@ export default {
           width: 100%;
           border-collapse: collapse;
           table-layout: fixed; /* Ensure fixed layout */
-          margin-top: 20px;
         }
         .el-table__body-wrapper, .el-table__header-wrapper {
             border: none !important; /* 移除容器边框 */
@@ -250,16 +249,16 @@ export default {
         }
         .el-table td {
           border: 1px solid #000000 !important;
-          font-size: 20px;
-          padding: 1px 0;
+          font-size: 24px;
+          padding: 20px 0;
           text-align: center; /* Center text */
           word-wrap: break-word;
           white-space: normal; /* Prevent text from wrapping */
-          line-height: 2;
+          line-height: 3;
         }
         .el-table th {
           border: 1px solid #000000 !important;
-          font-size: 22px;
+          font-size: 32px;
           padding: 4px; /* Reduce padding to make cells more compact */
           text-align: center; /* Center text */
           word-wrap: break-word; /* Ensure text wraps within cells */

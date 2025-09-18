@@ -1,6 +1,7 @@
 package com.itssky.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.system.domain.TbStationInfo;
 
 import java.util.List;
@@ -30,6 +31,8 @@ public interface TbStationInfoService extends IService<TbStationInfo> {
 
 
     public List<Map<String, Object>> listStationSelectV2(boolean needCenter);
+
+    public List<Integer> getAuthRangeStationIdList(Integer stationId, LoginUser loginUser);
 
 
 

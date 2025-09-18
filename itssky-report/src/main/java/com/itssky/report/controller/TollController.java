@@ -228,7 +228,7 @@ public class TollController extends BaseController {
         ExcelUtil<Cf1Vo> util = new ExcelUtil<Cf1Vo>(Cf1Vo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
-        return util.exportDynamic(list, "CF1收费中心通行费收入班统计表", conditionList, 14, reportTitleName, loginUserInfo.getUsername());
+        return util.exportDynamic(list, "CF1收费中心通行费收入班统计表", conditionList, 13, reportTitleName, loginUserInfo.getUsername());
     }
 
     @PostMapping(value = "/mobtoll")

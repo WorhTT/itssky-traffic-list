@@ -13,6 +13,7 @@ import com.itssky.system.domain.dto.VehicleClassStatDto;
 import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.mapper.TollMapper;
 import com.itssky.system.service.ITollService;
+import com.itssky.system.service.TbStationInfoService;
 import com.itssky.util.TableUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -39,7 +40,7 @@ public class TollServiceImpl implements ITollService {
     private TollMapper tollMapper;
 
     @Autowired
-    private TbStationInfoMapper tbStationInfoMapper;
+    private TbStationInfoService tbStationInfoService;
 
     /**
      * F1收费站通行费收入班统计
@@ -68,11 +69,11 @@ public class TollServiceImpl implements ITollService {
         Map<String, ExtraPayVo> extraPayVoMap = extraPayList.stream().collect(Collectors.toMap(ExtraPayVo::getOperatorId, i -> i));
         stationShiftVos.forEach(i -> {
             //加收金额
-            BigDecimal addedToll = BigDecimal.ZERO;
+            BigDecimal addedToll = new BigDecimal("0.00");
             //移动支付加收金额
-            BigDecimal ydzfAddedToll = BigDecimal.ZERO;
+            BigDecimal ydzfAddedToll = new BigDecimal("0.00");
             //实收金额
-            BigDecimal handToll = BigDecimal.ZERO;
+            BigDecimal handToll = new BigDecimal("0.00");
             //douTotalToll
             BigDecimal douTotalToll = i.getDouTotalToll();
             if (Objects.nonNull(tbShMap.get(i.getOperatorId()))) {
@@ -172,59 +173,6 @@ public class TollServiceImpl implements ITollService {
         return result;
     }
 
-
-    /**
-     * 获取权限涉及范围内的StationIdList
-     */
-    public List<Integer> getAuthRangeStationIdList(Integer stationId, LoginUser loginUser) {
-        //-1是中心
-        //三位数的是分中心需要补零，四位数的也是分中心
-        //其余的都考虑是站ID
-
-        boolean isRoot = loginUser.getCorpNo().length() == 2;
-        if (stationId == -1) {
-            String corpNo = loginUser.getCorpNo();
-            LambdaQueryWrapper<TbStationInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.likeRight(TbStationInfo::getCorpno, corpNo);
-            List<TbStationInfo> tbStationInfos = tbStationInfoMapper.selectList(lambdaQueryWrapper);
-            if (!CollectionUtils.isEmpty(tbStationInfos)) {
-                return tbStationInfos.stream().map(TbStationInfo::getStationid).collect(Collectors.toList());
-            }
-
-        }
-        //需要判断是否是中心用户 中心用户则取这个传参(如果位数不对需补0) ,分中心用户则直接获取corpNo下的所有tbStationInfo
-        else if (stationId <= 9999) {
-            //中心用户
-            if (isRoot) {
-                String corpNo;
-                if (stationId < 1000) {
-                    corpNo = "0" + stationId;
-                } else {
-                    corpNo = String.valueOf(stationId);
-                }
-                LambdaQueryWrapper<TbStationInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-                lambdaQueryWrapper.likeRight(TbStationInfo::getCorpno, corpNo);
-                List<TbStationInfo> tbStationInfos = tbStationInfoMapper.selectList(lambdaQueryWrapper);
-                if (!CollectionUtils.isEmpty(tbStationInfos)) {
-                    return tbStationInfos.stream().map(TbStationInfo::getStationid).collect(Collectors.toList());
-                }
-            }
-            //非顶层中心用户
-            else {
-                LambdaQueryWrapper<TbStationInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-                lambdaQueryWrapper.likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
-                List<TbStationInfo> tbStationInfos = tbStationInfoMapper.selectList(lambdaQueryWrapper);
-                if (!CollectionUtils.isEmpty(tbStationInfos)) {
-                    return tbStationInfos.stream().map(TbStationInfo::getStationid).collect(Collectors.toList());
-                }
-            }
-        }
-        else {
-            return Collections.singletonList(stationId);
-        }
-        return new ArrayList<>();
-    }
-
     /**
      * F2收费站通行费收入日统计
      * 统计金额 = 应收款 + 电子支付 + 移动支付
@@ -249,11 +197,11 @@ public class TollServiceImpl implements ITollService {
         Map<String, ExtraPayVo> extraPayVoMap = extraPayList.stream().collect(Collectors.toMap(ExtraPayVo::getOperatorId, i -> i));
         stationShiftVos.forEach(i -> {
             //加收金额
-            BigDecimal addedToll = BigDecimal.ZERO;
+            BigDecimal addedToll = new BigDecimal("0.00");
             //移动支付加收金额
-            BigDecimal ydzfAddedToll = BigDecimal.ZERO;
+            BigDecimal ydzfAddedToll = new BigDecimal("0.00");
             //实收金额
-            BigDecimal handToll = BigDecimal.ZERO;
+            BigDecimal handToll = new BigDecimal("0.00");
             //douTotalToll
             BigDecimal douTotalToll = i.getDouTotalToll();
             if (Objects.nonNull(tbShMap.get(i.getOperatorId()))) {
@@ -358,7 +306,7 @@ public class TollServiceImpl implements ITollService {
     public List<StationShiftVo> ftToll(FtStationDto dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        List<Integer> authRangeStationIdList = getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
         dto.setStationIdList(authRangeStationIdList);
         //构建会查询到的表集合
         dto.setTableNameList(
@@ -412,11 +360,11 @@ public class TollServiceImpl implements ITollService {
         //计算金额差异和统计金额和应缴金额
         for (StationShiftVo item : stationShiftVos) {
             //加收金额
-            BigDecimal addedToll = BigDecimal.ZERO;
+            BigDecimal addedToll = new BigDecimal("0.00");
             //移动支付加收金额
-            BigDecimal ydzfAddedToll = BigDecimal.ZERO;
+            BigDecimal ydzfAddedToll = new BigDecimal("0.00");
             //实收金额
-            BigDecimal handToll = BigDecimal.ZERO;
+            BigDecimal handToll = new BigDecimal("0.00");
             //douTotalToll
             BigDecimal douTotalToll = item.getDouTotalToll();
             switch (dto.getStatisticsType()) {
@@ -516,7 +464,7 @@ public class TollServiceImpl implements ITollService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         //判断用户的corpno
-        List<Integer> authRangeStationIdList = getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
         dto.setStationIdList(authRangeStationIdList);
         //构建会查询到的表集合
         dto.setTableNameList(
@@ -684,7 +632,7 @@ public class TollServiceImpl implements ITollService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         //判断用户的corpno
-        List<Integer> authRangeStationIdList = getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
         dto.setStationIdList(authRangeStationIdList);
         //构建会查询到的表集合
         dto.setTableNameList(
@@ -804,12 +752,12 @@ public class TollServiceImpl implements ITollService {
         //获取收费站ID列表
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        List<Integer> authRangeStationIdList = getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
         dto.setStationIdList(authRangeStationIdList);
         dto.setTimeFormat(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
         //下班解款数据 获取字段addedtoll,handtoll
         Map<String, TbShVo> tbShMap = new HashMap<>();
-        dto.setTableName("sh" + DateUtil.format(dto.getTime(), DatePattern.SIMPLE_MONTH_PATTERN));
+        dto.setTableName("tbsh" + DateUtil.format(dto.getTime(), DatePattern.SIMPLE_MONTH_PATTERN));
         List<TbShVo> tbShList = tollMapper.getTbShGroupByStation(dto);
         if (!CollectionUtils.isEmpty(tbShList)) {
             tbShMap = tbShList.stream().collect(Collectors.toMap(TbShVo::getStationId, i -> i, (m,n)->m));
@@ -921,7 +869,7 @@ public class TollServiceImpl implements ITollService {
         //获取收费站ID列表
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        List<Integer> authRangeStationIdList = getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
         dto.setStationIdList(authRangeStationIdList);
         dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
         dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.itssky.common.annotation.Excel;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -45,7 +46,7 @@ public class FD27Vo {
     private String tradeVehicleClass = "";
 
     @Excel(name = "收费金额")
-    private Double toll = 0D;
+    private BigDecimal toll = BigDecimal.ZERO;
 
     private boolean totalRow;
 }

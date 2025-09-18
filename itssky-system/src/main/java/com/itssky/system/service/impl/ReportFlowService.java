@@ -14,6 +14,7 @@ import com.itssky.system.domain.dto.FlowStatisticsDto;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.mapper.*;
 import com.itssky.system.service.CardService;
+import com.itssky.system.service.TbStationInfoService;
 import com.itssky.util.TableUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,9 @@ public class ReportFlowService {
     @Autowired
     private CardService cardService;
 
+    @Autowired
+    private TbStationInfoService tbStationInfoService;
+
     public static final int ENTRY = 0;
 
     public static final int EXIT = 1;
@@ -65,31 +69,16 @@ public class ReportFlowService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         //判断用户的corpno
-        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
-            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
-                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
-            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
-            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
-                dto.setStationIdList(stationIdList);
-            }
-        } else {
-            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
-        }
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
+        dto.setFlagStr(String.valueOf(flag));
         //构建会查询到的表集合
         String tablePrefix = null;
-        if (flag == 1) {
-            //RSJ
+        if (flag == 1 || flag == 3) {
+            //RSJ OR RSJ机器人
             tablePrefix = "tbstatentry";
-        } else if (flag == 2) {
-            //CSJ
-            tablePrefix = "tbstatexit";
-        } else if (flag == 3) {
-            //RSJ机器人
-            tablePrefix = "tbstatentry";
-        } else if (flag == 4) {
+        } else if (flag == 2 || flag == 4) {
+            //CSJ OR CSJ机器人
             tablePrefix = "tbstatexit";
         }
         dto.setTableNameList(
@@ -102,6 +91,12 @@ public class ReportFlowService {
         dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
         dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
         List<ReportFlowInfo> reportFlowInfos = reportFlowMapper.csjFlow(dto);
+        if (CollectionUtils.isEmpty(reportFlowInfos)) {
+            return new ArrayList<>();
+        }
+        reportFlowInfos.forEach(r -> {
+            r.setAllAmount(r.getKAmount() + r.getHAmount() + r.getZAmount());
+        });
         //设置统计方式
         reportFlowInfos.forEach(r -> {
             if (dto.getStatisticsType().equals("0")) {
@@ -482,20 +477,8 @@ public class ReportFlowService {
         //获取收费站ID列表
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        //判断用户的corpno
-        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
-            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
-                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
-            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
-            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
-                dto.setStationIdList(stationIdList);
-            }
-        } else {
-            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
-        }
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
         dto.setTableNameList(
                 TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatexit",
                         DatePattern.SIMPLE_MONTH_PATTERN));
@@ -546,19 +529,8 @@ public class ReportFlowService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         //判断用户的corpno
-        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
-            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
-                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
-            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
-            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
-                dto.setStationIdList(stationIdList);
-            }
-        } else {
-            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
-        }
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
         if (dto.getFlag() == ENTRY) {
             dto.setTableNameList(
                     TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatentry",
@@ -568,6 +540,7 @@ public class ReportFlowService {
                     TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatexit",
                             DatePattern.SIMPLE_MONTH_PATTERN));
         }
+        dto.setFlagStr(dto.getFlag().toString());
 
         if (CollectionUtils.isEmpty(dto.getTableNameList())) {
             return new ArrayList<>();
@@ -579,7 +552,7 @@ public class ReportFlowService {
         //计算比例
         list.forEach(item -> {
             //计算sumCount
-            item.setSumCount(item.getHSum() + item.getKSum() + item.getZSum() + item.getGw() + item.getJc() + item.getMf() + item.getYh() + item.getCd());
+            item.setSumCount(item.getHSum() + item.getKSum() + item.getZSum());
             BigDecimal kcbl = divideWithRounding(BigDecimal.valueOf(item.getKSum()), BigDecimal.valueOf(item.getSumCount()), 4);
             BigDecimal hcbl = divideWithRounding(BigDecimal.valueOf(item.getHSum()), BigDecimal.valueOf(item.getSumCount()), 4);
             BigDecimal zcbl = divideWithRounding(BigDecimal.valueOf(item.getZSum()), BigDecimal.valueOf(item.getSumCount()), 4);
@@ -640,26 +613,17 @@ public class ReportFlowService {
         return dividend.divide(divisor, scale, RoundingMode.HALF_UP).multiply(new BigDecimal("100"));
     }
 
-    public List<TkFlowVo> tkFlow(FlowStatisticsDto dto) {
+    /**
+     * 1 -> MTC
+     * 2 -> ETC+MTC
+     */
+    public List<TkFlowVo> tkFlow(FlowStatisticsDto dto, int flag) {
         //获取收费站ID列表
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        //判断用户的corpno
-        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
-            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
-                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
-            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
-            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
-                dto.setStationIdList(stationIdList);
-            }
-        } else {
-            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
-        }
-
-        List<String> tableNameList = new ArrayList<>();
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
+        Set<String> tableNameList = new HashSet<>();
 
         List<String> entryTableNameList = TableUtil.generateMonthList(dto.getBeginTime(), dto.getEndTime(), DatePattern.SIMPLE_MONTH_PATTERN);
         if (!CollectionUtils.isEmpty(entryTableNameList)) {
@@ -672,20 +636,28 @@ public class ReportFlowService {
         if (CollectionUtils.isEmpty(tableNameList)) {
             return new ArrayList<>();
         }
-        dto.setTableNameList(tableNameList);
+        dto.setTableNameList(new ArrayList<>(tableNameList));
         //时间传参格式化
         dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
         dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
-        List<TkFlowVo> list = reportFlowMapper.getTkFlow(dto);
+        List<TkFlowVo> list = new ArrayList<>();
+        if (flag == 1) {
+            list = reportFlowMapper.getTkFlow(dto);
+        } else if (flag == 2) {
+            list = reportFlowMapper.getTkFlowAll(dto);
+        }
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
         list.forEach(item -> {
             //小计
-            item.setRsum(item.getRkc() + item.getRhc() + item.getRzc() + item.getRgw() + item.getRjc() + item.getRyh() + item.getRcd());
-            item.setCsum(item.getCkc() + item.getChc() + item.getCzc() + item.getCgw() + item.getCjc() + item.getCyh() + item.getCmf() + item.getCcd());
-            if (dto.getStatisticsType().equals("0")) {
-                item.setStatType(item.getStaDate().toString());
-            } else if (dto.getStatisticsType().equals("1")) {
+            item.setRsum(item.getRxj() + item.getRdz());
+            item.setCsum(item.getCxj() + item.getCdz() + item.getCyd());
+            if ("0".equals(dto.getStatisticsType())) {
+                item.setStatType(item.getStaDate());
+            } else if ("1".equals(dto.getStatisticsType())) {
                 item.setStatType(item.getMonthDate());
-            } else if (dto.getStatisticsType().equals("2")) {
+            } else if ("2".equals(dto.getStatisticsType())) {
                 item.setStatType(item.getStationName());
             }
             //总计
@@ -694,22 +666,19 @@ public class ReportFlowService {
         //合计
         TkFlowVo totalRow = new TkFlowVo();
         totalRow.setTotalRow(true);
-        totalRow.setStatType("统计方式");
+        totalRow.setStatType("合计");
         totalRow.setSumCount(list.stream().map(i -> new BigDecimal(i.getSumCount())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
-        totalRow.setRkc(list.stream().map(i -> new BigDecimal(i.getRkc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
-        totalRow.setRhc(list.stream().map(i -> new BigDecimal(i.getRhc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
-        totalRow.setRzc(list.stream().map(i -> new BigDecimal(i.getRzc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRxj(list.stream().map(i -> new BigDecimal(i.getRxj())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRdz(list.stream().map(i -> new BigDecimal(i.getRdz())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setRgw(list.stream().map(i -> new BigDecimal(i.getRgw())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setRjc(list.stream().map(i -> new BigDecimal(i.getRjc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setRyh(list.stream().map(i -> new BigDecimal(i.getRyh())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setRcd(list.stream().map(i -> new BigDecimal(i.getRcd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setRsum(list.stream().map(i -> new BigDecimal(i.getRsum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
-        totalRow.setCkc(list.stream().map(i -> new BigDecimal(i.getCkc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
-        totalRow.setChc(list.stream().map(i -> new BigDecimal(i.getChc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
-        totalRow.setCzc(list.stream().map(i -> new BigDecimal(i.getCzc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setCxj(list.stream().map(i -> new BigDecimal(i.getCxj())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
-        totalRow.setCepay(list.stream().map(i -> new BigDecimal(i.getCepay())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
-        totalRow.setCmpay(list.stream().map(i -> new BigDecimal(i.getCmpay())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCdz(list.stream().map(i -> new BigDecimal(i.getCdz())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCyd(list.stream().map(i -> new BigDecimal(i.getCyd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCxj(list.stream().map(i -> new BigDecimal(i.getCxj())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setCgw(list.stream().map(i -> new BigDecimal(i.getCgw())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setCjc(list.stream().map(i -> new BigDecimal(i.getCjc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setCyh(list.stream().map(i -> new BigDecimal(i.getCyh())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
