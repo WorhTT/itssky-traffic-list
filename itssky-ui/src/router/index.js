@@ -381,12 +381,12 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  {
-    path: '/flow',
-    component: Layout,
-    name: '交通流量类',
-    meta: {title: '交通流量类', icon: 'list'},
-    children: [
+  // {
+  //   path: '/flow',
+  //   component: Layout,
+  //   name: '交通流量类',
+  //   meta: {title: '交通流量类', icon: 'list'},
+  //   children: [
   //     {
   //       path: '/csjExitFlow',
   //       name: 'CSJ出口(MTC+ETC)交通流量统计表',
@@ -435,14 +435,14 @@ export const constantRoutes = [
   //       meta: {title: 'TK入出口(MTC)交通流量按车种统计表', icon: 'chart'},
   //       component: () => import('@/views/report/flow/tkFlow.vue')
   //     },
-          {
-            path: '/tkflowAll',
-            name: 'TK入出口(MTC+ETC)交通流量按车种统计表',
-            meta: {title: 'TK入出口(MTC+ETC)交通流量按车种统计表', icon: 'chart'},
-            component: () => import('@/views/report/flow/tkFlowAll.vue')
-          },
-    ]
-  },
+  //         {
+  //           path: '/tkflowAll',
+  //           name: 'TK入出口(MTC+ETC)交通流量按车种统计表',
+  //           meta: {title: 'TK入出口(MTC+ETC)交通流量按车种统计表', icon: 'chart'},
+  //           component: () => import('@/views/report/flow/tkFlowAll.vue')
+  //         },
+  //   ]
+  // },
   // {
   //   path: '/examine',
   //   component: Layout,

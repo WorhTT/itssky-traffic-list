@@ -247,37 +247,28 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th rowspan="3">班次</th>
-              <th rowspan="3">工号</th>
-              <th colspan="7">通行费收入总额</th>
-              <th rowspan="3">移动支付</th>
-              <th rowspan="3">电子支付</th>
-              <th rowspan="3">公务IC卡</th>
-              <th rowspan="3">军车IC卡</th>
-              <th rowspan="3">免费IC卡</th>
-              <th rowspan="3">应缴IC卡</th>
+              <th rowspan="2">班次</th>
+              <th rowspan="2">工号</th>
+              <th colspan="6">通行费收入总额</th>
+              <th rowspan="2">移动支付</th>
+              <th rowspan="2">电子支付</th>
+              <th rowspan="2">公务IC卡</th>
+              <th rowspan="2">军车IC卡</th>
+              <th rowspan="2">免费IC卡</th>
+              <th rowspan="2">应缴IC卡</th>
             </tr>
             <tr>
               <th>统计金额</th>
               <th>应缴金额</th>
               <th>实缴金额</th>
               <th>金额差异</th>
-              <th colspan="2">欠款</th>
+              <th>欠款</th>
               <th>加收款</th>
-            </tr>
-            <tr>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th>车次</th>
-              <th>金额</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
       `;
-      
+
       // 填充表格数据
       this.dataList.forEach(row => {
         // 处理可能为0的数值，确保0也能正确显示
@@ -287,7 +278,6 @@ export default {
         const dueAmount = row.dueAmount !== undefined && row.dueAmount !== null ? row.dueAmount : '';
         const paidAmount = row.paidAmount !== undefined && row.paidAmount !== null ? row.paidAmount : '';
         const amountDiff = row.amountDiff !== undefined && row.amountDiff !== null ? row.amountDiff : '';
-        const arrearsTrips = row.arrearsTrips !== undefined && row.arrearsTrips !== null ? row.arrearsTrips : '';
         const arrearsAmount = row.arrearsAmount !== undefined && row.arrearsAmount !== null ? row.arrearsAmount : '';
         const extraTotal = row.extraTotal !== undefined && row.extraTotal !== null ? row.extraTotal : '';
         const mobilePaymentAmount = row.mobilePaymentAmount !== undefined && row.mobilePaymentAmount !== null ? row.mobilePaymentAmount : '';
@@ -296,16 +286,15 @@ export default {
         const militaryIcCardCount = row.militaryIcCardCount !== undefined && row.militaryIcCardCount !== null ? row.militaryIcCardCount : '';
         const freeIcCardCount = row.freeIcCardCount !== undefined && row.freeIcCardCount !== null ? row.freeIcCardCount : '';
         const dueIcCardCount = row.dueIcCardCount !== undefined && row.dueIcCardCount !== null ? row.dueIcCardCount : '';
-        
-        tableHtml += `
+
+        if (row.totalRow === true) {
+          tableHtml += `
           <tr>
-            <td>${shiftId}</td>
-            <td>${operatorId}</td>
+            <td colspan="2">合计</td>
             <td>${statAmount}</td>
             <td>${dueAmount}</td>
             <td>${paidAmount}</td>
             <td>${amountDiff}</td>
-            <td>${arrearsTrips}</td>
             <td>${arrearsAmount}</td>
             <td>${extraTotal}</td>
             <td>${mobilePaymentAmount}</td>
@@ -316,13 +305,51 @@ export default {
             <td>${dueIcCardCount}</td>
           </tr>
         `;
+        } else if (row.subTotalRow === true) {
+          tableHtml += `
+          <tr style="background: #C0C0C0">
+            <td colspan="2">小计</td>
+            <td>${statAmount}</td>
+            <td>${dueAmount}</td>
+            <td>${paidAmount}</td>
+            <td>${amountDiff}</td>
+            <td>${arrearsAmount}</td>
+            <td>${extraTotal}</td>
+            <td>${mobilePaymentAmount}</td>
+            <td>${epaymentAmount}</td>
+            <td>${officialIcCardCount}</td>
+            <td>${militaryIcCardCount}</td>
+            <td>${freeIcCardCount}</td>
+            <td>${dueIcCardCount}</td>
+          </tr>
+        `;
+        } else {
+          tableHtml += `
+          <tr>
+            <td>${shiftId}</td>
+            <td>${operatorId}</td>
+            <td>${statAmount}</td>
+            <td>${dueAmount}</td>
+            <td>${paidAmount}</td>
+            <td>${amountDiff}</td>
+            <td>${arrearsAmount}</td>
+            <td>${extraTotal}</td>
+            <td>${mobilePaymentAmount}</td>
+            <td>${epaymentAmount}</td>
+            <td>${officialIcCardCount}</td>
+            <td>${militaryIcCardCount}</td>
+            <td>${freeIcCardCount}</td>
+            <td>${dueIcCardCount}</td>
+          </tr>
+        `;
+        }
       });
-      
+
       tableHtml += `
           </tbody>
         </table>
       `;
-      
+
       let htmlContent = `
       <!DOCTYPE html>
         <html>
@@ -360,23 +387,41 @@ export default {
         .el-table {
           width: 100%;
           border-collapse: collapse;
-          table-layout: fixed;
+          table-layout: auto; /* 自动调整列宽 */
+          font-size: 13px;
         }
         .el-table thead tr {
           background-color: #ebeef5;
+          break-inside: avoid; /* 防止表头跨页 */
+        }
+        .el-table thead tr:nth-child(1) th,
+        .el-table thead tr:nth-child(2) th,
+        .el-table thead tr:nth-child(3) th {
+          font-weight: bold;
+          background-color: #f5f7fa;
+          break-inside: avoid; /* 防止表头单元格跨页 */
         }
         .el-table th, .el-table td {
           border: 1px solid #000;
           padding: 8px 5px;
           text-align: center;
           word-wrap: break-word;
-          white-space: normal;
+          white-space: normal; /* 允许内容换行 */
           font-size: 13px;
+          min-width: 60px;
+          word-break: break-word; /* 允许单词内换行 */
+          break-inside: avoid; /* 防止单元格内容跨页 */
         }
         .el-table th {
           font-weight: bold;
           font-size: 14px;
           background-color: #f5f7fa;
+          break-inside: avoid; /* 防止表头单元格跨页 */
+        }
+        /* 特别加强表头第一行的样式 */
+        .el-table thead tr:first-child th {
+          font-size: 15px;
+          font-weight: bold;
         }
         /* 防止表格跨页截断 */
         thead {
@@ -409,8 +454,8 @@ export default {
         }
         @media print {
           @page {
-            size: A4 portrait;
-            margin: 10mm;
+            size: A4 landscape; /* 横向打印 */
+            margin: 8mm;
           }
           body {
             -webkit-print-color-adjust: exact;
@@ -418,28 +463,52 @@ export default {
             padding: 0;
             margin: 0;
             width: 100%;
-            font-size: 12px;
+            font-size: 11px; /* 调小字体 */
           }
           .el-table {
             width: 100% !important;
-            table-layout: fixed !important;
+            table-layout: auto !important; /* 自动调整列宽 */
+            font-size: 11px;
+          }
+          .el-table thead tr {
+            background-color: #ebeef5;
+            break-inside: avoid; /* 防止表头跨页 */
+          }
+          .el-table thead tr:nth-child(1) th,
+          .el-table thead tr:nth-child(2) th,
+          .el-table thead tr:nth-child(3) th {
+            font-weight: bold;
+            background-color: #f5f7fa;
+            break-inside: avoid; /* 防止表头单元格跨页 */
           }
           .el-table th, .el-table td {
-            padding: 6px 4px;
-            font-size: 12px;
+            padding: 4px 3px; /* 减小内边距 */
+            font-size: 11px;
+            min-width: 40px;
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-word;
+            break-inside: avoid;
           }
           .el-table th {
+            font-size: 12px; /* 表头字体稍大 */
+            font-weight: bold;
+            break-inside: avoid;
+          }
+          /* 特别加强打印时表头第一行的样式 */
+          .el-table thead tr:first-child th {
             font-size: 13px;
+            font-weight: bold;
           }
           .container span {
-            font-size: 13px;
+            font-size: 12px;
           }
           .print-title {
-            font-size: 18px;
+            font-size: 16px;
           }
           .footer-info {
-            margin-top: 15px;
-            font-size: 12px;
+            margin-top: 10px;
+            font-size: 11px;
           }
           /* 防止表格跨页截断 */
           thead {
@@ -454,6 +523,7 @@ export default {
           tr {
             page-break-inside: avoid;
             page-break-after: auto;
+            break-inside: avoid;
           }
           td, th {
             page-break-inside: avoid;

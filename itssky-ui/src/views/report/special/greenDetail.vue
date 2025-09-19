@@ -37,7 +37,6 @@
       <el-table-column label="日期" align="center" prop="staDate" min-width="120"/>
       <el-table-column label="收费站" align="center" prop="stationName" min-width="120"/>
       <el-table-column label="收费员" align="center" prop="operatorName"/>
-      <el-table-column label="入口车道" align="center" prop="entryLane"/>
       <el-table-column label="车道" align="center" prop="laneId"/>
       <el-table-column label="交易时间" align="center" prop="exitTimeStr"/>
       <el-table-column label="优惠前金额(元)" align="center" prop="tollfee"/>
@@ -54,7 +53,7 @@
 
 <script>
 
-import {greenTable, exportGreenTable,exportUnUseEtc } from "@/api/report/special"
+import {greenTable, exportGreenTable} from "@/api/report/special"
 import {getLoginUser} from "@/api/login";
 
 export default {
@@ -139,12 +138,12 @@ export default {
       if (row.hj === true) {
         row.staDate = "优惠前金额合计"
         if (columnIndex === 0) {
-          return [1, 6];
-        } else if (columnIndex >= 1 && columnIndex <= 5) {
+          return [1, 5];
+        } else if (columnIndex >= 1 && columnIndex <= 4) {
           return [0, 0];
-        } else if (columnIndex === 6) {
-          return [6, 8]
-        } else if (columnIndex >= 7 && columnIndex <= 8) {
+        } else if (columnIndex === 5) {
+          return [5, 7]
+        } else if (columnIndex >= 6 && columnIndex <= 7) {
           return [0, 0]
         }
       }

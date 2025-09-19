@@ -214,7 +214,7 @@ export default {
           </thead>
           <tbody>
       `;
-      
+
       // 填充表格数据
       this.dataList.forEach(row => {
         // 处理可能为0的数值，确保0也能正确显示
@@ -225,11 +225,21 @@ export default {
         const yjIcCardNum = row.yjIcCardNum !== undefined && row.yjIcCardNum !== null ? row.yjIcCardNum : '';
         const paperNum = row.paperNum !== undefined && row.paperNum !== null ? row.paperNum : '';
         const yfIcCardNum = row.yfIcCardNum !== undefined && row.yfIcCardNum !== null ? row.yfIcCardNum : '';
-        
-        // 对于合计行，收费员工号应为空
+
         const displayOperatorId = row.totalRow === true ? '' : operatorId;
-        
-        tableHtml += `
+
+        if (row.totalRow === true) {
+          tableHtml += `
+          <tr>
+            <td colspan="3">合计</td>
+            <td>${toll}</td>
+            <td>${yjIcCardNum}</td>
+            <td>${paperNum}</td>
+            <td>${yfIcCardNum}</td>
+          </tr>
+        `;
+        } else {
+          tableHtml += `
           <tr>
             <td>${teamId}</td>
             <td>${displayOperatorId}</td>
@@ -240,13 +250,14 @@ export default {
             <td>${yfIcCardNum}</td>
           </tr>
         `;
+        }
       });
-      
+
       tableHtml += `
           </tbody>
         </table>
       `;
-      
+
       let htmlContent = `
       <!DOCTYPE html>
         <html>

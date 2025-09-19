@@ -204,38 +204,38 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th rowspan="2">统计方式</th>
-              <th colspan="5">客车</th>
-              <th colspan="7">货车</th>
-              <th colspan="7">专车</th>
-              <th rowspan="2">加收</th>
-              <th rowspan="2">合计</th>
+              <th rowspan="2" style="min-width: 80px;">统计方式</th>
+              <th colspan="5" style="min-width: 400px;">客车</th>
+              <th colspan="7" style="min-width: 560px;">货车</th>
+              <th colspan="7" style="min-width: 420px;">专车</th>
+              <th rowspan="2" style="min-width: 60px;">加收</th>
+              <th rowspan="2" style="min-width: 80px;">合计</th>
             </tr>
             <tr>
-              <th>客一</th>
-              <th>客二</th>
-              <th>客三</th>
-              <th>客四</th>
-              <th>客车小计</th>
-              <th>货一</th>
-              <th>货二</th>
-              <th>货三</th>
-              <th>货四</th>
-              <th>货五</th>
-              <th>货六</th>
-              <th>货车小计</th>
-              <th>专一</th>
-              <th>专二</th>
-              <th>专三</th>
-              <th>专四</th>
-              <th>专五</th>
-              <th>专六</th>
-              <th>专车小计</th>
+              <th style="min-width: 80px;">客一</th>
+              <th style="min-width: 80px;">客二</th>
+              <th style="min-width: 80px;">客三</th>
+              <th style="min-width: 80px;">客四</th>
+              <th style="min-width: 80px;">客车小计</th>
+              <th style="min-width: 80px;">货一</th>
+              <th style="min-width: 80px;">货二</th>
+              <th style="min-width: 80px;">货三</th>
+              <th style="min-width: 80px;">货四</th>
+              <th style="min-width: 80px;">货五</th>
+              <th style="min-width: 80px;">货六</th>
+              <th style="min-width: 80px;">货车小计</th>
+              <th style="min-width: 60px;">专一</th>
+              <th style="min-width: 60px;">专二</th>
+              <th style="min-width: 60px;">专三</th>
+              <th style="min-width: 60px;">专四</th>
+              <th style="min-width: 60px;">专五</th>
+              <th style="min-width: 60px;">专六</th>
+              <th style="min-width: 60px;">专车小计</th>
             </tr>
           </thead>
           <tbody>
       `;
-      
+
       // 填充表格数据
       this.dataList.forEach(row => {
         // 处理可能为0的数值，确保0也能正确显示
@@ -261,7 +261,7 @@ export default {
         const specSubTotal = row.specSubTotal !== undefined && row.specSubTotal !== null ? row.specSubTotal : '';
         const addedAmount = row.addedAmount !== undefined && row.addedAmount !== null ? row.addedAmount : '';
         const totalAmount = row.totalAmount !== undefined && row.totalAmount !== null ? row.totalAmount : '';
-        
+
         tableHtml += `
           <tr>
             <td>${statType}</td>
@@ -289,12 +289,12 @@ export default {
           </tr>
         `;
       });
-      
+
       tableHtml += `
           </tbody>
         </table>
       `;
-      
+
       let htmlContent = `
       <!DOCTYPE html>
         <html>
@@ -306,11 +306,11 @@ export default {
           padding: 15px;
           font-family: "Microsoft YaHei", SimHei, Arial, sans-serif;
           box-sizing: border-box;
-          font-size: 14px;
+          font-size: 18px; /* 再增加字体大小 */
         }
         .print-title {
           text-align: center;
-          font-size: 20px;
+          font-size: 24px; /* 再增加标题字体大小 */
           font-weight: bold;
           margin-bottom: 10px;
         }
@@ -323,32 +323,40 @@ export default {
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 15px;
+            font-size: 19px; /* 再增加条件字体大小 */
         }
         .table-container {
           margin-top: 10px;
           width: 100%;
+          zoom: 0.85; /* 屏幕显示时也进行适当缩放 */
         }
         .el-table {
           width: 100%;
           border-collapse: collapse;
-          table-layout: fixed;
+          table-layout: auto; /* 自动调整列宽 */
+          font-size: 17px; /* 再增加字体大小 */
+          zoom: 0.85; /* 屏幕显示时也进行适当缩放 */
         }
         .el-table thead tr {
           background-color: #ebeef5;
+          break-inside: avoid; /* 防止表头跨页 */
         }
         .el-table th, .el-table td {
           border: 1px solid #000;
           padding: 8px 5px;
           text-align: center;
           word-wrap: break-word;
-          white-space: normal;
-          font-size: 13px;
+          white-space: normal; /* 允许内容换行 */
+          font-size: 17px; /* 再增加内容字体大小 */
+          min-width: 60px;
+          word-break: break-word; /* 允许单词内换行 */
+          break-inside: avoid; /* 防止单元格内容跨页 */
         }
         .el-table th {
           font-weight: bold;
-          font-size: 14px;
+          font-size: 19px; /* 再增加表头字体大小 */
           background-color: #f5f7fa;
+          break-inside: avoid; /* 防止表头单元格跨页 */
         }
         /* 防止表格跨页截断 */
         thead {
@@ -381,8 +389,8 @@ export default {
         }
         @media print {
           @page {
-            size: A4 portrait;
-            margin: 10mm;
+            size: A4 landscape; /* 横向打印 */
+            margin: 5mm;
           }
           body {
             -webkit-print-color-adjust: exact;
@@ -390,28 +398,37 @@ export default {
             padding: 0;
             margin: 0;
             width: 100%;
-            font-size: 12px;
+            font-size: 15px; /* 再增加字体大小 */
+            zoom: 0.75; /* 添加缩放以适应页面 */
           }
           .el-table {
             width: 100% !important;
-            table-layout: fixed !important;
+            table-layout: auto !important; /* 自动调整列宽 */
+            font-size: 15px; /* 再增加字体大小 */
+            zoom: 0.75; /* 表格也进行缩放 */
           }
           .el-table th, .el-table td {
-            padding: 6px 4px;
-            font-size: 12px;
+            padding: 4px 3px; /* 减小内边距 */
+            font-size: 19px; /* 再增加内容字体大小 */
+            min-width: 40px;
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-word;
+            break-inside: avoid;
           }
           .el-table th {
-            font-size: 13px;
+            font-size: 22px; /* 再增加表头字体大小 */
+            break-inside: avoid;
           }
           .container span {
-            font-size: 13px;
+            font-size: 16px;
           }
           .print-title {
-            font-size: 18px;
+            font-size: 20px;
           }
           .footer-info {
-            margin-top: 15px;
-            font-size: 12px;
+            margin-top: 10px;
+            font-size: 15px;
           }
           /* 防止表格跨页截断 */
           thead {
@@ -426,9 +443,13 @@ export default {
           tr {
             page-break-inside: avoid;
             page-break-after: auto;
+            break-inside: avoid;
           }
           td, th {
             page-break-inside: avoid;
+          }
+          .table-container {
+            zoom: 0.75; /* 确保表格容器也进行缩放 */
           }
         }
         </style>

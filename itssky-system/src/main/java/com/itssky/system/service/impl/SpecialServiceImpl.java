@@ -16,6 +16,7 @@ import com.itssky.system.domain.vo.UnUseEtcVo;
 import com.itssky.system.mapper.SpecialMapper;
 import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.service.ISpecialService;
+import com.itssky.system.service.TbStationInfoService;
 import com.itssky.util.TableUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,8 @@ public class SpecialServiceImpl implements ISpecialService {
 
     private final SpecialMapper specialMapper;
 
+    private final TbStationInfoService tbStationInfoService;
+
 
 
     @Override
@@ -48,22 +51,10 @@ public class SpecialServiceImpl implements ISpecialService {
         //获取收费站ID列表
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        //判断用户的corpno
-        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
-            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
-                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
-            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
-            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
-                dto.setStationIdList(stationIdList);
-            }
-        } else {
-            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
-        }
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
         dto.setTableNameList(
-                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "exit",
+                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbrawexit",
                         DatePattern.SIMPLE_MONTH_PATTERN));
         if (CollectionUtils.isEmpty(dto.getTableNameList())) {
             return new ArrayList<>();
@@ -73,33 +64,14 @@ public class SpecialServiceImpl implements ISpecialService {
         dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
         List<GreenVo> greenVos = specialMapper.greenTable(dto);
         if (!CollectionUtils.isEmpty(greenVos)) {
-            List<Map> operatorNameMap =
-                    specialMapper.buildOperatorName(greenVos.stream()
-                            .distinct().map(GreenVo::getOperatorId).collect(Collectors.toSet()));
-            List<Map> stationNameMap = specialMapper.buildStationName(greenVos.stream()
-                    .distinct().map(GreenVo::getStationId).collect(Collectors.toSet()));
-            Map<Integer, String> operatorMap = new HashMap<>();
-            Map<Integer, String> stationMap = new HashMap<>();
-            operatorNameMap.forEach(m -> operatorMap.put(Integer.valueOf(m.get("operatorId").toString()),
-                    m.get("operatorName").toString()));
-            stationNameMap.forEach(m -> stationMap.put(Integer.valueOf(m.get("stationId").toString()),
-                    m.get("stationName").toString()));
-            greenVos.forEach(i -> {
-                if (Objects.nonNull(operatorMap.get(i.getOperatorId()))) {
-                    i.setOperatorName(operatorMap.get(i.getOperatorId()));
-                }
-                if (Objects.nonNull(stationMap.get(i.getStationId()))) {
-                    i.setStationName(stationMap.get(i.getStationId()));
-                }
-                i.setExitTimeStr(DateUtil.format(i.getExitTime(), DatePattern.NORM_DATETIME_PATTERN));
-            });
+            greenVos.forEach(i -> i.setExitTimeStr(DateUtil.format(i.getExitTime(), DatePattern.NORM_DATETIME_PATTERN)));
         }
         //优惠金额合计行
         GreenVo hj = new GreenVo();
         hj.setTollfee(
-                greenVos.stream().map(i -> BigDecimal.valueOf(i.getTollfee()))
+                greenVos.stream().map(GreenVo::getTollfee)
                         .reduce(BigDecimal.ZERO, BigDecimal::add)
-                        .setScale(2, RoundingMode.HALF_UP).doubleValue()
+                        .setScale(2, RoundingMode.HALF_UP)
         );
         hj.setHj(true);
         hj.setStaDate("优惠前金额合计");
@@ -112,22 +84,10 @@ public class SpecialServiceImpl implements ISpecialService {
         //获取收费站ID列表
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        //判断用户的corpno
-        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
-            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
-                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
-            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
-            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().filter(i -> i.getStationid() != null)
-                        .map(TbStationInfo::getStationid).collect(Collectors.toList());
-                dto.setStationIdList(stationIdList);
-            }
-        } else {
-            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
-        }
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
         dto.setTableNameList(
-                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "entry",
+                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbrawentry",
                         DatePattern.SIMPLE_MONTH_PATTERN));
         if (CollectionUtils.isEmpty(dto.getTableNameList())) {
             return new ArrayList<>();

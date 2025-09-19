@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.itssky.common.annotation.Excel;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -16,11 +17,11 @@ public class GreenVo {
     @Excel(name = "时间")
     private String staDate = "";
 
+    @Excel(name = "收费站")
+    private String stationName = "";
+
     @Excel(name = "收费员")
     private String operatorName = "";
-
-    @Excel(name = "入口车道")
-    private String entryLane = "";
 
     @Excel(name = "车道")
     private String laneId = "";
@@ -32,7 +33,7 @@ public class GreenVo {
     private String exitTimeStr = "";
 
     @Excel(name = "优惠前金额")
-    private Double tollfee = 0D;
+    private BigDecimal tollfee = new BigDecimal("0.00");
 
     @Excel(name = "车牌")
     private String LicensePlate = "";
@@ -43,5 +44,4 @@ public class GreenVo {
 
     private Integer stationId;
 
-    private String stationName;
 }

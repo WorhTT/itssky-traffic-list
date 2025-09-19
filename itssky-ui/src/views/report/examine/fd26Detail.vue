@@ -139,24 +139,24 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th>统计日期</th>
-              <th>收费站名称</th>
-              <th>班次</th>
-              <th>收费员工号</th>
-              <th>收费员姓名</th>
-              <th>车道</th>
-              <th>卡号</th>
-              <th>车牌</th>
-              <th>收费时间</th>
-              <th>改前车型</th>
-              <th>入口车型</th>
-              <th>收费车型</th>
-              <th>收费金额</th>
+              <th style="min-width: 70px;">统计日期</th>
+              <th style="min-width: 90px;">收费站名称</th>
+              <th style="min-width: 50px;">班次</th>
+              <th style="min-width: 90px;">收费员工号</th>
+              <th style="min-width: 70px;">收费员姓名</th>
+              <th style="min-width: 50px;">车道</th>
+              <th style="min-width: 110px;">卡号</th>
+              <th style="min-width: 90px;">车牌</th>
+              <th style="min-width: 110px;">收费时间</th>
+              <th style="min-width: 70px;">改前车型</th>
+              <th style="min-width: 70px;">入口车型</th>
+              <th style="min-width: 70px;">收费车型</th>
+              <th style="min-width: 70px;">收费金额</th>
             </tr>
           </thead>
           <tbody>
       `;
-      
+
       // 填充表格数据
       this.dataList.forEach(row => {
         // 处理可能为0的数值，确保0也能正确显示
@@ -173,8 +173,17 @@ export default {
         const entryVehicleClass = row.entryVehicleClass !== undefined && row.entryVehicleClass !== null ? row.entryVehicleClass : '';
         const tradeVehicleClass = row.tradeVehicleClass !== undefined && row.tradeVehicleClass !== null ? row.tradeVehicleClass : '';
         const toll = row.toll !== undefined && row.toll !== null ? row.toll : '';
-        
-        tableHtml += `
+
+        if (row.totalRow === true) {
+          tableHtml += `
+          <tr style="background: #C0C0C0">
+            <td colspan="11">总记录数</td>
+            <td>${tradeVehicleClass}</td>
+            <td>${toll}</td>
+          </tr>
+        `;
+        } else {
+          tableHtml += `
           <tr>
             <td>${statDate}</td>
             <td>${stationName}</td>
@@ -191,13 +200,14 @@ export default {
             <td>${toll}</td>
           </tr>
         `;
+        }
       });
-      
+
       tableHtml += `
           </tbody>
         </table>
       `;
-      
+
       let htmlContent = `
       <!DOCTYPE html>
         <html>
@@ -235,23 +245,28 @@ export default {
         .el-table {
           width: 100%;
           border-collapse: collapse;
-          table-layout: fixed;
+          table-layout: auto; /* 自动调整列宽 */
+          font-size: 13px;
         }
         .el-table thead tr {
           background-color: #ebeef5;
+          break-inside: avoid; /* 防止表头跨页 */
         }
         .el-table th, .el-table td {
           border: 1px solid #000;
           padding: 8px 5px;
           text-align: center;
           word-wrap: break-word;
-          white-space: normal;
+          white-space: normal; /* 允许内容换行 */
           font-size: 13px;
+          min-width: 60px;
+          word-break: break-word; /* 允许单词内换行 */
         }
         .el-table th {
           font-weight: bold;
           font-size: 14px;
           background-color: #f5f7fa;
+          break-inside: avoid; /* 防止表头单元格跨页 */
         }
         /* 防止表格跨页截断 */
         thead {
@@ -284,8 +299,8 @@ export default {
         }
         @media print {
           @page {
-            size: A4 portrait;
-            margin: 10mm;
+            size: A4 landscape; /* 改为横向打印 */
+            margin: 8mm; /* 减小边距以获得更多内容空间 */
           }
           body {
             -webkit-print-color-adjust: exact;
@@ -293,18 +308,30 @@ export default {
             padding: 0;
             margin: 0;
             width: 100%;
-            font-size: 12px;
+            font-size: 11px; /* 调小字体以适应更多内容 */
           }
           .el-table {
             width: 100% !important;
-            table-layout: fixed !important;
+            table-layout: auto !important; /* 自动调整列宽 */
+            font-size: 11px; /* 调小字体以适应更多内容 */
+          }
+          .el-table thead tr {
+            background-color: #ebeef5;
+            break-inside: avoid; /* 防止表头跨页 */
           }
           .el-table th, .el-table td {
-            padding: 6px 4px;
-            font-size: 12px;
+            padding: 4px 3px; /* 减小内边距以节省空间 */
+            font-size: 11px;
+            min-width: 40px; /* 调整最小宽度 */
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-word;
+            break-inside: avoid;
           }
           .el-table th {
-            font-size: 13px;
+            font-size: 12px; /* 表头字体稍大 */
+            font-weight: bold;
+            break-inside: avoid;
           }
           .container span {
             font-size: 13px;
@@ -329,6 +356,7 @@ export default {
           tr {
             page-break-inside: avoid;
             page-break-after: auto;
+            break-inside: avoid; /* 防止行跨页 */
           }
           td, th {
             page-break-inside: avoid;

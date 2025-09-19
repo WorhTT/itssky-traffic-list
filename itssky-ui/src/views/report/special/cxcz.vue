@@ -59,7 +59,7 @@
 
 <script>
 
-import {listStationSelect} from "@/api/system/station";
+import {listStationSelectV2} from "@/api/system/station";
 import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
 
 export default {
@@ -111,7 +111,7 @@ export default {
     //获取收费站下拉框
     this.queryParams.beginTime = getMidnightTime();
     this.queryParams.endTime = getCurrentTime();
-    listStationSelect({needCenter: true}).then((res) => {
+    listStationSelectV2({needCenter: true}).then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue
       this.$set(this.queryParams, 'stationId', this.currentStationId);

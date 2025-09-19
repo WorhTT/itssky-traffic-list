@@ -8,12 +8,13 @@
             parameterType="com.itssky.system.domain.dto.GreenDto">
         SELECT ExitDate as staDate,
                StationID as stationId,
+               (SELECT StationName FROM dbtoms.tbstationinfo WHERE StationID = a.StationID LIMIT 1) AS stationName,
+               (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE OperatorID = a.OperatorID ORDER BY LastUpdateTime DESC LIMIT 1) AS operatorName,
                OperatorID as operatorId,
-               EntryLane as entryLane,
                LaneID as laneId,
                ExitTime as exitTime,
                LicensePlate as licensePlate,
-               TollFee / 100 as tollfee
+               CAST(IFNULL(TollFee / 100, 0) AS DECIMAL(10, 2))  as tollfee
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
             SELECT
@@ -66,12 +67,11 @@
             parameterType="com.itssky.system.domain.dto.CxczDto">
         SELECT StationID as stationId,
                laneid as laneId,
-               (SELECT LaneName FROM dbtoms.tblaneinfo WHERE StationID = a.StationID AND LaneID = a.laneid) as laneName,
-               (SELECT StationName FROM dbtoms.tbstationinfo WHERE StationID = a.StationID) as stationName,
-               (SELECT VehicleName FROM dbtoms.tbvehicleclass WHERE VehicleClass = a.VehicleClass) as vehicleClassStr,
+               (SELECT LaneName FROM dbtoms.tblaneinfo WHERE StationID = a.StationID AND LaneID = a.laneid LIMIT 1) as laneName,
+               (SELECT StationName FROM dbtoms.tbstationinfo WHERE StationID = a.StationID LIMIT 1) as stationName,
+               (SELECT VehicleName FROM dbtoms.tbvehicleclass WHERE VehicleClass = a.VehicleClass LIMIT 1) as vehicleClassStr,
                CardID as cardId,
                CardType as cardType,
-               NetWork as netWork,
                OperatorID as operatorId,
                EntryTime as entryTime,
                VehicleLicense as vehicleLicense,

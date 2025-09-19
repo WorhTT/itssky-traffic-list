@@ -223,93 +223,313 @@ export default {
       <span class="print-time">打印时间：${printTime}</span>
     </div>
   `;
+      // 创建一个新的表格结构，避免样式冲突
+      let tableHtml = `
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th style="min-width: 50px;">班次</th>
+              <th style="min-width: 50px;">班组</th>
+              <th style="min-width: 80px;">工号</th>
+              <th style="min-width: 50px;">客一</th>
+              <th style="min-width: 50px;">客二</th>
+              <th style="min-width: 50px;">客三</th>
+              <th style="min-width: 50px;">客四</th>
+              <th style="min-width: 80px;">客车小计</th>
+              <th style="min-width: 50px;">货一</th>
+              <th style="min-width: 50px;">货二</th>
+              <th style="min-width: 50px;">货三</th>
+              <th style="min-width: 50px;">货四</th>
+              <th style="min-width: 50px;">货五</th>
+              <th style="min-width: 50px;">货六</th>
+              <th style="min-width: 80px;">货车小计</th>
+              <th style="min-width: 50px;">专一</th>
+              <th style="min-width: 50px;">专二</th>
+              <th style="min-width: 50px;">专三</th>
+              <th style="min-width: 50px;">专四</th>
+              <th style="min-width: 50px;">专五</th>
+              <th style="min-width: 50px;">专六</th>
+              <th style="min-width: 80px;">专车小计</th>
+              <th style="min-width: 50px;">军车</th>
+              <th style="min-width: 50px;">公务</th>
+              <th style="min-width: 50px;">车队</th>
+              <th style="min-width: 50px;">优惠</th>
+              <th style="min-width: 50px;">ETC</th>
+              <th style="min-width: 50px;">纸券</th>
+              <th style="min-width: 60px;">应收卡</th>
+              <th style="min-width: 60px;">实收卡</th>
+              <th style="min-width: 50px;">无卡</th>
+              <th style="min-width: 50px;">卡损</th>
+              <th style="min-width: 60px;">总流量</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      // 填充表格数据
+      this.dataList.forEach(row => {
+        // 处理可能为空的数值，确保空值也能正确显示
+        const shiftId = row.shiftId !== undefined && row.shiftId !== null ? row.shiftId : '';
+        const teamId = row.teamId !== undefined && row.teamId !== null ? row.teamId : '';
+        const operatorId = row.operatorId !== undefined && row.operatorId !== null ? row.operatorId : '';
+        const cust1 = row.cust1 !== undefined && row.cust1 !== null ? row.cust1 : '';
+        const cust2 = row.cust2 !== undefined && row.cust2 !== null ? row.cust2 : '';
+        const cust3 = row.cust3 !== undefined && row.cust3 !== null ? row.cust3 : '';
+        const cust4 = row.cust4 !== undefined && row.cust4 !== null ? row.cust4 : '';
+        const custSubTotal = row.custSubTotal !== undefined && row.custSubTotal !== null ? row.custSubTotal : '';
+        const truck1 = row.truck1 !== undefined && row.truck1 !== null ? row.truck1 : '';
+        const truck2 = row.truck2 !== undefined && row.truck2 !== null ? row.truck2 : '';
+        const truck3 = row.truck3 !== undefined && row.truck3 !== null ? row.truck3 : '';
+        const truck4 = row.truck4 !== undefined && row.truck4 !== null ? row.truck4 : '';
+        const truck5 = row.truck5 !== undefined && row.truck5 !== null ? row.truck5 : '';
+        const truck6 = row.truck6 !== undefined && row.truck6 !== null ? row.truck6 : '';
+        const truckSubTotal = row.truckSubTotal !== undefined && row.truckSubTotal !== null ? row.truckSubTotal : '';
+        const spec1 = row.spec1 !== undefined && row.spec1 !== null ? row.spec1 : '';
+        const spec2 = row.spec2 !== undefined && row.spec2 !== null ? row.spec2 : '';
+        const spec3 = row.spec3 !== undefined && row.spec3 !== null ? row.spec3 : '';
+        const spec4 = row.spec4 !== undefined && row.spec4 !== null ? row.spec4 : '';
+        const spec5 = row.spec5 !== undefined && row.spec5 !== null ? row.spec5 : '';
+        const spec6 = row.spec6 !== undefined && row.spec6 !== null ? row.spec6 : '';
+        const specSubTotal = row.specSubTotal !== undefined && row.specSubTotal !== null ? row.specSubTotal : '';
+        const militaryNum = row.militaryNum !== undefined && row.militaryNum !== null ? row.militaryNum : '';
+        const officialNum = row.officialNum !== undefined && row.officialNum !== null ? row.officialNum : '';
+        const fleetNum = row.fleetNum !== undefined && row.fleetNum !== null ? row.fleetNum : '';
+        const preferNum = row.preferNum !== undefined && row.preferNum !== null ? row.preferNum : '';
+        const etcNum = row.etcNum !== undefined && row.etcNum !== null ? row.etcNum : '';
+        const paperNum = row.paperNum !== undefined && row.paperNum !== null ? row.paperNum : '';
+        const issuedNum = row.issuedNum !== undefined && row.issuedNum !== null ? row.issuedNum : '';
+        const actualNum = row.actualNum !== undefined && row.actualNum !== null ? row.actualNum : '';
+        const noneNum = row.noneNum !== undefined && row.noneNum !== null ? row.noneNum : '';
+        const badNum = row.badNum !== undefined && row.badNum !== null ? row.badNum : '';
+        const totalFlow = row.totalFlow !== undefined && row.totalFlow !== null ? row.totalFlow : '';
+
+        if (row.totalRow === true) {
+          tableHtml += `
+          <tr>
+            <td colspan="3">合计</td>
+            <td>${cust1}</td>
+            <td>${cust2}</td>
+            <td>${cust3}</td>
+            <td>${cust4}</td>
+            <td>${custSubTotal}</td>
+            <td>${truck1}</td>
+            <td>${truck2}</td>
+            <td>${truck3}</td>
+            <td>${truck4}</td>
+            <td>${truck5}</td>
+            <td>${truck6}</td>
+            <td>${truckSubTotal}</td>
+            <td>${spec1}</td>
+            <td>${spec2}</td>
+            <td>${spec3}</td>
+            <td>${spec4}</td>
+            <td>${spec5}</td>
+            <td>${spec6}</td>
+            <td>${specSubTotal}</td>
+            <td>${militaryNum}</td>
+            <td>${officialNum}</td>
+            <td>${fleetNum}</td>
+            <td>${preferNum}</td>
+            <td>${etcNum}</td>
+            <td>${paperNum}</td>
+            <td>${issuedNum}</td>
+            <td>${actualNum}</td>
+            <td>${noneNum}</td>
+            <td>${badNum}</td>
+            <td>${totalFlow}</td>
+          </tr>
+        `;
+        } else {
+          tableHtml += `
+          <tr>
+            <td>${shiftId}</td>
+            <td>${teamId}</td>
+            <td>${operatorId}</td>
+            <td>${cust1}</td>
+            <td>${cust2}</td>
+            <td>${cust3}</td>
+            <td>${cust4}</td>
+            <td>${custSubTotal}</td>
+            <td>${truck1}</td>
+            <td>${truck2}</td>
+            <td>${truck3}</td>
+            <td>${truck4}</td>
+            <td>${truck5}</td>
+            <td>${truck6}</td>
+            <td>${truckSubTotal}</td>
+            <td>${spec1}</td>
+            <td>${spec2}</td>
+            <td>${spec3}</td>
+            <td>${spec4}</td>
+            <td>${spec5}</td>
+            <td>${spec6}</td>
+            <td>${specSubTotal}</td>
+            <td>${militaryNum}</td>
+            <td>${officialNum}</td>
+            <td>${fleetNum}</td>
+            <td>${preferNum}</td>
+            <td>${etcNum}</td>
+            <td>${paperNum}</td>
+            <td>${issuedNum}</td>
+            <td>${actualNum}</td>
+            <td>${noneNum}</td>
+            <td>${badNum}</td>
+            <td>${totalFlow}</td>
+          </tr>
+        `;
+        }
+      });
+
+      tableHtml += `
+          </tbody>
+        </table>
+      `;
+
       let htmlContent = `
       <!DOCTYPE html>
         <html>
         <head>
         <title>Print</title>
         <style>
-            /* 在这里添加你的样式 */
-        .table-container {
-          zoom: 0.43
+        body {
+          margin: 0;
+          padding: 15px;
+          font-family: "Microsoft YaHei", SimHei, Arial, sans-serif;
+          box-sizing: border-box;
+          font-size: 14px;
         }
         .print-title {
           text-align: center;
-          font-size: 24px;
+          font-size: 20px;
           font-weight: bold;
-          margin-bottom: 20px;
-        }
-        body {
-          margin: 0;
-          padding: 20px;
-          font-family: Arial, sans-serif;
-          box-sizing: border-box;
+          margin-bottom: 10px;
         }
         .container {
           display: flex;
+          margin-bottom: 15px;
         }
         .container span {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 15px;
+        }
+        .table-container {
+          margin-top: 10px;
+          width: 100%;
+          zoom: 0.7;
         }
         .el-table {
           width: 100%;
           border-collapse: collapse;
-          table-layout: fixed; /* Ensure fixed layout */
-          margin-top: 20px;
+          table-layout: auto; /* 自动调整列宽 */
+          font-size: 13px;
         }
-        .el-table__body-wrapper, .el-table__header-wrapper {
-        border: none !important; /* 移除容器边框 */
+        .el-table thead tr {
+          background-color: #ebeef5;
         }
-
-        .el-table td, .el-table th {
-        border: 1px solid #000 !important; /* 保留单元格边框 */
-        }
-        .el-table td {
-          border: 1px solid #000000 !important;
-          font-size: 20px;
-          padding: 0 0;
-          text-align: center; /* Center text */
+        .el-table th, .el-table td {
+          border: 1px solid #000;
+          padding: 8px 5px;
+          text-align: center;
           word-wrap: break-word;
-          white-space: normal; /* Prevent text from wrapping */
-          line-height: 2;
+          white-space: normal; /* 允许内容换行 */
+          font-size: 13px;
+          min-width: 60px;
+          word-break: break-word; /* 允许单词内换行 */
         }
         .el-table th {
-          border: 1px solid #000000 !important;
-          font-size: 22px;
-          padding: 4px; /* Reduce padding to make cells more compact */
-          text-align: center; /* Center text */
-          word-wrap: break-word; /* Ensure text wraps within cells */
-          white-space: normal; /* Allow text to wrap */
+          font-weight: bold;
+          font-size: 14px;
+          background-color: #f5f7fa;
         }
-.footer-info {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    font-size: 14px;
-}
-.operator {
-    text-align: left;
-}
-.print-time {
-    text-align: right;
-}
+        /* 防止表格跨页截断 */
+        thead {
+          display: table-header-group;
+        }
+        tfoot {
+          display: table-footer-group;
+        }
+        tbody {
+          display: table-row-group;
+        }
+        tr {
+          page-break-inside: avoid;
+          page-break-after: auto;
+        }
+        td, th {
+          page-break-inside: avoid;
+        }
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        .operator {
+            text-align: left;
+        }
+        .print-time {
+            text-align: right;
+        }
         @media print {
+          @page {
+            size: A4 landscape;
+            margin: 10mm;
+          }
           body {
             -webkit-print-color-adjust: exact;
             color-adjust: exact;
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100vw !important; /* 强制占据全部视口宽度 */
-            /*transform: scale(0.85);  !* 初始缩放系数 *!*/
-            transform-origin: top left;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            font-size: 12px;
           }
-        }
-        @page {
-          size: auto;
-          margin: 2mm 2mm;
+          .el-table {
+            width: 100% !important;
+            table-layout: auto !important; /* 自动调整列宽 */
+            font-size: 12px;
+          }
+          .el-table th, .el-table td {
+            padding: 6px 4px;
+            font-size: 15px;
+            min-width: 50px;
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-word; /* 允许单词内换行 */
+          }
+          .el-table th {
+            font-size: 17px;
+            font-weight: bold;
+          }
+          .container span {
+            font-size: 13px;
+          }
+          .print-title {
+            font-size: 18px;
+          }
+          .footer-info {
+            margin-top: 15px;
+            font-size: 12px;
+          }
+          /* 防止表格跨页截断 */
+          thead {
+            display: table-header-group;
+          }
+          tfoot {
+            display: table-footer-group;
+          }
+          tbody {
+            display: table-row-group;
+          }
+          tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+          }
+          td, th {
+            page-break-inside: avoid;
+          }
         }
         </style>
         </head>
@@ -317,7 +537,7 @@ export default {
             <div class="print-title">${corpName}</div>
             <div class="print-title">C2收费站通行卡回收日统计表</div>
             <div class="container">${conditionListHtml}</div>
-            <div class="table-container">${elTable.outerHTML}</div>
+            <div class="table-container">${tableHtml}</div>
             ${footerHtml}
         </body>
         </html>

@@ -338,23 +338,29 @@ export default {
         .el-table {
           width: 100%;
           border-collapse: collapse;
-          table-layout: fixed;
+          table-layout: auto; /* 自动调整列宽 */
+          font-size: 13px;
         }
         .el-table thead tr {
           background-color: #ebeef5;
+          break-inside: avoid; /* 防止表头跨页 */
         }
         .el-table th, .el-table td {
           border: 1px solid #000;
           padding: 8px 5px;
           text-align: center;
           word-wrap: break-word;
-          white-space: normal;
+          white-space: normal; /* 允许内容换行 */
           font-size: 13px;
+          min-width: 60px;
+          word-break: break-word; /* 允许单词内换行 */
+          break-inside: avoid; /* 防止单元格内容跨页 */
         }
         .el-table th {
           font-weight: bold;
           font-size: 14px;
           background-color: #f5f7fa;
+          break-inside: avoid; /* 防止表头单元格跨页 */
         }
         /* 防止表格跨页截断 */
         thead {
@@ -387,8 +393,8 @@ export default {
         }
         @media print {
           @page {
-            size: A4 portrait;
-            margin: 10mm;
+            size: A4 landscape; /* 横向打印 */
+            margin: 8mm;
           }
           body {
             -webkit-print-color-adjust: exact;
@@ -396,28 +402,36 @@ export default {
             padding: 0;
             margin: 0;
             width: 100%;
-            font-size: 12px;
+            font-size: 11px; /* 调小字体 */
           }
           .el-table {
             width: 100% !important;
-            table-layout: fixed !important;
+            table-layout: auto !important; /* 自动调整列宽 */
+            font-size: 11px;
           }
           .el-table th, .el-table td {
-            padding: 6px 4px;
-            font-size: 12px;
+            padding: 4px 3px; /* 减小内边距 */
+            font-size: 11px;
+            min-width: 40px;
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-word;
+            break-inside: avoid;
           }
           .el-table th {
-            font-size: 13px;
+            font-size: 12px; /* 表头字体稍大 */
+            font-weight: bold;
+            break-inside: avoid;
           }
           .container span {
-            font-size: 13px;
+            font-size: 12px;
           }
           .print-title {
-            font-size: 18px;
+            font-size: 16px;
           }
           .footer-info {
-            margin-top: 15px;
-            font-size: 12px;
+            margin-top: 10px;
+            font-size: 11px;
           }
           /* 防止表格跨页截断 */
           thead {
@@ -432,6 +446,7 @@ export default {
           tr {
             page-break-inside: avoid;
             page-break-after: auto;
+            break-inside: avoid;
           }
           td, th {
             page-break-inside: avoid;

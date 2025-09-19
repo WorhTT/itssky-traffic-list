@@ -187,55 +187,155 @@ export default {
       <span class="print-time">打印时间：${printTime}</span>
     </div>
   `;
+      // 创建一个新的表格结构，避免样式冲突
+      let tableHtml = `
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="min-width: 80px;">统计方式</th>
+              <th colspan="7" style="min-width: 350px;">入口</th>
+              <th colspan="9" style="min-width: 450px;">出口</th>
+              <th rowspan="2" style="min-width: 60px;">总计</th>
+            </tr>
+            <tr>
+              <th style="min-width: 50px;">现金</th>
+              <th style="min-width: 70px;">电子支付</th>
+              <th style="min-width: 60px;">公务车</th>
+              <th style="min-width: 50px;">军车</th>
+              <th style="min-width: 60px;">优惠车</th>
+              <th style="min-width: 50px;">车队</th>
+              <th style="min-width: 70px;">入口小计</th>
+              <th style="min-width: 50px;">现金</th>
+              <th style="min-width: 70px;">电子支付</th>
+              <th style="min-width: 70px;">移动支付</th>
+              <th style="min-width: 60px;">公务车</th>
+              <th style="min-width: 50px;">军车</th>
+              <th style="min-width: 60px;">优惠车</th>
+              <th style="min-width: 60px;">免费车</th>
+              <th style="min-width: 50px;">车队</th>
+              <th style="min-width: 70px;">出口小计</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      // 填充表格数据
+      this.dataList.forEach(row => {
+        tableHtml += `
+          <tr>
+            <td>${row.statType !== undefined && row.statType !== null ? row.statType : ''}</td>
+            <td>${row.rxj !== undefined && row.rxj !== null ? row.rxj : ''}</td>
+            <td>${row.rdz !== undefined && row.rdz !== null ? row.rdz : ''}</td>
+            <td>${row.rgw !== undefined && row.rgw !== null ? row.rgw : ''}</td>
+            <td>${row.rjc !== undefined && row.rjc !== null ? row.rjc : ''}</td>
+            <td>${row.ryh !== undefined && row.ryh !== null ? row.ryh : ''}</td>
+            <td>${row.rcd !== undefined && row.rcd !== null ? row.rcd : ''}</td>
+            <td>${row.rsum !== undefined && row.rsum !== null ? row.rsum : ''}</td>
+            <td>${row.cxj !== undefined && row.cxj !== null ? row.cxj : ''}</td>
+            <td>${row.cdz !== undefined && row.cdz !== null ? row.cdz : ''}</td>
+            <td>${row.cyd !== undefined && row.cyd !== null ? row.cyd : ''}</td>
+            <td>${row.cgw !== undefined && row.cgw !== null ? row.cgw : ''}</td>
+            <td>${row.cjc !== undefined && row.cjc !== null ? row.cjc : ''}</td>
+            <td>${row.cyh !== undefined && row.cyh !== null ? row.cyh : ''}</td>
+            <td>${row.cmf !== undefined && row.cmf !== null ? row.cmf : ''}</td>
+            <td>${row.rcd !== undefined && row.rcd !== null ? row.rcd : ''}</td>
+            <td>${row.csum !== undefined && row.csum !== null ? row.csum : ''}</td>
+            <td>${row.sumCount !== undefined && row.sumCount !== null ? row.sumCount : ''}</td>
+          </tr>
+        `;
+      });
+
+      tableHtml += `
+          </tbody>
+        </table>
+      `;
+
       let htmlContent = `
       <!DOCTYPE html>
         <html>
         <head>
         <title>Print</title>
         <style>
-        /* 在这里添加你的样式 */
-        .table-container {
-          zoom: 0.8;
-          margin-top: 20px;
+        body {
+          margin: 0;
+          padding: 15px;
+          font-family: "Microsoft YaHei", SimHei, Arial, sans-serif;
+          box-sizing: border-box;
+          font-size: 14px;
         }
         .print-title {
           text-align: center;
-          font-size: 24px;
+          font-size: 20px;
           font-weight: bold;
-          margin-bottom: 20px;
-        }
-        body {
-          margin: 0;
-          padding: 20px;
-          font-family: Arial, sans-serif;
-          box-sizing: border-box;
+          margin-bottom: 10px;
         }
         .container {
           display: flex;
+          margin-bottom: 15px;
         }
         .container span {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 15px;
+        }
+        .table-container {
+          margin-top: 10px;
+          width: 100%;
         }
         .el-table {
           width: 100%;
           border-collapse: collapse;
-          table-layout: fixed; /* Ensure fixed layout */
+          table-layout: auto; /* 自动调整列宽 */
+          font-size: 13px;
         }
-        .el-table__body-wrapper, .el-table__header-wrapper {
-            border: none !important; /* 移除容器边框 */
+        .el-table thead tr {
+          background-color: #ebeef5;
+          break-inside: avoid; /* 防止表头跨页 */
         }
-
-        .el-table td, .el-table th {
-            border: 1px solid #000 !important; /* 保留单元格边框 */
+        .el-table th, .el-table td {
+          border: 1px solid #000;
+          padding: 8px 5px;
+          text-align: center;
+          word-wrap: break-word;
+          white-space: normal; /* 允许内容换行 */
+          font-size: 13px;
+          min-width: 50px;
+          word-break: break-word; /* 允许单词内换行 */
+          break-inside: avoid; /* 防止单元格跨页 */
+        }
+        .el-table th {
+          font-weight: bold;
+          font-size: 14px;
+          background-color: #f5f7fa;
+          height: auto;
+          line-height: 1.2;
+          break-inside: avoid; /* 防止表头单元格跨页 */
+        }
+        /* 防止表格跨页截断 */
+        thead {
+          display: table-header-group;
+        }
+        tfoot {
+          display: table-footer-group;
+        }
+        tbody {
+          display: table-row-group;
+        }
+        tr {
+          page-break-inside: avoid;
+          page-break-after: auto;
+          break-inside: avoid; /* 防止行跨页 */
+        }
+        td, th {
+          page-break-inside: avoid;
         }
         .footer-info {
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
-            font-size: 14px;
+            font-size: 13px;
         }
         .operator {
             text-align: left;
@@ -243,37 +343,70 @@ export default {
         .print-time {
             text-align: right;
         }
-        .el-table td {
-          border: 1px solid #000000 !important;
-          font-size: 20px;
-          padding: 1px 0;
-          text-align: center; /* Center text */
-          word-wrap: break-word;
-          white-space: normal; /* Prevent text from wrapping */
-          line-height: 3;
-        }
-        .el-table th {
-          border: 1px solid #000000 !important;
-          font-size: 22px;
-          padding: 4px; /* Reduce padding to make cells more compact */
-          text-align: center; /* Center text */
-          word-wrap: break-word; /* Ensure text wraps within cells */
-          white-space: normal; /* Allow text to wrap */
-        }
         @media print {
+          @page {
+            size: A4 landscape; /* 改为横向打印 */
+            margin: 8mm; /* 减小边距以获得更多内容空间 */
+          }
           body {
             -webkit-print-color-adjust: exact;
             color-adjust: exact;
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100vw !important; /* 强制占据全部视口宽度 */
-            /*transform: scale(0.85);  !* 初始缩放系数 *!*/
-            transform-origin: top left;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            font-size: 11px; /* 调小字体以适应更多内容 */
           }
-        }
-        @page {
-          size: auto;
-          margin: 5mm;
+          .el-table {
+            width: 100% !important;
+            table-layout: auto !important; /* 自动调整列宽 */
+            font-size: 11px; /* 调小字体以适应更多内容 */
+          }
+          .el-table thead tr {
+            background-color: #ebeef5;
+            break-inside: avoid; /* 防止表头跨页 */
+          }
+          .el-table th, .el-table td {
+            padding: 4px 3px; /* 减小内边距以节省空间 */
+            font-size: 15px;
+            min-width: 40px; /* 调整最小宽度 */
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-word;
+            break-inside: avoid; /* 防止单元格跨页 */
+          }
+          .el-table th {
+            font-size: 16px; /* 表头字体稍大 */
+            font-weight: bold;
+            break-inside: avoid; /* 防止表头单元格跨页 */
+          }
+          .container span {
+            font-size: 13px;
+          }
+          .print-title {
+            font-size: 18px;
+          }
+          .footer-info {
+            margin-top: 15px;
+            font-size: 12px;
+          }
+          /* 防止表格跨页截断 */
+          thead {
+            display: table-header-group;
+          }
+          tfoot {
+            display: table-footer-group;
+          }
+          tbody {
+            display: table-row-group;
+          }
+          tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+            break-inside: avoid; /* 防止行跨页 */
+          }
+          td, th {
+            page-break-inside: avoid;
+          }
         }
         </style>
         </head>
@@ -281,7 +414,7 @@ export default {
             <div class="print-title">${corpName}</div>
             <div class="print-title">TK入出口(MTC+ETC)交通流量按车种统计表</div>
             <div class="container">${conditionListHtml}</div>
-            <div class="table-container">${elTable.outerHTML}</div>
+            <div class="table-container">${tableHtml}</div>
             ${footerHtml}
         </body>
         </html>

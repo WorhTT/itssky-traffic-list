@@ -192,7 +192,8 @@ export default {
         .el-table {
           width: 100%;
           border-collapse: collapse;
-          table-layout: fixed;
+          table-layout: auto; /* 自动调整列宽 */
+          font-size: 13px;
         }
         .el-table thead tr {
           background-color: #ebeef5;
@@ -202,8 +203,10 @@ export default {
           padding: 8px 5px;
           text-align: center;
           word-wrap: break-word;
-          white-space: normal;
+          white-space: normal; /* 允许内容换行 */
           font-size: 13px;
+          min-width: 60px;
+          word-break: break-word; /* 允许单词内换行 */
         }
         .el-table th {
           font-weight: bold;
@@ -254,14 +257,20 @@ export default {
           }
           .el-table {
             width: 100% !important;
-            table-layout: fixed !important;
+            table-layout: auto !important; /* 自动调整列宽 */
+            font-size: 12px;
           }
           .el-table th, .el-table td {
             padding: 6px 4px;
             font-size: 12px;
+            min-width: 50px;
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-word; /* 允许单词内换行 */
           }
           .el-table th {
             font-size: 13px;
+            font-weight: bold;
           }
           .container span {
             font-size: 13px;

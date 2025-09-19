@@ -18,14 +18,14 @@ import java.util.Set;
 
 public interface SpecialMapper {
 
-    @ItsData
+    @Dbedge
     public List<GreenVo> greenTable(GreenDto greenDto);
 
     public List<Map> buildOperatorName(@Param(value = "operatorIds") Set<Integer> operatorIds);
 
     public List<Map> buildStationName(@Param(value = "stationIds") Set<Integer> stationIds);
 
-    @ItsData
+    @Dbedge
     public List<CxczVo> cxczTable(CxczDto dto);
 
     @Dbedge

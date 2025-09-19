@@ -123,16 +123,20 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th>收费员工号</th>
-              <th>收费员姓名</th>
-              <th>收费流量</th>
-              <th>应缴卡数</th>
-              <th>实缴卡数</th>
-              <th>应缴金额</th>
-              <th>实缴金额</th>
-              <th>电子支付</th>
-              <th>移动支付</th>
-              <th>收费金额合计</th>
+              <th rowspan="2" style="word-wrap: break-word; word-break: break-all; white-space: normal;">收费员工号</th>
+              <th rowspan="2" style="word-wrap: break-word; word-break: break-all; white-space: normal;">收费员姓名</th>
+              <th rowspan="2" style="word-wrap: break-word; word-break: break-all; white-space: normal;">收费流量</th>
+              <th colspan="2" style="word-wrap: break-word; word-break: break-all; white-space: normal;">回收卡</th>
+              <th colspan="2" style="word-wrap: break-word; word-break: break-all; white-space: normal;">现金收入</th>
+              <th rowspan="2" style="word-wrap: break-word; word-break: break-all; white-space: normal;">电子支付</th>
+              <th rowspan="2" style="word-wrap: break-word; word-break: break-all; white-space: normal;">移动支付</th>
+              <th rowspan="2" style="word-wrap: break-word; word-break: break-all; white-space: normal;">收费金额合计</th>
+            </tr>
+            <tr>
+              <th style="word-wrap: break-word; word-break: break-all; white-space: normal;">应缴卡数</th>
+              <th style="word-wrap: break-word; word-break: break-all; white-space: normal;">实缴卡数</th>
+              <th style="word-wrap: break-word; word-break: break-all; white-space: normal;">应缴金额</th>
+              <th style="word-wrap: break-word; word-break: break-all; white-space: normal;">实缴金额</th>
             </tr>
           </thead>
           <tbody>
@@ -210,7 +214,8 @@ export default {
         .el-table {
           width: 100%;
           border-collapse: collapse;
-          table-layout: fixed;
+          table-layout: auto; /* 自动调整列宽 */
+          font-size: 13px;
         }
         .el-table thead tr {
           background-color: #ebeef5;
@@ -220,13 +225,18 @@ export default {
           padding: 8px 5px;
           text-align: center;
           word-wrap: break-word;
-          white-space: normal;
+          white-space: normal; /* 允许内容换行 */
           font-size: 13px;
+          min-width: 60px;
+          word-break: break-word; /* 允许单词内换行 */
+          vertical-align: middle;
         }
         .el-table th {
           font-weight: bold;
           font-size: 14px;
           background-color: #f5f7fa;
+          height: auto;
+          line-height: 1.2;
         }
         /* 防止表格跨页截断 */
         thead {
@@ -259,7 +269,7 @@ export default {
         }
         @media print {
           @page {
-            size: A4 portrait;
+            size: A4 landscape;
             margin: 10mm;
           }
           body {
@@ -272,14 +282,23 @@ export default {
           }
           .el-table {
             width: 100% !important;
-            table-layout: fixed !important;
+            table-layout: auto !important; /* 自动调整列宽 */
+            font-size: 12px;
           }
           .el-table th, .el-table td {
             padding: 6px 4px;
             font-size: 12px;
+            min-width: 50px;
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-word; /* 允许单词内换行 */
+            vertical-align: middle;
           }
           .el-table th {
             font-size: 13px;
+            font-weight: bold;
+            height: auto;
+            line-height: 1.2;
           }
           .container span {
             font-size: 13px;
