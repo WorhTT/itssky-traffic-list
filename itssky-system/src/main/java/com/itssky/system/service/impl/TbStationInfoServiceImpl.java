@@ -183,6 +183,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
     /**
      * 获取权限涉及范围内的StationIdList
      */
+    @Override
     public List<Integer> getAuthRangeStationIdList(Integer stationId, LoginUser loginUser) {
         //-1是中心
         //三位数的是分中心需要补零，四位数的也是分中心
@@ -378,6 +379,37 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
             }
         }
         return tempList;
+    }
+
+    /**
+     * 根据中心或分中心的CorpNo获取stationIds
+     */
+    @Override
+    public List<Integer> getStationIdsByCorpNo(Integer corpNo) {
+        String corpNoStr = "";
+        if (corpNo <= 99) {
+            if (corpNo == -1) {
+                corpNoStr = SecurityUtils.getLoginUser().getCorpNo();
+            } else if (corpNo < 10) {
+                corpNoStr = "0" + corpNo;
+            } else {
+                corpNoStr = corpNo + "";
+            }
+        } else if (corpNo <= 9999) {
+            if (corpNo < 1000) {
+                corpNoStr = "0" + corpNo;
+            } else {
+                corpNoStr = corpNo + "";
+            }
+        }
+        LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.likeRight(TbStationInfo::getCorpno, corpNoStr);
+        List<TbStationInfo> stationInfoList = baseMapper.selectList(wrapper);
+        if (!CollectionUtils.isEmpty(stationInfoList)) {
+            return stationInfoList.stream().map(TbStationInfo::getStationid).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**

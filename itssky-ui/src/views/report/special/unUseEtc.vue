@@ -48,7 +48,7 @@
 
 <script>
 
-import {centerOptions, listStationSelect} from "@/api/system/station";
+import {centerOptions} from "@/api/system/station";
 import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
 
 export default {

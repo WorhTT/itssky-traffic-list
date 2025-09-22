@@ -646,6 +646,9 @@ public class TollServiceImpl implements ITollService {
         dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
         //获取内容
         List<EPayTollStatVo> ePayTollStatVos = tollMapper.eefEPay(dto);
+        if (CollectionUtils.isEmpty(ePayTollStatVos)) {
+            return new ArrayList<>();
+        }
         ePayTollStatVos.forEach(i -> {
             if ("0".equals(dto.getStatisticsType())) {
                 i.setStatType(i.getStaDate());
@@ -657,7 +660,137 @@ public class TollServiceImpl implements ITollService {
                 i.setStatType(i.getOperatorId());
             }
         });
+        //合计行
+        EPayTollStatVo totalRow = buildEefTotalRow(ePayTollStatVos);
+        ePayTollStatVos.add(totalRow);
         return ePayTollStatVos;
+    }
+
+    private EPayTollStatVo buildEefTotalRow(List<EPayTollStatVo> ePayTollStatVos) {
+        EPayTollStatVo totalRow = new EPayTollStatVo();
+        totalRow.setTotalRow(true);
+        totalRow.setStatType("合计");
+        totalRow.setCust1C(ePayTollStatVos.stream().map(EPayTollStatVo::getCust1C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust1D(ePayTollStatVos.stream().map(EPayTollStatVo::getCust1D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust1Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getCust1Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust2C(ePayTollStatVos.stream().map(EPayTollStatVo::getCust2C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust2D(ePayTollStatVos.stream().map(EPayTollStatVo::getCust2D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust2Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getCust2Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust3C(ePayTollStatVos.stream().map(EPayTollStatVo::getCust3C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust3D(ePayTollStatVos.stream().map(EPayTollStatVo::getCust3D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust3Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getCust3Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust4C(ePayTollStatVos.stream().map(EPayTollStatVo::getCust4C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust4D(ePayTollStatVos.stream().map(EPayTollStatVo::getCust4D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCust4Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getCust4Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCustCSubTotal(ePayTollStatVos.stream().map(EPayTollStatVo::getCustCSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCustDSubTotal(ePayTollStatVos.stream().map(EPayTollStatVo::getCustDSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCustSubSum(ePayTollStatVos.stream().map(EPayTollStatVo::getCustSubSum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust1C(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust1C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust1D(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust1D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust1Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust1Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust2C(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust2C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust2D(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust2D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust2Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust2Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust3C(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust3C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust3D(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust3D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust3Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust3Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust4C(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust4C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust4D(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust4D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust4Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust4Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust5C(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust5C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust5D(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust5D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust5Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust5Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust6C(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust6C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust6D(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust6D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrust6Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getTrust6Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrustCSubTotal(ePayTollStatVos.stream().map(EPayTollStatVo::getTrustCSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrustDSubTotal(ePayTollStatVos.stream().map(EPayTollStatVo::getTrustDSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTrustSubSum(ePayTollStatVos.stream().map(EPayTollStatVo::getTrustSubSum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec1C(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec1C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec1D(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec1D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec1Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec1Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec2C(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec2C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec2D(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec2D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec2Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec2Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec3C(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec3C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec3D(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec3D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec3Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec3Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec4C(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec4C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec4D(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec4D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec4Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec4Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec5C(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec5C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec5D(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec5D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec5Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec5Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec6C(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec6C)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec6D(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec6D)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpec6Sum(ePayTollStatVos.stream().map(EPayTollStatVo::getSpec6Sum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpecCSubTotal(ePayTollStatVos.stream().map(EPayTollStatVo::getSpecCSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpecDSubTotal(ePayTollStatVos.stream().map(EPayTollStatVo::getSpecDSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setSpecSubSum(ePayTollStatVos.stream().map(EPayTollStatVo::getSpecSubSum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setCTotal(ePayTollStatVos.stream().map(EPayTollStatVo::getCTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setDTotal(ePayTollStatVos.stream().map(EPayTollStatVo::getDTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        totalRow.setTotalSum(ePayTollStatVos.stream().map(EPayTollStatVo::getTotalSum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP));
+        return totalRow;
     }
 
     @Override

@@ -45,4 +45,10 @@ public class VehicleClassStatDto {
     private Integer intEndTime;
 
     private List<Integer> stationIdList;
+
+    /**
+     * 1 -> MTC
+     * 2 -> ETC
+     */
+    private String flag;
 }

@@ -52,7 +52,7 @@ export default {
   created() {
     //获取收费站下拉框
     this.queryParams.time = getCurrentTime();
-    listStationSelect({needCenter: true}).then((res) => {
+    listStationSelect({needCenter: false}).then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue
       this.$set(this.queryParams, 'stationId', this.currentStationId);

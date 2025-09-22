@@ -2,61 +2,35 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="收费站:" prop="stationId">
-        <el-select v-model="queryParams.stationId" placeholder="请选择收费站" clearable class="custom-input" style="width: 160px;">
+        <el-select v-model="queryParams.stationId" placeholder="请选择收费站" clearable class="custom-input">
           <el-option v-for="item in stationOptions" :key="item.label" :label="item.label"
                      :value="item.value"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="统计日期:" prop="beginTime">
+      <el-form-item label="统计日期:" prop="time">
         <el-date-picker
-          v-model="queryParams.beginTime"
+          v-model="queryParams.time"
           placeholder="请选择日期"
           type="date"
           value-format="yyyy-MM-dd"
           :picker-options="pickOptions"
-          style="width: 160px;"
         >
         </el-date-picker>
-      </el-form-item>
-      <el-form-item label="结束日期:" prop="endTime">
-        <el-date-picker
-          v-model="queryParams.endTime"
-          placeholder="请选择日期"
-          type="date"
-          value-format="yyyy-MM-dd"
-          :picker-options="pickOptions"
-          style="width: 160px;"
-        >
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="统计类型:" prop="statisticsType">
-        <el-select
-          v-model="queryParams.statisticsType"
-          class="custom-input"
-          placeholder="请选择"
-          clearable
-          filterable
-          style="width: 120px;"
-        >
-          <el-option value="0" label="日" key="0"/>
-          <el-option value="1" label="月" key="1"/>
-          <el-option value="2" label="站" key="2"/>
-        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="openChildPage">查看详细报表</el-button>
       </el-form-item>
     </el-form>
+
   </div>
 </template>
 
 <script>
 
-import {listStationSelectV2} from "@/api/system/station";
-import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
+import {getCurrentTime} from "@/utils/dateUtils";
 
 export default {
-  name: "TKFlow",
+  name: "Ccq2",
   data() {
     return {
       props: {multiple: true},
@@ -80,10 +54,9 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        stationId: [],
-        beginTime: null,
-        endTime: null,
-        statisticsType: '0',
+        stationId: null,
+        time: null,
+        tableFlag: '1',
       },
       // 表单参数
       form: {},
@@ -91,7 +64,6 @@ export default {
       rules: {
       },
       stationOptions: [],
-      shiftOptions: [],
       pickerType: 'date',
       pickOptions: {
         disabledDate(time) {
@@ -100,20 +72,19 @@ export default {
       },
     };
   },
+  computed: {},
   created() {
+    this.queryParams.time = getCurrentTime();
     //获取收费站下拉框
-    this.queryParams.beginTime = getMidnightTime();
-    this.queryParams.endTime = getCurrentTime();
-    listStationSelectV2({needCenter: true}).then((res) => {
-      this.stationOptions = res.data.array
-      this.currentStationId = res.data.defaultValue
-      this.$set(this.queryParams, 'stationId', this.currentStationId);
-    })
+    this.stationOptions = [{label: '中心', value: -1}]
+    this.currentStationId = -1
+    this.$set(this.queryParams, 'stationId', this.currentStationId);
   },
+  watch: {},
   methods: {
     openChildPage() {
       const route = {
-        path: '/tkFlowDetail',
+        path: '/ccq2Detail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);
@@ -122,3 +93,12 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.el-table {
+  ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+    width: 15px; /*滚动条宽度*/
+    height: 15px; /*滚动条高度*/
+  }
+}
+</style>

@@ -94,6 +94,16 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/eefEPayMtcTollDetail',
+    component: () => import('@/views/report/toll/eefEPayMtcTollDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/eefEPayEtcTollDetail',
+    component: () => import('@/views/report/toll/eefEPayEtcTollDetail.vue'),
+    hidden: true
+  },
+  {
     path: '/s1StationShiftDetail',
     component: () => import('@/views/report/card/s1StationShiftDetail.vue'),
     hidden: true
@@ -121,6 +131,16 @@ export const constantRoutes = [
   {
     path: '/c2StationDayDetail',
     component: () => import('@/views/report/card/c2StationDayDetail.vue'),
+    hidden: true
+  },
+  {
+    path: '/ccq2Detail',
+    component: () => import('@/views/report/card/ccq2Detail.vue'),
+    hidden: true
+  },
+  {
+    path: '/ccq3Detail',
+    component: () => import('@/views/report/card/ccq3Detail.vue'),
     hidden: true
   },
   {
@@ -241,12 +261,24 @@ export const constantRoutes = [
     path: '/itssky',
     redirect: '/f1StationShift'
   },
-  // {
-  //   path: '/toll',
-  //   component: Layout,
-  //   name: '通行费类',
-  //   meta: {title: '通行费类', icon: 'list'},
-  //   children: [
+  {
+    path: '/toll',
+    component: Layout,
+    name: '通行费类',
+    meta: {title: '通行费类', icon: 'list'},
+    children: [
+      {
+        path: '/eefEPayMtcToll',
+        name: 'EEF_MTC电子支付通行费统计表',
+        meta: {title: 'EEF_MTC电子支付通行费统计表', icon: 'chart'},
+        component: () => import('@/views/report/toll/eefEPayMtcToll.vue'),
+      },
+      {
+        path: '/eefEPayEtcToll',
+        name: 'EEF_ETC电子支付通行费统计表',
+        meta: {title: 'EEF_ETC电子支付通行费统计表', icon: 'chart'},
+        component: () => import('@/views/report/toll/eefEPayEtcToll.vue'),
+      },
   //     {
   //       path: '/f1StationShift',
   //       name: 'F1收费站通行费收入班统计表',
@@ -302,14 +334,26 @@ export const constantRoutes = [
   //       meta: {title: 'MOB移动支付收费统计报表', icon: 'chart'},
   //       component: () => import('@/views/report/toll/mobToll.vue'),
   //     }
-  //   ],
-  // },
-  // {
-  //   path: '/card',
-  //   component: Layout,
-  //   name: '通行卡类',
-  //   meta: {title: '通行卡类', icon: 'list'},
-  //   children: [
+    ],
+  },
+  {
+    path: '/card',
+    component: Layout,
+    name: '通行卡类',
+    meta: {title: '通行卡类', icon: 'list'},
+    children: [
+      {
+        path: '/ccq2',
+        name: 'CCQ2收费中心IC卡库存日统计表',
+        meta: {title: 'CCQ2收费中心IC卡库存日统计表', icon: 'chart'},
+        component: () => import('@/views/report/card/ccq2.vue'),
+      },
+      {
+        path: '/ccq3',
+        name: 'CCQ3收费中心IC卡库存月统计汇总表',
+        meta: {title: 'CCQ3收费中心IC卡库存月统计汇总表', icon: 'chart'},
+        component: () => import('@/views/report/card/ccq3.vue'),
+      },
   //     {
   //       path: '/s1StationShift',
   //       name: 'S1收费站通行卡发放班统计表',
@@ -352,8 +396,8 @@ export const constantRoutes = [
   //     //   meta: {title: 'FD08收费站IC卡库存汇总表(CPC)', icon: 'chart'},
   //     //   component: () => import('@/views/report/card/fd08StationStock.vue'),
   //     // },
-  //   ]
-  // },
+    ]
+  },
   //
   // {
   //   path: '/special',

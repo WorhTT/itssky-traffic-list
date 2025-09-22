@@ -1,15 +1,11 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
-      <el-form-item label="收费站:" prop="stationIdArray">
-        <el-cascader v-model="queryParams.stationIdArray"
-                     :options="stationOptions"
-                     :props="props"
-                     clearable
-                     collapse-tags
-                     placeholder="请选择收费站" style="width: 12vw;">
-
-        </el-cascader>
+      <el-form-item label="收费站:" prop="stationId">
+        <el-select v-model="queryParams.stationId" placeholder="请选择收费站" clearable class="custom-input" style="width: 160px;">
+          <el-option v-for="item in stationOptions" :key="item.label" :label="item.label"
+                     :value="item.value"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="统计日期:" prop="beginTime">
         <el-date-picker
@@ -100,7 +96,7 @@
 <script>
 
 import {getExitFlow, exportExitFlow} from "@/api/report/exitFlow"
-import {stationSelectList} from "@/api/system/station";
+import {listStationSelectV2, stationSelectList} from "@/api/system/station";
 
 export default {
   name: "RSJEntryFlow",
@@ -145,13 +141,15 @@ export default {
           return time.getTime() > Date.now();
         },
       },
+      currentStationId: null,
     };
   },
   created() {
     //获取收费站下拉框
-    stationSelectList().then(res => {
-      this.stationOptions = res.data
-      this.queryParams.stationIdArray = res.selectData
+    listStationSelectV2({needCenter: true}).then((res) => {
+      this.stationOptions = res.data.array
+      this.currentStationId = res.data.defaultValue
+      this.$set(this.queryParams, 'stationId', this.currentStationId);
     })
   },
   methods: {

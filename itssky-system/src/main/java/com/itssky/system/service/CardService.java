@@ -1,5 +1,6 @@
 package com.itssky.system.service;
 
+import com.itssky.system.domain.dto.CardCcqDto;
 import com.itssky.system.domain.dto.CardStatisticsDto;
 import com.itssky.system.domain.dto.CardStatisticsDtoV2;
 import com.itssky.system.domain.vo.*;
@@ -30,6 +31,10 @@ public interface CardService {
 
     public ExportVo getCdtStationShift(CardStatisticsDtoV2 dto);
 
+    public List<Ccq2CardVo> ccq2(CardCcqDto dto);
+
+    public List<Ccq3CardVo> ccq3(CardCcqDto dto);
+
     public List<String> buildConditionList(Integer stationId, Date time, Integer shiftId);
 
     public List<String> buildConditionList(Integer stationId, Date time);
@@ -37,5 +42,7 @@ public interface CardService {
     public List<String> buildConditionList(Integer stationId, Date beginTime, Date endTime);
 
     public List<String> buildConditionList(String corpNo, Date beginTime, Date endTime);
+
+    public List<String> buildConditionList(Integer corpNo, Date time, String flag);
 
 }

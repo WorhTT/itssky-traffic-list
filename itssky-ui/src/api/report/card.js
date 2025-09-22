@@ -72,3 +72,19 @@ export function exportCdtStation(data) {
     data: data
   })
 }
+
+export function ccq2(data) {
+  return request({
+    url: '/card/ccq2',
+    method: 'post',
+    data: data
+  })
+}
+
+export function ccq3(data) {
+  return request({
+    url: '/card/ccq3',
+    method: 'post',
+    data: data
+  })
+}

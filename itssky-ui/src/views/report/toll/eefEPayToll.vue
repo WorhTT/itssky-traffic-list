@@ -38,7 +38,7 @@
           style="width: 120px"
           filterable
         >
-          <el-option value="3" label="人员" key="3"/>
+<!--          <el-option value="3" label="人员" key="3"/>-->
           <el-option value="0" label="日" key="0"/>
           <el-option value="1" label="月" key="1"/>
           <el-option value="2" label="站" key="2"/>
@@ -90,7 +90,7 @@ export default {
         stationId: [],
         beginTime: null,
         endTime: null,
-        statisticsType: '3'
+        statisticsType: '0'
       },
       // 表单参数
       form: {},
@@ -122,7 +122,6 @@ export default {
   watch: {},
   methods: {
     openChildPage() {
-      console.log('queryparams1', this.queryParams);
       const route = {
         path: '/eefEPayTollDetail',
         query: this.queryParams

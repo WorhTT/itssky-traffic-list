@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itssky.common.annotation.DynamicTableName;
 import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.MybatisPlusTableNameHelper;
+import com.itssky.common.utils.SecurityUtils;
 import com.itssky.system.domain.TbCorpInfo;
 import com.itssky.system.domain.TbStationInfo;
 import com.itssky.system.domain.dto.*;
@@ -15,6 +16,7 @@ import com.itssky.system.mapper.TbCorpInfoMapper;
 import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.mapper.TollMapper;
 import com.itssky.system.service.CardService;
+import com.itssky.system.service.TbStationInfoService;
 import com.itssky.util.TableUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +47,8 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     private TbCorpInfoMapper corpInfoMapper;
+    @Autowired
+    private TbStationInfoService tbStationInfoService;
 
     /**
      * S1收费站通行卡发放班统计表
@@ -250,19 +254,40 @@ public class CardServiceImpl implements CardService {
         return exportVo;
     }
 
-    @Override
-    public List<String> buildConditionList(Integer stationId, Date time, Integer shiftId) {
-        List<String> conditionList = new ArrayList<>();
+    private String buildStationName(Integer stationId) {
         if (stationId == -1) {
-            conditionList.add("收费站：中心");
+            return "收费站：中心";
+        } else if (stationId <= 9999) {
+            String corpNo;
+            if (stationId < 1000) {
+                corpNo = "0" + stationId;
+            } else {
+                corpNo = String.valueOf(stationId);
+            }
+            LambdaQueryWrapper<TbCorpInfo> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(TbCorpInfo::getCorpno, corpNo);
+            TbCorpInfo tbCorpInfo = corpInfoMapper.selectOne(wrapper);
+            if (Objects.isNull(tbCorpInfo)) {
+                return "收费站：";
+            } else {
+                return "收费站：" + tbCorpInfo.getCorpname();
+            }
         } else {
             LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
             wrapper.eq(TbStationInfo::getStationid, stationId);
             TbStationInfo tbStationInfo = tbStationInfoMapper.selectOne(wrapper);
             if (Objects.nonNull(tbStationInfo)) {
-                conditionList.add("收费站：" + Objects.requireNonNull(tbStationInfo.getStationname()));
+                return Objects.requireNonNull(tbStationInfo.getStationname());
             }
         }
+        return "收费站：";
+    }
+
+    @Override
+    public List<String> buildConditionList(Integer stationId, Date time, Integer shiftId) {
+        List<String> conditionList = new ArrayList<>();
+        String stationName = buildStationName(stationId);
+        conditionList.add(stationName);
         conditionList.add("统计日期：" + DateUtil.format(time, DatePattern.NORM_DATE_PATTERN));
         String shiftName = null;
         if (!Objects.isNull(shiftId)) {
@@ -281,16 +306,8 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<String> buildConditionList(Integer stationId, Date beginTime, Date endTime) {
         List<String> conditionList = new ArrayList<>();
-        if (stationId == -1) {
-            conditionList.add("收费站：中心");
-        } else {
-            LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(TbStationInfo::getStationid, stationId);
-            TbStationInfo tbStationInfo = tbStationInfoMapper.selectOne(wrapper);
-            if (Objects.nonNull(tbStationInfo)) {
-                conditionList.add("收费站：" + Objects.requireNonNull(tbStationInfo.getStationname()));
-            }
-        }
+        String stationName = buildStationName(stationId);
+        conditionList.add(stationName);
         conditionList.add("统计日期：" + DateUtil.format(beginTime, DatePattern.NORM_DATE_PATTERN) + " 至 " +
                 DateUtil.format(endTime, DatePattern.NORM_DATE_PATTERN));
         return conditionList;
@@ -299,16 +316,8 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<String> buildConditionList(Integer stationId, Date time) {
         List<String> conditionList = new ArrayList<>();
-        if (stationId == -1) {
-            conditionList.add("收费站：中心");
-        } else {
-            LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(TbStationInfo::getStationid, stationId);
-            TbStationInfo tbStationInfo = tbStationInfoMapper.selectOne(wrapper);
-            if (Objects.nonNull(tbStationInfo)) {
-                conditionList.add("收费站：" + Objects.requireNonNull(tbStationInfo.getStationname()));
-            }
-        }
+        String stationName = buildStationName(stationId);
+        conditionList.add(stationName);
         conditionList.add("统计日期：" + DateUtil.format(time, DatePattern.NORM_DATE_PATTERN));
         return conditionList;
     }
@@ -322,6 +331,20 @@ public class CardServiceImpl implements CardService {
         conditionList.add("收费站：" + tbCorpInfo.getCorpname());
         conditionList.add("统计日期：" + DateUtil.format(beginTime, DatePattern.NORM_DATE_PATTERN) + " 至 " +
                 DateUtil.format(endTime, DatePattern.NORM_DATE_PATTERN));
+        return conditionList;
+    }
+
+    @Override
+    public List<String> buildConditionList(Integer corpNo, Date time, String flag) {
+        List<String> conditionList = new ArrayList<>();
+        if (corpNo == -1) {
+            conditionList.add("收费站：中心");
+        }
+        if ("1".equals(flag)) {
+            conditionList.add("统计日期：" + DateUtil.format(time, DatePattern.NORM_DATE_PATTERN));
+        } else if ("2".equals(flag)) {
+            conditionList.add("统计日期：" + DateUtil.format(time, DatePattern.NORM_MONTH_PATTERN));
+        }
         return conditionList;
     }
 
@@ -398,20 +421,8 @@ public class CardServiceImpl implements CardService {
     public List<CardStatisticsVo> sdtStationShift(CardStatisticsDtoV2 dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        //判断用户的corpno
-        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
-            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
-                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
-            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
-            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().map(TbStationInfo::getStationid)
-                        .filter(Objects::nonNull).collect(Collectors.toList());
-                dto.setStationIdList(stationIdList);
-            }
-        } else {
-            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
-        }
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
         //构建会查询到的表集合
         dto.setTableNameList(
                 TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatentry",
@@ -536,20 +547,8 @@ public class CardServiceImpl implements CardService {
     public List<CdtStatisticsVo> cdtCardRecycle(CardStatisticsDtoV2 dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        //判断用户的corpno
-        if (dto.getStationId() == -1 && loginUser.getCorpNo().length() == 2) {
-            LambdaQueryWrapper<TbStationInfo> tbStationInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            tbStationInfoLambdaQueryWrapper.select(TbStationInfo::getStationname, TbStationInfo::getStationhex,
-                    TbStationInfo::getStationid).likeRight(TbStationInfo::getCorpno, loginUser.getCorpNo());
-            List<TbStationInfo> tbStationInfoList = tbStationInfoMapper.selectList(tbStationInfoLambdaQueryWrapper);
-            if (!CollectionUtils.isEmpty(tbStationInfoList)) {
-                List<Integer> stationIdList = tbStationInfoList.stream().map(TbStationInfo::getStationid)
-                        .filter(Objects::nonNull).collect(Collectors.toList());
-                dto.setStationIdList(stationIdList);
-            }
-        } else {
-            dto.setStationIdList(Collections.singletonList(dto.getStationId()));
-        }
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
         //构建会查询到的表集合
         dto.setTableNameList(
                 TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatexit",
@@ -597,7 +596,7 @@ public class CardServiceImpl implements CardService {
             i.setIssuedNum(i.getCustSubTotal() + i.getTruckSubTotal() + i.getSpecSubTotal());
             i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getPreferNum()  + i.getFleetNum() + i.getEtcNum() +i.getNoneNum() + i.getBadNum());
             if ("0".equals(dto.getStatisticsType())) {
-                i.setStatType(i.getStaDate().toString());
+                i.setStatType(i.getStaDate());
             } else if ("1".equals(dto.getStatisticsType())) {
                 i.setStatType(i.getMonthDate());
             } else if ("2".equals(dto.getStatisticsType())) {
@@ -658,5 +657,82 @@ public class CardServiceImpl implements CardService {
         exportVo.setResult(result);
         exportVo.setConditionList(buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         return exportVo;
+    }
+
+    @Override
+    public List<Ccq2CardVo> ccq2(CardCcqDto dto) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (loginUser.getCorpNo().length() > 2) {
+            log.warn("当前用户权限过低，无法访问中心级报表");
+            return new ArrayList<>();
+        }
+        List<Integer> stationIds = tbStationInfoService.getStationIdsByCorpNo(dto.getStationId());
+        if (CollectionUtils.isEmpty(stationIds)) {
+            return new ArrayList<>();
+        } else {
+            dto.setStationIdList(stationIds);
+        }
+        dto.setStaDate(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN));
+        dto.setTableName("tbstc" + DateUtil.format(dto.getTime(), DatePattern.NORM_YEAR_PATTERN));
+        List<Ccq2CardVo> ccq2CardVos = cardMapper.ccq2(dto);
+        if (!CollectionUtils.isEmpty(ccq2CardVos)) {
+            //构建合计行
+            Ccq2CardVo totalRow = new Ccq2CardVo();
+            totalRow.setTotalRow(true);
+            totalRow.setStationName("合计");
+            totalRow.setTxkdr(ccq2CardVos.stream().map(Ccq2CardVo::getTxkdr).reduce(0, Integer::sum));
+            totalRow.setCkhs(ccq2CardVos.stream().map(Ccq2CardVo::getCkhs).reduce(0, Integer::sum));
+            totalRow.setHkhs(ccq2CardVos.stream().map(Ccq2CardVo::getHkhs).reduce(0, Integer::sum));
+            totalRow.setTxkhf(ccq2CardVos.stream().map(Ccq2CardVo::getTxkhf).reduce(0, Integer::sum));
+            totalRow.setTxkdc(ccq2CardVos.stream().map(Ccq2CardVo::getTxkdc).reduce(0, Integer::sum));
+            totalRow.setRkfk(ccq2CardVos.stream().map(Ccq2CardVo::getRkfk).reduce(0, Integer::sum));
+            totalRow.setHksj(ccq2CardVos.stream().map(Ccq2CardVo::getHksj).reduce(0, Integer::sum));
+            totalRow.setKcwhs(ccq2CardVos.stream().map(Ccq2CardVo::getKcwhs).reduce(0, Integer::sum));
+            totalRow.setKcbd(ccq2CardVos.stream().map(Ccq2CardVo::getKcbd).reduce(0, Integer::sum));
+            totalRow.setKchk(ccq2CardVos.stream().map(Ccq2CardVo::getKchk).reduce(0, Integer::sum));
+            totalRow.setKczck(ccq2CardVos.stream().map(Ccq2CardVo::getKczck).reduce(0, Integer::sum));
+            ccq2CardVos.add(totalRow);
+            return ccq2CardVos;
+        }
+        return Collections.emptyList();
+    }
+
+
+    @Override
+    public List<Ccq3CardVo> ccq3(CardCcqDto dto) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (loginUser.getCorpNo().length() > 2) {
+            log.warn("当前用户权限过低，无法访问中心级报表");
+            return new ArrayList<>();
+        }
+        List<Integer> stationIds = tbStationInfoService.getStationIdsByCorpNo(dto.getStationId());
+        if (CollectionUtils.isEmpty(stationIds)) {
+            return new ArrayList<>();
+        } else {
+            dto.setStationIdList(stationIds);
+        }
+        dto.setStaDate(DateUtil.format(dto.getTime(), DatePattern.SIMPLE_MONTH_PATTERN));
+        dto.setTableName("tbstc" + DateUtil.format(dto.getTime(), DatePattern.NORM_YEAR_PATTERN));
+        List<Ccq3CardVo> ccq3CardVos = cardMapper.ccq3(dto);
+        if (!CollectionUtils.isEmpty(ccq3CardVos)) {
+            //构建合计行
+            Ccq3CardVo totalRow = new Ccq3CardVo();
+            totalRow.setTotalRow(true);
+            totalRow.setStaDate("合计");
+            totalRow.setTxkdr(ccq3CardVos.stream().map(Ccq3CardVo::getTxkdr).reduce(0, Integer::sum));
+            totalRow.setCkhs(ccq3CardVos.stream().map(Ccq3CardVo::getCkhs).reduce(0, Integer::sum));
+            totalRow.setHkhs(ccq3CardVos.stream().map(Ccq3CardVo::getHkhs).reduce(0, Integer::sum));
+            totalRow.setTxkhf(ccq3CardVos.stream().map(Ccq3CardVo::getTxkhf).reduce(0, Integer::sum));
+            totalRow.setTxkdc(ccq3CardVos.stream().map(Ccq3CardVo::getTxkdc).reduce(0, Integer::sum));
+            totalRow.setRkfk(ccq3CardVos.stream().map(Ccq3CardVo::getRkfk).reduce(0, Integer::sum));
+            totalRow.setHksj(ccq3CardVos.stream().map(Ccq3CardVo::getHksj).reduce(0, Integer::sum));
+            totalRow.setKcwhs(ccq3CardVos.stream().map(Ccq3CardVo::getKcwhs).reduce(0, Integer::sum));
+            totalRow.setKcbd(ccq3CardVos.stream().map(Ccq3CardVo::getKcbd).reduce(0, Integer::sum));
+            totalRow.setKchk(ccq3CardVos.stream().map(Ccq3CardVo::getKchk).reduce(0, Integer::sum));
+            totalRow.setKczck(ccq3CardVos.stream().map(Ccq3CardVo::getKczck).reduce(0, Integer::sum));
+            ccq3CardVos.add(totalRow);
+            return ccq3CardVos;
+        }
+        return Collections.emptyList();
     }
 }

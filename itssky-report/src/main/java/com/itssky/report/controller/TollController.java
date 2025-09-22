@@ -167,6 +167,7 @@ public class TollController extends BaseController {
 
     /**
      * EEF电子支付通行费(MTC+ETC)统计表
+     * Flag 1:MTC 2:ETC 前端不传就是MTC+ETC
      */
     @PostMapping(value = "/eefepay")
     public TableDataVo eefEPay(@RequestBody @Valid VehicleClassStatDto dto) {

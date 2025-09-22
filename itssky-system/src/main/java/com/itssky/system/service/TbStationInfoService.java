@@ -44,5 +44,7 @@ public interface TbStationInfoService extends IService<TbStationInfo> {
     public Integer currentAssignStationId();
 
     public List<Map<String, Object>> centerOptions();
+
+    public List<Integer> getStationIdsByCorpNo(Integer corpNo);
 }
 

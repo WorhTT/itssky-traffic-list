@@ -25,7 +25,7 @@
           type="date"
           value-format="yyyy-MM-dd"
           :picker-options="pickOptions"
-          style="width: 160px;"
+          style="width:  160px;"
         >
         </el-date-picker>
       </el-form-item>
@@ -35,9 +35,10 @@
           class="custom-input"
           placeholder="请选择"
           clearable
+          style="width: 120px"
           filterable
-          style="width: 120px;"
         >
+<!--          <el-option value="3" label="人员" key="3"/>-->
           <el-option value="0" label="日" key="0"/>
           <el-option value="1" label="月" key="1"/>
           <el-option value="2" label="站" key="2"/>
@@ -53,10 +54,16 @@
 <script>
 
 import {listStationSelectV2} from "@/api/system/station";
+import eefEPayMtcTollDetail from "@/views/report/toll/eefEPayMtcTollDetail";
+import Router from "vue-router";
 import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
 
 export default {
-  name: "TKFlow",
+  name: "EEFEPayMtcToll",
+  components: {
+    eefEPayMtcTollDetail,
+    Router
+  },
   data() {
     return {
       props: {multiple: true},
@@ -83,7 +90,7 @@ export default {
         stationId: [],
         beginTime: null,
         endTime: null,
-        statisticsType: '0',
+        statisticsType: '0'
       },
       // 表单参数
       form: {},
@@ -93,6 +100,7 @@ export default {
       stationOptions: [],
       shiftOptions: [],
       pickerType: 'date',
+      currentStationId: null,
       pickOptions: {
         disabledDate(time) {
           return time.getTime() > Date.now();
@@ -100,20 +108,22 @@ export default {
       },
     };
   },
+  computed: {},
   created() {
-    //获取收费站下拉框
     this.queryParams.beginTime = getMidnightTime();
     this.queryParams.endTime = getCurrentTime();
+    //获取收费站下拉框
     listStationSelectV2({needCenter: true}).then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue
       this.$set(this.queryParams, 'stationId', this.currentStationId);
     })
   },
+  watch: {},
   methods: {
     openChildPage() {
       const route = {
-        path: '/tkFlowDetail',
+        path: '/eefEPayMtcTollDetail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);
@@ -122,3 +132,13 @@ export default {
   }
 };
 </script>
+
+
+<style lang="scss" scoped>
+.el-table {
+  ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+    width: 15px; /*滚动条宽度*/
+    height: 15px; /*滚动条高度*/
+  }
+}
+</style>

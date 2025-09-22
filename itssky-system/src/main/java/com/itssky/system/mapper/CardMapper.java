@@ -1,13 +1,8 @@
 package com.itssky.system.mapper;
 
 import com.itssky.db.Dbstats;
-import com.itssky.system.domain.dto.CardStatisticsDto;
-import com.itssky.system.domain.dto.CardStatisticsDtoV2;
-import com.itssky.system.domain.dto.TbStcDto;
-import com.itssky.system.domain.dto.TbStcDtoV2;
-import com.itssky.system.domain.vo.CardStatisticsVo;
-import com.itssky.system.domain.vo.CdtStatisticsVo;
-import com.itssky.system.domain.vo.TbStcVo;
+import com.itssky.system.domain.dto.*;
+import com.itssky.system.domain.vo.*;
 
 import java.util.List;
 
@@ -27,6 +22,12 @@ public interface CardMapper {
 
     @Dbstats
     public List<CdtStatisticsVo> cdtStationShift(CardStatisticsDtoV2 dto);
+
+    @Dbstats
+    public List<Ccq2CardVo> ccq2(CardCcqDto dto);
+
+    @Dbstats
+    public List<Ccq3CardVo> ccq3(CardCcqDto dto);
 
     /**
      * 按条件获取卡库存表

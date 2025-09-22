@@ -9,6 +9,7 @@ import com.itssky.common.utils.SecurityUtils;
 import com.itssky.common.utils.StringUtils;
 import com.itssky.common.utils.poi.ExcelUtil;
 import com.itssky.system.domain.TbUserInfo;
+import com.itssky.system.domain.dto.CardCcqDto;
 import com.itssky.system.domain.dto.CardStatisticsDto;
 import com.itssky.system.domain.dto.CardStatisticsDtoV2;
 import com.itssky.system.domain.vo.*;
@@ -205,4 +206,19 @@ public class CardController extends BaseController {
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         return util.exportDynamic(result, "CDT通行卡回收统计表", exportVo.getConditionList(), 29, reportTitleName, loginUserInfo.getUsername());
     }
+
+    /**
+     * CCQ收费中心IC卡库存日统计表
+     */
+    @PostMapping(value = "/ccq2")
+    public TableDataVo ccq2(@RequestBody @Valid CardCcqDto dto) {
+        List<Ccq2CardVo> ccq2CardVos = cardService.ccq2(dto);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setTitle(reportTitleName);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), "1"));
+        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        tableDataVo.setRows(ccq2CardVos);
+        return tableDataVo;
+    }
+
 }
