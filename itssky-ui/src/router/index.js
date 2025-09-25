@@ -249,6 +249,26 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/erjFlowDetail',
+    component: () => import("@/views/report/flow/erjFlowDetail.vue"),
+    hidden: true
+  },
+  {
+    path: '/ersFlowDetail',
+    component: () => import("@/views/report/flow/ersFlowDetail.vue"),
+    hidden: true
+  },
+  {
+    path: '/ecjFlowDetail',
+    component: () => import("@/views/report/flow/ecjFlowDetail.vue"),
+    hidden: true
+  },
+  {
+    path: '/ecsFlowDetail',
+    component: () => import("@/views/report/flow/ecsFlowDetail.vue"),
+    hidden: true
+  },
+  {
     path: '/mobTollDetail',
     component: () => import("@/views/report/toll/mobTollDetail.vue"),
     hidden: true
@@ -425,12 +445,36 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  // {
-  //   path: '/flow',
-  //   component: Layout,
-  //   name: '交通流量类',
-  //   meta: {title: '交通流量类', icon: 'list'},
-  //   children: [
+  {
+    path: '/flow',
+    component: Layout,
+    name: '交通流量类',
+    meta: {title: '交通流量类', icon: 'list'},
+    children: [
+      {
+        path: '/erjFlow',
+        name: 'ERJ电子支付(ETC)入口流量统计表',
+        meta: {title: 'ERJ电子支付(ETC)入口流量统计表', icon: 'chart'},
+        component: () => import('@/views/report/flow/erjFlow.vue'),
+      },
+      {
+        path: '/ersFlow',
+        name: 'ERS电子支付(MTC+ETC)入口流量统计表',
+        meta: {title: 'ERJ电子支付(ETC)入口流量统计表', icon: 'chart'},
+        component: () => import('@/views/report/flow/ersFlow.vue'),
+      },
+      {
+        path: '/ecjFlow',
+        name: 'ECJ电子支付(ETC)出口流量统计表',
+        meta: {title: 'ECJ电子支付(ETC)出口流量统计表', icon: 'chart'},
+        component: () => import('@/views/report/flow/ecjFlow.vue'),
+      },
+      {
+        path: '/ecsFlow',
+        name: 'ECS电子支付(MTC+ETC)入口流量统计表',
+        meta: {title: 'ECS电子支付(MTC+ETC)入口流量统计表', icon: 'chart'},
+        component: () => import('@/views/report/flow/ecsFlow.vue'),
+      },
   //     {
   //       path: '/csjExitFlow',
   //       name: 'CSJ出口(MTC+ETC)交通流量统计表',
@@ -485,8 +529,8 @@ export const constantRoutes = [
   //           meta: {title: 'TK入出口(MTC+ETC)交通流量按车种统计表', icon: 'chart'},
   //           component: () => import('@/views/report/flow/tkFlowAll.vue')
   //         },
-  //   ]
-  // },
+    ]
+  },
   // {
   //   path: '/examine',
   //   component: Layout,

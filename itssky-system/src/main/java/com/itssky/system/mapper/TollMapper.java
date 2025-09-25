@@ -1,9 +1,7 @@
 package com.itssky.system.mapper;
 
 
-import com.itssky.db.Dbedge;
-import com.itssky.db.Dbstats;
-import com.itssky.db.ItsData;
+import com.itssky.db.*;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.domain.dto.FtStationDto;
 import com.itssky.system.domain.dto.StationShiftDto;
@@ -14,21 +12,20 @@ import java.util.List;
 /**
  * @author ITSSKY
  */
+@Dbstats
 public interface TollMapper {
 
-    @Dbstats
     public List<StationShiftVo> f1StationShift(StationShiftDto dto);
 
-    @Dbstats
     public List<StationShiftVo> f2StationShift(StationShiftDto dto);
 
-    @Dbstats
     public List<StationShiftVo> ftToll(FtStationDto dto);
 
-    @Dbstats
+    @Dbstats2
+    public List<StationShiftVo> ftTollForOtherDatabase(FtStationDto dto);
+
     public List<VehicleClassStatVo> afvGeneral(VehicleClassStatDto dto);
 
-    @Dbstats
     public List<EPayTollStatVo> eefEPay(VehicleClassStatDto dto);
 
     @Dbedge
@@ -36,6 +33,9 @@ public interface TollMapper {
 
     @Dbedge
     public List<TbShVo> getTbShDataV2(FtStationDto dto);
+
+    @Dbedge2
+    public List<TbShVo> getTbShDataV2ForOtherDatabase(FtStationDto dto);
 
     @Dbedge
     public List<F6TollVo> getF6TollEntry(StationShiftDto dto);
@@ -52,10 +52,11 @@ public interface TollMapper {
     @Dbedge
     public List<ExtraPayVo> getExtraPay(StationShiftDto dto);
 
-    @Dbstats
+    @Dbedge2
+    public List<ExtraPayVo> getExtraPayForOtherDatabase(StationShiftDto dto);
+
     public List<Cf1Vo> getCf1Vo(StationShiftDto dto);
 
-    @Dbstats
     public List<MOBTollVo> getMOBToll(FtStationDto dto);
 }
 

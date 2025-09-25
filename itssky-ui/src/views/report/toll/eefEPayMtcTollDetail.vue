@@ -156,7 +156,7 @@
 
 <script>
 
-import {eefepay, exportEefepay} from "@/api/report/toll"
+import {eefepay, exportEefepayMtc} from "@/api/report/toll"
 import {getLoginUser} from "@/api/login";
 
 export default {
@@ -254,7 +254,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportEefepay(queryParams);
+        return exportEefepayMtc(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       }).finally(() => {

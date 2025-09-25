@@ -277,6 +277,37 @@ public class ReportFlowController extends BaseController {
         return util.exportDynamic(list, "TK入出口(MTC+ETC)交通流量按车种统计表", conditionList, 18, reportTitleName, loginUserInfo.getUsername());
     }
 
+    /**
+     * 入出口流量按车型统计表(沿江总值)
+     */
+    @PostMapping(value = "/flow/yjzz")
+    public TableDataVo getFlowYjzz(@RequestBody @Valid FlowStatisticsDto dto) {
+        TableDataVo data = new TableDataVo();
+        List<FlowVeClassVo> list = reportFlowService.flowYjzz(dto);
+        data.setRows(list);
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        data.setTitle(reportTitleName);
+        return data;
+    }
+
+    /**
+     * ERJ电子支付(ETC)入口流量统计表 flagStr -> 1
+     * ERS电子支付(MTC+ETC)入口流量统计表 flagStr -> 2
+     * ECJ电子支付(ETC)出口流量统计表 flagStr -> 3
+     * ECS电子支付(MTC+ETC)出口流量统计表 flagStr -> 4
+     */
+    @PostMapping(value = "/flow/erjs")
+    public TableDataVo erjs(@RequestBody @Valid FlowStatisticsDto dto) {
+        TableDataVo data = new TableDataVo();
+        List<FlowGroupVo> list = reportFlowService.erjs(dto);
+        data.setRows(list);
+        data.setTitle(reportTitleName);
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return data;
+    }
+
 //    @PostMapping(value = "/od")
 //    public TableDataVo od(@RequestBody @Valid FlowStatisticsDto dto) {
 //        TableDataVo data = new TableDataVo();

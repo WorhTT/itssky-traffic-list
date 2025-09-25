@@ -194,6 +194,24 @@ public class TollController extends BaseController {
         return util.exportDynamic(list, "EEF电子支付通行费MTC、ETC统计表", conditionList, 61, reportTitleName, loginUserInfo.getUsername());
     }
 
+    @PostMapping(value = "/export/eefepay/mtc")
+    public AjaxResult exportEefEPayMtc(@RequestBody @Valid VehicleClassStatDto dto) throws IOException {
+        List<EPayTollStatVo> list = tollService.eefEPay(dto);
+        ExcelUtil<EPayTollStatVo> util = new ExcelUtil<EPayTollStatVo>(EPayTollStatVo.class);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "EEF_MTC电子支付通行费统计表", conditionList, 61, reportTitleName, loginUserInfo.getUsername());
+    }
+
+    @PostMapping(value = "/export/eefepay/etc")
+    public AjaxResult exportEefEPayEtc(@RequestBody @Valid VehicleClassStatDto dto) throws IOException {
+        List<EPayTollStatVo> list = tollService.eefEPay(dto);
+        ExcelUtil<EPayTollStatVo> util = new ExcelUtil<EPayTollStatVo>(EPayTollStatVo.class);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "EEF_ETC电子支付通行费统计表", conditionList, 61, reportTitleName, loginUserInfo.getUsername());
+    }
+
     @PostMapping(value = "/f6toll")
     public TableDataVo getF6Toll(@RequestBody @Valid StationShiftDto dto) {
         TableDataVo data = new TableDataVo();
@@ -249,5 +267,20 @@ public class TollController extends BaseController {
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         return util.exportDynamic(list, "MOB移动支付收费统计报表", conditionList, 19, reportTitleName, loginUserInfo.getUsername());
+    }
+
+    /**
+     * 通行费收入综合统计表 沿江总值
+     */
+    @PostMapping(value = "/yjzz")
+    public TableDataVo getYjzz(@RequestBody @Valid FtStationDto dto) {
+        TableDataVo data = new TableDataVo();
+        List<StationShiftVo> list = tollService.yjzz(dto);
+        data.setRows(list);
+        data.setTitle(reportTitleName);
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        //构建查询条件
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return data;
     }
 }

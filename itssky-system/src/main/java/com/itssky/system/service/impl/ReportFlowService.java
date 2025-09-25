@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.DateUtils;
 import com.itssky.common.utils.MybatisPlusTableNameHelper;
+import com.itssky.common.utils.SecurityUtils;
 import com.itssky.db.Dbedge;
 import com.itssky.db.Dbstats;
 import com.itssky.system.domain.*;
@@ -27,6 +28,7 @@ import org.yaml.snakeyaml.util.ArrayUtils;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -685,6 +687,132 @@ public class ReportFlowService {
         totalRow.setCmf(list.stream().map(i -> new BigDecimal(i.getCmf())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setCcd(list.stream().map(i -> new BigDecimal(i.getCcd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setCsum(list.stream().map(i -> new BigDecimal(i.getCsum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        list.add(totalRow);
+        return list;
+    }
+
+    public List<FlowGroupVo> erjs(FlowStatisticsDto dto) {
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), SecurityUtils.getLoginUser());
+        //构建查询站点范围参数
+        dto.setStationIdList(authRangeStationIdList);
+        //构建查询时间范围参数
+        dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
+        dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
+        //构建查询表范围参数
+        if ("1".equals(dto.getFlagStr()) || "2".equals(dto.getFlagStr())) {
+            dto.setTableNameList(TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(),
+                    "tbstatentry",DatePattern.SIMPLE_MONTH_PATTERN));
+        } else if ("3".equals(dto.getFlagStr()) || "4".equals(dto.getFlagStr())) {
+            dto.setTableNameList(TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(),
+                    "tbstatexit",DatePattern.SIMPLE_MONTH_PATTERN));
+        }
+        List<FlowGroupVo> list = reportFlowMapper.getFlowGroup(dto);
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        } else {
+            list.forEach(item -> {
+                if ("0".equals(dto.getStatisticsType())) {
+                    item.setStatType(item.getStaDate());
+                } else if ("1".equals(dto.getStatisticsType())) {
+                    item.setStatType(item.getMonthDate());
+                } else if ("2".equals(dto.getStatisticsType())) {
+                    item.setStatType(item.getStationName());
+                }
+            });
+            //添加合计行
+            FlowGroupVo totalRow = new FlowGroupVo();
+            totalRow.setTotalRow(true);
+            totalRow.setStatType("合计");
+            totalRow.setK1c(list.stream().map(i -> new BigDecimal(i.getK1c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setK1d(list.stream().map(i -> new BigDecimal(i.getK1d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setK2c(list.stream().map(i -> new BigDecimal(i.getK2c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setK2d(list.stream().map(i -> new BigDecimal(i.getK2d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setK3c(list.stream().map(i -> new BigDecimal(i.getK3c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setK3d(list.stream().map(i -> new BigDecimal(i.getK3d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setK4c(list.stream().map(i -> new BigDecimal(i.getK4c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setK4d(list.stream().map(i -> new BigDecimal(i.getK4d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setKAmountc(list.stream().map(i -> new BigDecimal(i.getKAmountc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setKAmountd(list.stream().map(i -> new BigDecimal(i.getKAmountd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH1c(list.stream().map(i -> new BigDecimal(i.getH1c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH1d(list.stream().map(i -> new BigDecimal(i.getH1d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH2c(list.stream().map(i -> new BigDecimal(i.getH2c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH2d(list.stream().map(i -> new BigDecimal(i.getH2d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH3c(list.stream().map(i -> new BigDecimal(i.getH3c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH3d(list.stream().map(i -> new BigDecimal(i.getH3d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH4c(list.stream().map(i -> new BigDecimal(i.getH4c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH4d(list.stream().map(i -> new BigDecimal(i.getH4d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH5c(list.stream().map(i -> new BigDecimal(i.getH5c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH5d(list.stream().map(i -> new BigDecimal(i.getH5d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH6c(list.stream().map(i -> new BigDecimal(i.getH6c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setH6d(list.stream().map(i -> new BigDecimal(i.getH6d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setHAmountc(list.stream().map(i -> new BigDecimal(i.getHAmountc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setHAmountd(list.stream().map(i -> new BigDecimal(i.getHAmountd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ1c(list.stream().map(i -> new BigDecimal(i.getZ1c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ1d(list.stream().map(i -> new BigDecimal(i.getZ1d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ2c(list.stream().map(i -> new BigDecimal(i.getZ2c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ2d(list.stream().map(i -> new BigDecimal(i.getZ2d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ3c(list.stream().map(i -> new BigDecimal(i.getZ3c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ3d(list.stream().map(i -> new BigDecimal(i.getZ3d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ4c(list.stream().map(i -> new BigDecimal(i.getZ4c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ4d(list.stream().map(i -> new BigDecimal(i.getZ4d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ5c(list.stream().map(i -> new BigDecimal(i.getZ5c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ5d(list.stream().map(i -> new BigDecimal(i.getZ5d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ6c(list.stream().map(i -> new BigDecimal(i.getZ6c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZ6d(list.stream().map(i -> new BigDecimal(i.getZ6d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZAmountc(list.stream().map(i -> new BigDecimal(i.getZAmountc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setZAmountd(list.stream().map(i -> new BigDecimal(i.getZAmountd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setAllAmountc(list.stream().map(i -> new BigDecimal(i.getAllAmountc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setAllAmountd(list.stream().map(i -> new BigDecimal(i.getAllAmountd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            totalRow.setTotal(list.stream().map(i -> new BigDecimal(i.getTotal())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+            list.add(totalRow);
+        }
+        return list;
+    }
+
+    public List<FlowVeClassVo> flowYjzz(FlowStatisticsDto dto) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (loginUser.getCorpNo().length() != 2) {
+            log.warn("当前用户权限不够访问中心级别报表");
+            return new ArrayList<>();
+        }
+        dto.setTableNameList(TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatexit",
+                DatePattern.SIMPLE_MONTH_PATTERN));
+        dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
+        dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
+        //苏州分中心及锡常分中心的数据
+        List<FlowVeClassVo> list = reportFlowMapper.getFlowVeClass(dto);
+
+        //沪苏浙分中心的数据
+        List<FlowVeClassVo> list2 = reportFlowMapper.getFlowVeClassForOtherDatabase(dto);
+
+        if (!CollectionUtils.isEmpty(list)) {
+            if (!CollectionUtils.isEmpty(list2)) {
+                list.addAll(list2);
+            }
+        } else {
+            return new ArrayList<>();
+        }
+        //计算合计
+        FlowVeClassVo totalRow = new FlowVeClassVo();
+        totalRow.setTotalRow(true);
+        totalRow.setStatType("合计");
+        totalRow.setR1(list.stream().map(i -> new BigDecimal(i.getR1())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setR2(list.stream().map(i -> new BigDecimal(i.getR2())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setR3(list.stream().map(i -> new BigDecimal(i.getR3())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setR4(list.stream().map(i -> new BigDecimal(i.getR4())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setR5(list.stream().map(i -> new BigDecimal(i.getR5())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setR6(list.stream().map(i -> new BigDecimal(i.getR6())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRzx(list.stream().map(i -> new BigDecimal(i.getRzx())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setRsum(list.stream().map(i -> new BigDecimal(i.getRsum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setC1(list.stream().map(i -> new BigDecimal(i.getC1())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setC2(list.stream().map(i -> new BigDecimal(i.getC2())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setC3(list.stream().map(i -> new BigDecimal(i.getC3())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setC4(list.stream().map(i -> new BigDecimal(i.getC4())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setC5(list.stream().map(i -> new BigDecimal(i.getC5())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setC6(list.stream().map(i -> new BigDecimal(i.getC6())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCzx(list.stream().map(i -> new BigDecimal(i.getCzx())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setCsum(list.stream().map(i -> new BigDecimal(i.getCsum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setAllSum(list.stream().map(i -> new BigDecimal(i.getAllSum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         list.add(totalRow);
         return list;
     }

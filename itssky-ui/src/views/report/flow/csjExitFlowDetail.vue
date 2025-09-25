@@ -154,7 +154,7 @@ export default {
         this.dataList = response.rows;
         this.total = response.total;
         this.conditionList = response.conditionList;
-        this.corpName = title;
+        this.corpName = response.title;
       }).finally(() => {
         this.loading = false;
       });

@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itssky.common.annotation.DynamicTableName;
 import com.itssky.common.core.domain.model.LoginUser;
+import com.itssky.common.enums.SpecialStationType;
 import com.itssky.common.utils.MybatisPlusTableNameHelper;
 import com.itssky.common.utils.SecurityUtils;
 import com.itssky.system.domain.TbCorpInfo;
@@ -255,22 +256,31 @@ public class CardServiceImpl implements CardService {
     }
 
     private String buildStationName(Integer stationId) {
+        String loginUserCorpNo = SecurityUtils.getLoginUser().getCorpNo();
+        LambdaQueryWrapper<TbCorpInfo> wrapper1 = new LambdaQueryWrapper<>();
+        wrapper1.eq(TbCorpInfo::getCorpno, loginUserCorpNo.substring(0, 2));
+        TbCorpInfo loginUserCorpInfo = corpInfoMapper.selectOne(wrapper1);
         if (stationId == -1) {
-            return "收费站：中心";
+            return "收费站：" + loginUserCorpInfo.getCorpname();
         } else if (stationId <= 9999) {
-            String corpNo;
-            if (stationId < 1000) {
-                corpNo = "0" + stationId;
+            if (SpecialStationType.getAllIds().contains(stationId)) {
+                String name = SpecialStationType.getNameById(stationId);
+                return "收费站：" + name;
             } else {
-                corpNo = String.valueOf(stationId);
-            }
-            LambdaQueryWrapper<TbCorpInfo> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(TbCorpInfo::getCorpno, corpNo);
-            TbCorpInfo tbCorpInfo = corpInfoMapper.selectOne(wrapper);
-            if (Objects.isNull(tbCorpInfo)) {
-                return "收费站：";
-            } else {
-                return "收费站：" + tbCorpInfo.getCorpname();
+                String corpNo;
+                if (stationId < 1000) {
+                    corpNo = "0" + stationId;
+                } else {
+                    corpNo = String.valueOf(stationId);
+                }
+                LambdaQueryWrapper<TbCorpInfo> wrapper = new LambdaQueryWrapper<>();
+                wrapper.eq(TbCorpInfo::getCorpno, corpNo);
+                TbCorpInfo tbCorpInfo = corpInfoMapper.selectOne(wrapper);
+                if (Objects.isNull(tbCorpInfo)) {
+                    return "收费站：";
+                } else {
+                    return "收费站：" + tbCorpInfo.getCorpname();
+                }
             }
         } else {
             LambdaQueryWrapper<TbStationInfo> wrapper = new LambdaQueryWrapper<>();
@@ -336,9 +346,13 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<String> buildConditionList(Integer corpNo, Date time, String flag) {
+        String loginUserCorpNo = SecurityUtils.getLoginUser().getCorpNo();
+        LambdaQueryWrapper<TbCorpInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(TbCorpInfo::getCorpno, loginUserCorpNo.substring(0, 2));
+        TbCorpInfo tbCorpInfo = corpInfoMapper.selectOne(wrapper);
         List<String> conditionList = new ArrayList<>();
         if (corpNo == -1) {
-            conditionList.add("收费站：中心");
+            conditionList.add("收费站：" + tbCorpInfo.getCorpname());
         }
         if ("1".equals(flag)) {
             conditionList.add("统计日期：" + DateUtil.format(time, DatePattern.NORM_DATE_PATTERN));

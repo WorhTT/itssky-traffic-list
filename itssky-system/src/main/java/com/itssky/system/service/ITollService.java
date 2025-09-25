@@ -33,4 +33,6 @@ public interface ITollService {
 
     public List<MOBTollVo> mobToll(FtStationDto dto);
 
+    public List<StationShiftVo> yjzz(FtStationDto dto);
+
 }

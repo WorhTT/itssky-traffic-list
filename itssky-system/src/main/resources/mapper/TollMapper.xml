@@ -140,6 +140,68 @@
         </choose>
     </select>
 
+    <select id="ftTollForOtherDatabase" resultType="com.itssky.system.domain.vo.StationShiftVo"
+            parameterType="com.itssky.system.domain.dto.FtStationDto">
+        SELECT
+        a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=6 THEN CarNum ELSE 0 END),0) as officialIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=8 THEN CarNum ELSE 0 END),0) as militaryIcCardCount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=12 THEN CarNum ELSE 0 END),0) as freeIcCardCount,
+        IFNULL(SUM(CASE WHEN (DealStatus&amp;14!=14 AND DealStatus&amp;14!=2
+        AND DealStatus&amp;0xE00000!=0x200000 AND DealStatus&amp;0x1000000=0 AND DealStatus&amp;32!=32 AND CardType=0)
+        OR (CardType=26 AND DealStatus&amp;32!=32) THEN CardNum ELSE 0 END),0) as dueIcCardCount,
+        IFNULL(CAST(SUM(CASE WHEN PayType=0 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS douTotalToll,
+        IFNULL(CAST(SUM(CASE WHEN DealStatus&amp;14=4 THEN TotalArrearage ELSE 0 END)/100 AS DECIMAL(10,2)), 0) AS arrearsAmount,
+        IFNULL(SUM(CASE WHEN DealStatus&amp;14=4 THEN CarNum ELSE 0 END),0) AS arrearsTrips,
+        IFNULL(CAST(SUM(CASE WHEN PayType=16 THEN TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS mobilePaymentAmount,
+        IFNULL(CAST(SUM(CASE WHEN PayType=2 THEN TotalToll  ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePaymentAmount,
+        LEFT(a.StaDate, 6) AS monthDate,
+        a.StaDate AS staDate
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
+            SELECT
+            *
+            FROM ${tableName} AS alias${index + 1}
+            <where>
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+                AND CancelFlag = 0 AND RecordType &amp;1 =1
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                GROUP BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                GROUP BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                GROUP BY StationID
+            </when>
+        </choose>
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                ORDER BY StaDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                ORDER BY monthDate ASC
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                ORDER BY StationID ASC
+            </when>
+        </choose>
+    </select>
+
     <!-- AFV综合(MTC+ETC)按车型统计表 -->
     <select id="afvGeneral" resultType="com.itssky.system.domain.vo.VehicleClassStatVo"
             parameterType="com.itssky.system.domain.dto.VehicleClassStatDto">
@@ -425,8 +487,108 @@
         </choose>
     </select>
 
+    <select id="getTbShDataV2ForOtherDatabase" resultType="com.itssky.system.domain.vo.TbShVo"
+            parameterType="com.itssky.system.domain.dto.FtStationDto">
+        SELECT
+        IFNULL(CAST(SUM(a.AddedToll)/100 as DECIMAL(10,2)) ,0) as addedToll,
+        IFNULL(CAST(SUM(a.HandToll)/100 as DECIMAL(10,2)), 0) as handToll,
+        IFNULL(SUM(a.HandInCNum), 0) AS handInCNum,
+        IFNULL(SUM(a.HandOutCNum), 0) AS handOutCNum,
+        a.StaDate AS staDate,
+        LEFT(a.StaDate, 6) AS monthDate,
+        a.StationID AS stationId,
+        a.OperatorID AS operatorId
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")">
+            SELECT
+            *
+            FROM ${tableName}
+            <where>
+                AND CancelFlag = 0
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                GROUP BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                GROUP BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                GROUP BY StationID
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 3">
+                GROUP BY OperatorID
+            </when>
+        </choose>
+    </select>
+
     <!-- 加收表查询 (支持多表联查)-->
     <select id="getExtraPay" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.ExtraPayVo">
+        SELECT
+        a.StaDate AS staDate,
+        LEFT(a.StaDate, 6) AS monthDate,
+        a.OperatorID AS operatorId,
+        a.StationID AS stationId,
+        IFNULL(CAST(SUM(a.AddedToll)/100 as DECIMAL(10,2)) ,0) AS extAddToll,
+        IFNULL(SUM(CASE WHEN a.payType=0 THEN a.AddedToll ELSE 0 END),0) as xjMoney,
+        IFNULL(SUM(CASE WHEN a.payType=16 THEN a.AddedToll ELSE 0 END),0) as ydzfMoney
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")">
+            SELECT
+            *
+            FROM ${tableName}
+            <where>
+                AND CancelFlag = 0
+                AND IsSplit=1
+                AND IsConfirm = 1
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="timeFormat != null and timeFormat != ''">
+                    AND StaDate = #{timeFormat}
+                </if>
+                <if test="shiftId != null and shiftId != ''">
+                    AND ShiftID = #{shiftId}
+                </if>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 0">
+                GROUP BY StaDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 1">
+                GROUP BY monthDate
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 2">
+                GROUP BY StationID
+            </when>
+            <when test="statisticsType != null and statisticsType != '' and statisticsType == 3">
+                GROUP BY OperatorID
+            </when>
+        </choose>
+    </select>
+
+    <select id="getExtraPayForOtherDatabase" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.ExtraPayVo">
         SELECT
         a.StaDate AS staDate,
         LEFT(a.StaDate, 6) AS monthDate,

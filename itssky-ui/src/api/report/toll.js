@@ -80,6 +80,22 @@ export function exportEefepay(data) {
   })
 }
 
+export function exportEefepayMtc(data) {
+  return request({
+    url: '/toll/export/eefepay/mtc',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportEefepayEtc(data) {
+  return request({
+    url: '/toll/export/eefepay/etc',
+    method: 'post',
+    data: data
+  })
+}
+
 export function f6Toll(data) {
   return request({
     url: '/toll/f6toll',

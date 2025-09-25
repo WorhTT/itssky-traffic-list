@@ -66,8 +66,7 @@
 
 <script>
 
-import {ccq2} from "@/api/report/card";
-import {getLoginUser} from "@/api/login";
+import {ccq2,exportCcq2} from "@/api/report/card";
 
 export default {
   name: "C1StationShiftDetail",
@@ -158,14 +157,270 @@ export default {
       this.$confirm('是否确认导出CCQ2收费中心IC卡库存日统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "警告"
       }).then(function () {
-        return exportC1StationShift(queryParams);
+        return exportCcq2(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       }).finally(() => {
         this.loading = false;
       })
+    },
+    printTable() {
+      const corpName = this.corpName;
+      const elTable = this.$refs.myTable.$el;
+      const printFrame = document.getElementById('printFrame');
+      const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
+      let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
+      // 获取操作人信息
+      const operator = this.operatorName;
+      const printTime = this.getCurrentDateTime();
+      // 添加底部信息行
+      const footerHtml = `
+    <div class="footer-info">
+      <span class="operator">操作人：${operator}</span>
+      <span class="print-time">打印时间：${printTime}</span>
+    </div>
+  `;
+      // 创建一个新的表格结构，避免样式冲突
+      let tableHtml = `
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="min-width: 100px;">收费站</th>
+              <th colspan="4" style="min-width: 200px;">库存增加</th>
+              <th colspan="3" style="min-width: 150px;">库存减少</th>
+              <th rowspan="2" style="min-width: 80px;">库存维护数</th>
+              <th rowspan="2" style="min-width: 80px;">库存变动</th>
+              <th rowspan="2" style="min-width: 80px;">库存坏卡</th>
+              <th rowspan="2" style="min-width: 100px;">库存正常卡</th>
+            </tr>
+            <tr>
+              <th style="min-width: 50px;">通行卡调入</th>
+              <th style="min-width: 50px;">出口回收</th>
+              <th style="min-width: 50px;">坏卡回收</th>
+              <th style="min-width: 50px;">通行卡恢复</th>
+              <th style="min-width: 50px;">通行卡调出</th>
+              <th style="min-width: 50px;">入口发卡</th>
+              <th style="min-width: 50px;">坏卡上缴</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      // 填充表格数据
+      this.dataList.forEach(row => {
+        // 处理可能为空的数值，确保空值也能正确显示
+        const stationName = row.stationName !== undefined && row.stationName !== null ? row.stationName : '';
+        const txkdr = row.txkdr !== undefined && row.txkdr !== null ? row.txkdr : '';
+        const ckhs = row.ckhs !== undefined && row.ckhs !== null ? row.ckhs : '';
+        const hkhs = row.hkhs !== undefined && row.hkhs !== null ? row.hkhs : '';
+        const txkhf = row.txkhf !== undefined && row.txkhf !== null ? row.txkhf : '';
+        const txkdc = row.txkdc !== undefined && row.txkdc !== null ? row.txkdc : '';
+        const rkfk = row.rkfk !== undefined && row.rkfk !== null ? row.rkfk : '';
+        const hksj = row.hksj !== undefined && row.hksj !== null ? row.hksj : '';
+        const kcwhs = row.kcwhs !== undefined && row.kcwhs !== null ? row.kcwhs : '';
+        const kcbd = row.kcbd !== undefined && row.kcbd !== null ? row.kcbd : '';
+        const kchk = row.kchk !== undefined && row.kchk !== null ? row.kchk : '';
+        const kczck = row.kczck !== undefined && row.kczck !== null ? row.kczck : '';
+
+        tableHtml += `
+          <tr>
+            <td>${stationName}</td>
+            <td>${txkdr}</td>
+            <td>${ckhs}</td>
+            <td>${hkhs}</td>
+            <td>${txkhf}</td>
+            <td>${txkdc}</td>
+            <td>${rkfk}</td>
+            <td>${hksj}</td>
+            <td>${kcwhs}</td>
+            <td>${kcbd}</td>
+            <td>${kchk}</td>
+            <td>${kczck}</td>
+          </tr>
+        `;
+      });
+
+      tableHtml += `
+          </tbody>
+        </table>
+      `;
+
+      let htmlContent = `
+      <!DOCTYPE html>
+        <html>
+        <head>
+        <title>Print</title>
+        <style>
+        body {
+          margin: 0;
+          padding: 15px;
+          font-family: "Microsoft YaHei", SimHei, Arial, sans-serif;
+          box-sizing: border-box;
+          font-size: 14px;
+        }
+        .print-title {
+          text-align: center;
+          font-size: 20px;
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+        .container {
+          display: flex;
+          margin-bottom: 15px;
+        }
+        .container span {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 15px;
+        }
+        .table-container {
+          margin-top: 10px;
+          width: 100%;
+          zoom: 0.6
+        }
+        .el-table {
+          width: 100%;
+          border-collapse: collapse;
+          table-layout: auto; /* 自动调整列宽 */
+          font-size: 13px;
+        }
+        .el-table thead tr {
+          background-color: #ebeef5;
+          break-inside: avoid; /* 防止表头跨页 */
+        }
+        .el-table th, .el-table td {
+          border: 1px solid #000;
+          padding: 8px 5px;
+          text-align: center;
+          word-wrap: break-word;
+          white-space: normal; /* 允许内容换行 */
+          font-size: 13px;
+          min-width: 50px;
+          word-break: break-word; /* 允许单词内换行 */
+          break-inside: avoid; /* 防止单元格跨页 */
+        }
+        .el-table th {
+          font-weight: bold;
+          font-size: 14px;
+          background-color: #f5f7fa;
+          break-inside: avoid; /* 防止表头单元格跨页 */
+        }
+        /* 防止表格跨页截断 */
+        thead {
+          display: table-header-group;
+        }
+        tfoot {
+          display: table-footer-group;
+        }
+        tbody {
+          display: table-row-group;
+        }
+        tr {
+          page-break-inside: avoid;
+          page-break-after: auto;
+          break-inside: avoid; /* 防止行跨页 */
+        }
+        td, th {
+          page-break-inside: avoid;
+        }
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        .operator {
+            text-align: left;
+        }
+        .print-time {
+            text-align: right;
+        }
+        @media print {
+          @page {
+            size: A4 landscape; /* 改为横向打印 */
+            margin: 8mm; /* 减小边距以获得更多内容空间 */
+          }
+          body {
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            font-size: 11px; /* 调小字体以适应更多内容 */
+          }
+          .el-table {
+            width: 100% !important;
+            table-layout: auto !important; /* 自动调整列宽 */
+            font-size: 11px; /* 调小字体以适应更多内容 */
+          }
+          .el-table thead tr {
+            background-color: #ebeef5;
+            break-inside: avoid; /* 防止表头跨页 */
+          }
+          .el-table th, .el-table td {
+            padding: 4px 3px; /* 减小内边距以节省空间 */
+            font-size: 15px;
+            min-width: 40px; /* 调整最小宽度 */
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-word;
+            break-inside: avoid; /* 防止单元格跨页 */
+          }
+          .el-table th {
+            font-size: 17px; /* 表头字体稍大 */
+            font-weight: bold;
+            break-inside: avoid; /* 防止表头单元格跨页 */
+          }
+          .container span {
+            font-size: 13px;
+          }
+          .print-title {
+            font-size: 18px;
+          }
+          .footer-info {
+            margin-top: 15px;
+            font-size: 12px;
+          }
+          /* 防止表格跨页截断 */
+          thead {
+            display: table-header-group;
+          }
+          tfoot {
+            display: table-footer-group;
+          }
+          tbody {
+            display: table-row-group;
+          }
+          tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+            break-inside: avoid; /* 防止行跨页 */
+          }
+          td, th {
+            page-break-inside: avoid;
+          }
+        }
+        </style>
+        </head>
+        <body>
+            <div class="print-title">${corpName}</div>
+            <div class="print-title">CCQ2收费中心IC卡库存日统计表</div>
+            <div class="container">${conditionListHtml}</div>
+            <div class="table-container">${tableHtml}</div>
+            ${footerHtml}
+        </body>
+        </html>
+      `
+      printDocument.write(htmlContent);
+      printDocument.close();
+
+      // Trigger print
+      printFrame.contentWindow.focus();
+      printFrame.contentWindow.print();
     },
   }
 };

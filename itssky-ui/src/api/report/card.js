@@ -88,3 +88,19 @@ export function ccq3(data) {
     data: data
   })
 }
+
+export function exportCcq2(data) {
+  return request({
+    url: '/card/export/ccq2',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportCcq3(data) {
+  return request({
+    url: '/card/export/ccq3',
+    method: 'post',
+    data: data
+  })
+}

@@ -3,6 +3,7 @@ package com.itssky.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itssky.common.core.domain.model.LoginUser;
+import com.itssky.common.enums.SpecialStationType;
 import com.itssky.common.exception.biz.BizException;
 import com.itssky.common.utils.SecurityUtils;
 import com.itssky.system.domain.TbCorpInfo;
@@ -188,7 +189,6 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
         //-1是中心
         //三位数的是分中心需要补零，四位数的也是分中心
         //其余的都考虑是站ID
-
         boolean isRoot = loginUser.getCorpNo().length() == 2;
         if (stationId == -1) {
             String corpNo = loginUser.getCorpNo();
@@ -202,8 +202,11 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
         }
         //需要判断是否是中心用户 中心用户则取这个传参(如果位数不对需补0) ,分中心用户则直接获取corpNo下的所有tbStationInfo
         else if (stationId <= 9999) {
-            //中心用户
-            if (isRoot) {
+            List<Integer> allIds = SpecialStationType.getAllIds();
+            if (allIds.contains(stationId)) {
+                return SpecialStationType.getStationIdsById(stationId);
+            } else if (isRoot) {
+                //中心用户
                 String corpNo;
                 if (stationId < 1000) {
                     corpNo = "0" + stationId;
@@ -226,8 +229,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
                     return tbStationInfos.stream().map(TbStationInfo::getStationid).collect(Collectors.toList());
                 }
             }
-        }
-        else {
+        } else {
             return Collections.singletonList(stationId);
         }
         return new ArrayList<>();
@@ -250,7 +252,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
             throw new RuntimeException("当前登录用户的所属路公司CorpNo为空，请联系运维人员");
         }
         String corpNo = loginUser.getCorpNo();
-        if (corpNo.length() %2 != 0) {
+        if (corpNo.length() % 2 != 0) {
             log.error("当前登录用户的所属路公司CorpNo位数有误，请联系运维人员");
             throw new RuntimeException("当前登录用户的所属路公司CorpNo位数有误，请联系运维人员");
         }
@@ -260,12 +262,23 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
             lambdaQueryWrapper.likeRight(TbCorpInfo::getCorpno, corpNo)
                     .apply(" LENGTH(CorpNo) <= 4 ");
             List<TbCorpInfo> tbCorpInfoList = tbCorpInfoMapper.selectList(lambdaQueryWrapper);
+//            //特殊的聚合路公司设定
+//            List<TbCorpInfo> specialCorpList = new ArrayList<>();
+//            Arrays.stream(SpecialStationType.values()).forEach(obj -> {
+//                if (obj.getCorpNo().startsWith(corpNo)) {
+//                    TbCorpInfo tbCorpInfo = new TbCorpInfo();
+//                    tbCorpInfo.setCorpname(obj.getName());
+//                    tbCorpInfo.setCorpno(String.valueOf(obj.getId()));
+//                    specialCorpList.add(tbCorpInfo);
+//                }
+//            });
+//            tbCorpInfoList.addAll(specialCorpList);
             if (!CollectionUtils.isEmpty(tbCorpInfoList)) {
                 tbCorpInfoList.forEach(obj -> {
                     Map<String, Object> map = new HashMap<>();
                     if (obj.getCorpno().length() == 2) {
                         map.put("value", -1);
-                        map.put("label", "中心");
+                        map.put("label", obj.getCorpname());
                     } else if (obj.getCorpno().length() == 4) {
                         map.put("value", Integer.parseInt(obj.getCorpno()));
                         map.put("label", obj.getCorpname());
@@ -345,7 +358,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
                 if (Objects.isNull(loginUser.getCorpNo())) {
                     throw new RuntimeException("当前用户获取到的CorpNo为空，请联系维护人员");
                 }
-                if (loginUser.getCorpNo().length() %2 != 0) {
+                if (loginUser.getCorpNo().length() % 2 != 0) {
                     throw new RuntimeException("当前用户所属路公司编号位数有误，请联系维护人员");
                 }
                 //获取当前用户顶层路公司corpno
@@ -414,6 +427,7 @@ public class TbStationInfoServiceImpl extends ServiceImpl<TbStationInfoMapper, T
 
     /**
      * 这个是只从当前的CorpNo往下迭代
+     *
      * @param corpNo
      * @return
      */

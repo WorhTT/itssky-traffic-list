@@ -127,3 +127,43 @@ export function exportTkFlowAll(data) {
     data: data
   })
 }
+
+export function erjsFlow(data) {
+  return request({
+    url: '/report/flow/erjs',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportErjFlow(data) {
+  return request({
+    url: '/report/flow/export/erj',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportErsFlow(data) {
+  return request({
+    url: '/report/flow/export/ers',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportEcjFlow(data) {
+  return request({
+    url: '/report/flow/export/ecj',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportEcsFlow(data) {
+  return request({
+    url: '/report/flow/export/ecs',
+    method: 'post',
+    data: data
+  })
+}

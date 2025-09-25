@@ -357,20 +357,20 @@
      -->
     <select id="ccq2" parameterType="com.itssky.system.domain.dto.CardCcqDto" resultType="com.itssky.system.domain.vo.Ccq2CardVo">
         SELECT
-        StationID AS stationId,
+        a.StationID AS stationId,
         (SELECT StationName FROM dbtoms.tbstationinfo WHERE StationID = a.StationID LIMIT 1) AS stationName,
-        IFNULL(SUM(InNum), 0) AS txkdr,
-        IFNULL(SUM(ReceivedNum), 0) AS cksh,
-        IFNULL(SUM(BadRecNUm), 0) AS hksh,
-        IFNULL(SUM(RecoverNum), 0) AS txkhf,
-        IFNULL(SUM(OutNum), 0) AS txkdc,
-        IFNULL(SUM(SendNum), 0) AS rkfk,
-        IFNULL(SUM(BadOutNum), 0) AS hksj,
-        IFNULL(SUM(AdjustNum), 0) AS kcwhs,
-        IFNULL(SUM(InNum+ReceivedNum-BadRecNUm+RecoverNum-OutNum-SendNum-BadOutNum+AdjustNum), 0) kcbd,
-        IFNULL(SUM(BadStockNum), 0) AS kchk,
-        IFNULL(SUM(StockNum), 0) AS kczck
-        FROM ${tableName}
+        IFNULL(SUM(a.InNum), 0) AS txkdr,
+        IFNULL(SUM(a.ReceivedNum), 0) AS cksh,
+        IFNULL(SUM(a.BadRecNUm), 0) AS hksh,
+        IFNULL(SUM(a.RecoverNum), 0) AS txkhf,
+        IFNULL(SUM(a.OutNum), 0) AS txkdc,
+        IFNULL(SUM(a.SendNum), 0) AS rkfk,
+        IFNULL(SUM(a.BadOutNum), 0) AS hksj,
+        IFNULL(SUM(a.AdjustNum), 0) AS kcwhs,
+        IFNULL(SUM(a.InNum+a.ReceivedNum-a.BadRecNUm+a.RecoverNum-a.OutNum-a.SendNum-a.BadOutNum+a.AdjustNum), 0) kcbd,
+        IFNULL(SUM(a.BadStockNum), 0) AS kchk,
+        IFNULL(SUM(a.StockNum), 0) AS kczck
+        FROM ${tableName} a
         <where>
             AND CancelFlag = 0
             AND StationID in
@@ -387,19 +387,19 @@
 
     <select id="ccq3" parameterType="com.itssky.system.domain.dto.CardCcqDto" resultType="com.itssky.system.domain.vo.Ccq3CardVo">
         SELECT
-        StaDate AS staDate,
-        IFNULL(SUM(InNum), 0) AS txkdr,
-        IFNULL(SUM(ReceivedNum), 0) AS cksh,
-        IFNULL(SUM(BadRecNUm), 0) AS hksh,
-        IFNULL(SUM(RecoverNum), 0) AS txkhf,
-        IFNULL(SUM(OutNum), 0) AS txkdc,
-        IFNULL(SUM(SendNum), 0) AS rkfk,
-        IFNULL(SUM(BadOutNum), 0) AS hksj,
-        IFNULL(SUM(AdjustNum), 0) AS kcwhs,
-        IFNULL(SUM(InNum+ReceivedNum-BadRecNUm+RecoverNum-OutNum-SendNum-BadOutNum+AdjustNum), 0) kcbd,
-        IFNULL(SUM(BadStockNum), 0) AS kchk,
-        IFNULL(SUM(StockNum), 0) AS kczck
-        FROM ${tableName}
+        a.StaDate AS staDate,
+        IFNULL(SUM(a.InNum), 0) AS txkdr,
+        IFNULL(SUM(a.ReceivedNum), 0) AS cksh,
+        IFNULL(SUM(a.BadRecNUm), 0) AS hksh,
+        IFNULL(SUM(a.RecoverNum), 0) AS txkhf,
+        IFNULL(SUM(a.OutNum), 0) AS txkdc,
+        IFNULL(SUM(a.SendNum), 0) AS rkfk,
+        IFNULL(SUM(a.BadOutNum), 0) AS hksj,
+        IFNULL(SUM(a.AdjustNum), 0) AS kcwhs,
+        IFNULL(SUM(a.InNum+a.ReceivedNum-a.BadRecNUm+a.RecoverNum-a.OutNum-a.SendNum-a.BadOutNum+a.AdjustNum), 0) kcbd,
+        IFNULL(SUM(a.BadStockNum), 0) AS kchk,
+        IFNULL(SUM(a.StockNum), 0) AS kczck
+        FROM ${tableName} a
         <where>
             AND CancelFlag = 0
             AND StationID in
@@ -407,7 +407,7 @@
                 #{stationId}
             </foreach>
             <if test="staDate != null">
-                AND LEFT(StaDate, 6) = #{StaDate}
+                AND LEFT(StaDate, 6) = #{staDate}
             </if>
         </where>
         GROUP BY StaDate

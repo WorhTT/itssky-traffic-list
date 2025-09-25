@@ -221,4 +221,38 @@ public class CardController extends BaseController {
         return tableDataVo;
     }
 
+    /**
+     * CCQ3收费中心IC卡库存月统计汇总表
+     */
+    @PostMapping(value = "/ccq3")
+    public TableDataVo ccq3(@RequestBody @Valid CardCcqDto dto) {
+        List<Ccq3CardVo> ccq3CardVos = cardService.ccq3(dto);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setTitle(reportTitleName);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), "2"));
+        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        tableDataVo.setRows(ccq3CardVos);
+        return tableDataVo;
+    }
+
+    @PostMapping(value = "/export/ccq2")
+    public AjaxResult exportCcq2(@RequestBody @Valid CardCcqDto dto) throws IOException {
+        List<Ccq2CardVo> result = cardService.ccq2(dto);
+        ExcelUtil<Ccq2CardVo> util = new ExcelUtil<Ccq2CardVo>(Ccq2CardVo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), "1");
+        return util.exportDynamic(result, "CCQ2收费中心IC卡库存日统计表",
+                conditionList, 12, reportTitleName, loginUserInfo.getUsername());
+    }
+
+    @PostMapping(value = "/export/ccq3")
+    public AjaxResult exportCcq3(@RequestBody @Valid CardCcqDto dto) throws IOException {
+        List<Ccq3CardVo> result = cardService.ccq3(dto);
+        ExcelUtil<Ccq3CardVo> util = new ExcelUtil<Ccq3CardVo>(Ccq3CardVo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), "2");
+        return util.exportDynamic(result, "CCQ3收费中心IC卡库存月统计汇总表",
+                conditionList, 12, reportTitleName, loginUserInfo.getUsername());
+    }
+
 }

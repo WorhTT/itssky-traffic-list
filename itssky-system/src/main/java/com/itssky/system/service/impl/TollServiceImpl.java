@@ -12,6 +12,7 @@ import com.itssky.system.domain.dto.StationShiftDto;
 import com.itssky.system.domain.dto.VehicleClassStatDto;
 import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.mapper.TollMapper;
+import com.itssky.system.service.GroupAggDefinition;
 import com.itssky.system.service.ITollService;
 import com.itssky.system.service.TbStationInfoService;
 import com.itssky.util.TableUtil;
@@ -1088,5 +1089,145 @@ public class TollServiceImpl implements ITollService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toPlainString());
         list.add(totalRow);
         return list;
+    }
+
+    /**
+     * 沿江总值
+     */
+    @Override
+    public List<StationShiftVo> yjzz(FtStationDto dto) {
+        List<StationShiftVo> localResult = ftToll(dto);
+        if (!localResult.isEmpty()) {
+            localResult.remove(localResult.size() - 1);
+            return ftTollForOtherDatabase(localResult, dto);
+        }
+        return new ArrayList<>();
+    }
+
+    private List<StationShiftVo> ftTollForOtherDatabase(List<StationShiftVo> localResult, FtStationDto dto) {
+        dto.setStationIdList(Arrays.asList(400002,400003,400004,400005,400006,400007));
+        //构建会查询到的表集合
+        dto.setTableNameList(
+                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatexit",
+                        DatePattern.SIMPLE_MONTH_PATTERN));
+        if (CollectionUtils.isEmpty(dto.getTableNameList())) {
+            return new ArrayList<>();
+        }
+        //时间传参格式化
+        dto.setIntBeginTime(Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN)));
+        dto.setIntEndTime(Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN)));
+        List<StationShiftVo> stationShiftVos = tollMapper.ftTollForOtherDatabase(dto);
+        //计算统计金额及实缴金额
+        //先查询交款记录表
+        //构建会查询到的表集合
+        dto.setTableNameList(
+                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbsh",
+                        DatePattern.SIMPLE_MONTH_PATTERN));
+        List<TbShVo> tbShVoList = tollMapper.getTbShDataV2ForOtherDatabase(dto);
+        //新加收表查询
+        dto.setTableNameList(
+                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "extrapay",
+                        DatePattern.NORM_YEAR_PATTERN)
+        );
+        StationShiftDto  paramDto = new StationShiftDto();
+        BeanUtils.copyProperties(dto,  paramDto);
+        List<ExtraPayVo> extraPayList = tollMapper.getExtraPayForOtherDatabase(paramDto);
+        //日
+        Map<String, TbShVo> tbshMap = new HashMap<>();
+        Map<String, ExtraPayVo> extrapayMap = new HashMap<>();
+        if ("0".equals(dto.getStatisticsType())) {
+            tbshMap = tbShVoList.stream()
+                    .collect(Collectors.toMap(TbShVo::getStaDate, i -> i));
+            extrapayMap = extraPayList.stream()
+                    .collect(Collectors.toMap(ExtraPayVo::getStaDate, i -> i));
+        }
+        //月
+        else if ("1".equals(dto.getStatisticsType())) {
+            tbshMap = tbShVoList.stream()
+                    .collect(Collectors.toMap(TbShVo::getMonthDate, i -> i));
+            extrapayMap = extraPayList.stream()
+                    .collect(Collectors.toMap(ExtraPayVo::getMonthDate, i -> i));
+        }
+        //站
+        else if ("2".equals(dto.getStatisticsType())) {
+            tbshMap = tbShVoList.stream()
+                    .collect(Collectors.toMap(TbShVo::getStationId, i -> i));
+            extrapayMap = extraPayList.stream()
+                    .collect(Collectors.toMap(ExtraPayVo::getStationId, i -> i));
+        }
+        //计算金额差异和统计金额和应缴金额
+        for (StationShiftVo item : stationShiftVos) {
+            //加收金额
+            BigDecimal addedToll = new BigDecimal("0.00");
+            //移动支付加收金额
+            BigDecimal ydzfAddedToll = new BigDecimal("0.00");
+            //实收金额
+            BigDecimal handToll = new BigDecimal("0.00");
+            //douTotalToll
+            BigDecimal douTotalToll = item.getDouTotalToll();
+            switch (dto.getStatisticsType()) {
+                case "0":
+                    item.setStatType(item.getStaDate());
+                    if (Objects.nonNull(tbshMap.get(item.getStaDate()))) {
+                        TbShVo tbShVo = tbshMap.get(item.getStaDate());
+                        handToll = tbShVo.getHandToll();
+                    }
+                    if (Objects.nonNull(extrapayMap.get(item.getStaDate()))) {
+                        ExtraPayVo extraPayVo = extrapayMap.get(item.getStaDate());
+                        ydzfAddedToll = extraPayVo.getYdzfMoney();
+                        addedToll =  extraPayVo.getExtAddToll();
+                    }
+                    break;
+                case "1":
+                    item.setStatType(item.getMonthDate());
+                    if (Objects.nonNull(tbshMap.get(item.getMonthDate()))) {
+                        TbShVo tbShVo = tbshMap.get(item.getMonthDate());
+                        handToll = tbShVo.getHandToll();
+                    }
+                    if (Objects.nonNull(extrapayMap.get(item.getMonthDate()))) {
+                        ExtraPayVo extraPayVo = extrapayMap.get(item.getMonthDate());
+                        ydzfAddedToll = extraPayVo.getYdzfMoney();
+                        addedToll =  extraPayVo.getExtAddToll();
+                    }
+                    break;
+                case "2":
+                    item.setStatType(item.getStationName());
+                    if (Objects.nonNull(tbshMap.get(item.getStationId()))) {
+                        TbShVo tbShVo = tbshMap.get(item.getStationId());
+                        handToll = tbShVo.getHandToll();
+                    }
+                    if (Objects.nonNull(extrapayMap.get(item.getStationId()))) {
+                        ExtraPayVo extraPayVo = extrapayMap.get(item.getStationId());
+                        ydzfAddedToll = extraPayVo.getYdzfMoney();
+                        addedToll =  extraPayVo.getExtAddToll();
+                    }
+                    break;
+            }
+            //应缴金额计算
+            BigDecimal yjje = douTotalToll.add(addedToll).subtract(ydzfAddedToll);
+            //金额差异
+            BigDecimal jecy = handToll.subtract(yjje);
+            //统计金额 应缴金额(现金)+移动支付+电子支付+移动支付加收
+            BigDecimal tjje = yjje.add(item.getMobilePaymentAmount()).add(item.getEPaymentAmount()).add(ydzfAddedToll);
+            //实缴金额
+            item.setPaidAmount(handToll);
+            //应缴金额
+            item.setDueAmount(yjje);
+            //金额差异
+            item.setAmountDiff(jecy);
+            //统计金额
+            item.setStatAmount(tjje);
+            //加收款
+            item.setExtraTotal(addedToll);
+        }
+        if (!CollectionUtils.isEmpty(stationShiftVos)) {
+            localResult.addAll(stationShiftVos);
+        }
+        //合计行
+        StationShiftVo hjRow = buildTotalRowVo(localResult);
+        hjRow.setTotalRow(true);
+        hjRow.setStatType("合计");
+        stationShiftVos.add(hjRow);
+        return localResult;
     }
 }

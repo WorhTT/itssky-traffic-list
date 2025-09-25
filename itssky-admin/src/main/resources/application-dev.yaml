@@ -27,6 +27,25 @@ spring:
           username: root
           password: 12345678
           driver-class-name: com.mysql.jdbc.Driver
+        #备用数据源 用于一些特殊的报表 例如沿江的沿江总值 需要额外查询沪苏浙的数据源
+        dbstats2:
+          url: jdbc:mysql://localhost:3306/dbstats?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+        #备用数据源 用于一些特殊的报表 例如沿江的沿江总值 需要额外查询沪苏浙的数据源
+        itsdata2:
+          url: jdbc:mysql://localhost:3306/itsdata?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+        #备用数据源 用于一些特殊的报表 例如沿江的沿江总值 需要额外查询沪苏浙的数据源
+        dbedge2:
+          url: jdbc:mysql://localhost:3306/dbedge?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+
 # token配置
 token:
   # 令牌自定义标识
@@ -83,9 +102,4 @@ secure:
       - /common/**
       - /logout
 
-fft:
-  url: http://10.0.96.95
-  binfile-auth: cht@a6165bf5f024f647267fae0b10cdf060
-  corpno: 03
-
-reportTitleName: "宁杭高速"
+reportTitleName: "沿江高速"

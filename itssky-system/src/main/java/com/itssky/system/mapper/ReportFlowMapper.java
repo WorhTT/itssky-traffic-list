@@ -1,14 +1,12 @@
 package com.itssky.system.mapper;
 
-import com.itssky.db.Dbedge;
 import com.itssky.db.Dbstats;
+import com.itssky.db.Dbstats2;
 import com.itssky.system.domain.*;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
-import com.itssky.system.domain.dto.StationShiftDto;
 import com.itssky.system.domain.vo.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -39,9 +37,18 @@ public interface ReportFlowMapper {
 
     public List<CRJFlowVo> getCRJFlow(FlowStatisticsDto dto);
 
-//    public List<ODFlowVo> getFlowOd(FlowStatisticsDto dto);
-
     public List<TkFlowVo> getTkFlow(FlowStatisticsDto dto);
 
     public List<TkFlowVo> getTkFlowAll(FlowStatisticsDto dto);
+
+    public List<FlowGroupVo> getFlowGroup(FlowStatisticsDto dto);
+
+    public List<FlowVeClassVo> getFlowVeClass(FlowStatisticsDto dto);
+
+    @Dbstats2
+    public List<FlowVeClassVo> getFlowVeClassForOtherDatabase(FlowStatisticsDto dto);
+
+
+
+//    public List<FlowGroupVo> getErjs(FlowStatisticsDto dto);
 }
