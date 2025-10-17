@@ -491,7 +491,7 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 4px 3px; /* 减小内边距以节省空间 */
-            font-size: 15px;
+            font-size: 18px;
             min-width: 40px; /* 调整最小宽度 */
             white-space: normal;
             word-wrap: break-word;
@@ -499,7 +499,7 @@ export default {
             break-inside: avoid; /* 防止单元格跨页 */
           }
           .el-table th {
-            font-size: 16px; /* 表头字体稍大 */
+            font-size: 20px; /* 表头字体稍大 */
             font-weight: bold;
             break-inside: avoid; /* 防止表头单元格跨页 */
           }

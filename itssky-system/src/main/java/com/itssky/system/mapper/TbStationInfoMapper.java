@@ -6,6 +6,7 @@ import com.itssky.system.domain.TbStationInfo;
 public interface TbStationInfoMapper extends BaseMapper<TbStationInfo> {
     int deleteByPrimaryKey(Integer id);
 
+    @Override
     int insert(TbStationInfo record);
 
     int insertSelective(TbStationInfo record);

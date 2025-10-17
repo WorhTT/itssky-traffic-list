@@ -255,4 +255,16 @@ public class CardController extends BaseController {
                 conditionList, 12, reportTitleName, loginUserInfo.getUsername());
     }
 
+    /**
+     * FD08收费站IC卡库存汇总表
+     */
+//    public TableDataVo fd08StationInventory() {
+//        List<Fd08StationInventoryVo> result = cardService.fd08StationInventory();
+//        TableDataVo tableDataVo = new TableDataVo();
+//        tableDataVo.setRows(result);
+//        tableDataVo.setTitle(reportTitleName);
+//        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+//        return tableDataVo;
+//    }
+
 }

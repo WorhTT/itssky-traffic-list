@@ -274,7 +274,7 @@ public class ReportFlowController extends BaseController {
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         ExcelUtil<TkFlowVo> util = new ExcelUtil<TkFlowVo>(TkFlowVo.class);
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
-        return util.exportDynamic(list, "TK入出口(MTC+ETC)交通流量按车种统计表", conditionList, 18, reportTitleName, loginUserInfo.getUsername());
+        return util.exportDynamic(list, "TK入出口(MTC、ETC)交通流量按车种统计表", conditionList, 18, reportTitleName, loginUserInfo.getUsername());
     }
 
     /**
@@ -306,6 +306,42 @@ public class ReportFlowController extends BaseController {
         data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         return data;
+    }
+
+    @PostMapping(value = "/flow/export/erj")
+    public AjaxResult exportErj(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
+        List<FlowGroupVo> list = reportFlowService.erjs(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<FlowGroupVo> util = new ExcelUtil<FlowGroupVo>(FlowGroupVo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "ERJ电子支付(ETC)入口流量统计表", conditionList, 42, reportTitleName, loginUserInfo.getUsername());
+    }
+
+    @PostMapping(value = "/flow/export/ers")
+    public AjaxResult exportErs(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
+        List<FlowGroupVo> list = reportFlowService.erjs(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<FlowGroupVo> util = new ExcelUtil<FlowGroupVo>(FlowGroupVo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "ERS电子支付(MTC、ETC)入口流量统计表", conditionList, 42, reportTitleName, loginUserInfo.getUsername());
+    }
+
+    @PostMapping(value = "/flow/export/ecj")
+    public AjaxResult exportEcj(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
+        List<FlowGroupVo> list = reportFlowService.erjs(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<FlowGroupVo> util = new ExcelUtil<FlowGroupVo>(FlowGroupVo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "ECJ电子支付(ETC)出口流量统计表", conditionList, 42, reportTitleName, loginUserInfo.getUsername());
+    }
+
+    @PostMapping(value = "/flow/export/ecs")
+    public AjaxResult exportEcs(@RequestBody @Valid FlowStatisticsDto dto) throws IOException {
+        List<FlowGroupVo> list = reportFlowService.erjs(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<FlowGroupVo> util = new ExcelUtil<FlowGroupVo>(FlowGroupVo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "ECS电子支付(MTC、ETC)出口流量统计表", conditionList, 42, reportTitleName, loginUserInfo.getUsername());
     }
 
 //    @PostMapping(value = "/od")

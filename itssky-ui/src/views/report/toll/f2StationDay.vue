@@ -26,8 +26,7 @@
 
 <script>
 
-import {f2StationShift} from "@/api/report/toll"
-import {listStationSelect, stationSelectList} from "@/api/system/station";
+import {listStationSelect} from "@/api/system/station";
 import {getCurrentTime} from "@/utils/dateUtils";
 
 export default {
