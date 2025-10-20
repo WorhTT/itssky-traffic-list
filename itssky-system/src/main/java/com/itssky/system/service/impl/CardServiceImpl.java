@@ -79,9 +79,9 @@ public class CardServiceImpl implements CardService {
             dto.setIntTime(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
         }
         List<CardStatisticsVo> cardStatisticsVos = new ArrayList<>();
-        if (dto.getTableFlag() == 0) {
+        if ("0".equals(dto.getTableFlag())) {
             cardStatisticsVos = cardMapper.s1StationShift(dto);
-        } else if (dto.getTableFlag() == 1) {
+        } else if ("1".equals(dto.getTableFlag())) {
             cardStatisticsVos = cardMapper.c1StationShift(dto);
         }
         StationShiftDto tbShDto = new StationShiftDto();
@@ -103,7 +103,7 @@ public class CardServiceImpl implements CardService {
                 //卡损
                 if (cardStatisticsVo.getOperatorId().equals(tbStcVo.getBalanceOp())) {
                     //S1
-                    if (dto.getTableFlag() == 0) {
+                    if ("0".equals(dto.getTableFlag())) {
                         cardStatisticsVo.setRecoverNum(tbStcVo.getRecoverNum());
                     }
                 }
@@ -113,9 +113,9 @@ public class CardServiceImpl implements CardService {
             for (TbShVo tbShVo : tbShData) {
                 //实际
                 if (cardStatisticsVo.getOperatorId().equals(tbShVo.getOperatorId())) {
-                    if (dto.getTableFlag() == 0) {
+                    if ("0".equals(dto.getTableFlag())) {
                         cardStatisticsVo.setActualNum(tbShVo.getHandOutCNum());
-                    } else if (dto.getTableFlag() == 1) {
+                    } else if ("1".equals(dto.getTableFlag())) {
                         cardStatisticsVo.setActualNum(tbShVo.getHandInCNum());
                     }
                 }
@@ -124,7 +124,7 @@ public class CardServiceImpl implements CardService {
         //计算应发卡和总流量
         cardStatisticsVos.forEach(i -> {
             i.setIssuedNum(i.getCustSubTotal() + i.getTruckSubTotal() + i.getSpecSubTotal());
-            i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getFleetNum() + i.getPreferNum() + i.getEtcNum() + i.getNoneNum() + i.getBadNum());
+            i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getFleetNum() + i.getPreferNum() + i.getEtcNum() + i.getNoneNum() + i.getBadNum() + i.getPaperNum());
         });
         //合计行
         CardStatisticsVo totalRow = buildTotalRow(cardStatisticsVos);

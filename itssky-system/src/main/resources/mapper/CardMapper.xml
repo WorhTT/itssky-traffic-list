@@ -65,15 +65,23 @@
         END
         ) AS specSubTotal,
         SUM( CASE WHEN a.CardType = 22 OR a.CardType = 23 THEN a.CarNum ELSE 0 END ) AS etcNum,
-        SUM( CASE WHEN a.CardType = 254 THEN a.CardNum ELSE 0 END) AS paperNum,
-        SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END) AS militaryNum,
-        SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END) AS officialNum,
-        SUM(CASE WHEN a.DealStatus&amp;14=14 THEN a.CarNum ELSE 0 END) AS fleetNum,
-        SUM(CASE WHEN a.DealStatus&amp;14=10 THEN a.CarNum ELSE 0 END) AS preferNum
+        SUM( CASE WHEN a.CardType = 254 THEN a.CarNum ELSE 0 END) AS paperNum,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=8 AND a.DealStatus&amp;2048 != 2048 AND a.DealStatus&amp;32 != 32 THEN a.CarNum ELSE 0 END), 0) AS militaryNum,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END), 0) AS officialNum,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=14 THEN a.CarNum ELSE 0 END), 0) AS fleetNum,
+        IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=10 AND a.DealStatus&amp;2048 != 2048 AND a.DealStatus&amp;32 != 32 AND a.VehicleStatus IN (1,101) THEN a.CarNum ELSE 0 END), 0) AS preferNum
         FROM
         tbstatentry a
         <where>
             AND CancelFlag = 0
+            <choose>
+                <when test="tableFlag != null and tableFlag != '' and tableFlag == 0">
+                    AND substring(LaneID,-4,1)=0 AND substring(LaneID,-3,1)=0 AND right(operatorid,3) != 971
+                </when>
+                <when test="tableFlag != null and tableFlag != '' and tableFlag == 1">
+                    AND right(operatorid,3) != 981
+                </when>
+            </choose>
             AND StationID in
             <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
                 #{stationId}
@@ -151,7 +159,7 @@
         END
         ) AS specSubTotal,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;16777216=16777216 THEN a.CarNum ELSE 0 END ), 0) AS etcNum,
-        IFNULL(SUM(CASE WHEN a.CardType = 254 AND a.DealStatus&amp;14 != 14 THEN a.CardNum ELSE 0 END), 0) AS paperNum,
+        IFNULL(SUM(CASE WHEN a.CardType = 254 AND a.DealStatus&amp;14 != 14 THEN a.CarNum ELSE 0 END), 0) AS paperNum,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=8 AND a.DealStatus&amp;2048 != 2048 AND a.DealStatus&amp;32 != 32 THEN a.CarNum ELSE 0 END), 0) AS militaryNum,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END), 0) AS officialNum,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=14 AND a.CardType != 254 THEN a.CarNum ELSE 0 END), 0) AS fleetNum,
@@ -215,7 +223,7 @@
         SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 AND a.CardType != 22 AND
         a.CardType != 23 THEN a.CardNum ELSE 0 END) AS specSubTotal,
         SUM(CASE WHEN a.CardType IN(22,23) AND right(a.OperatorID,3) != 971 THEN a.CarNum ELSE 0 END) AS etcNum,
-        SUM(CASE WHEN a.CardType = 254 THEN a.CardNum ELSE 0 END) AS paperNum,
+        SUM(CASE WHEN a.CardType = 254 THEN a.CarNum ELSE 0 END) AS paperNum,
         SUM(CASE WHEN a.DealStatus&amp;14=8 THEN a.CarNum ELSE 0 END) AS militaryNum,
         SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END) AS officialNum,
         SUM(CASE WHEN a.DealStatus&amp;14=14 THEN a.CarNum ELSE 0 END) AS fleetNum,
@@ -299,7 +307,7 @@
         IFNULL(SUM(CASE WHEN a.VehicleClass = 25 AND a.CardType=26 THEN a.CardNum ELSE 0 END ), 0) AS spec5,
         IFNULL(SUM(CASE WHEN a.VehicleClass = 26 AND a.CardType=26 THEN a.CardNum ELSE 0 END ), 0) AS spec6,
         IFNULL(SUM(CASE WHEN a.VehicleClass > 20 AND a.VehicleClass <![CDATA[<]]> 30 AND a.CardType=26 THEN a.CardNum ELSE 0 END), 0) AS specSubTotal,
-        IFNULL(SUM(CASE WHEN a.CardType = 254 THEN a.CardNum ELSE 0 END), 0) AS paperNum,
+        IFNULL(SUM(CASE WHEN a.CardType = 254 THEN a.CarNum ELSE 0 END), 0) AS paperNum,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=8 AND a.DealStatus&amp;2048 != 2048 THEN a.CarNum ELSE 0 END), 0) AS militaryNum,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=6 THEN a.CarNum ELSE 0 END), 0) AS officialNum,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;14=14 AND a.CardType != 254 THEN a.CarNum ELSE 0 END), 0) AS fleetNum,
@@ -307,7 +315,7 @@
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;32=32 THEN a.CarNum ELSE 0 END),0) AS noneNum,
         IFNULL(SUM(CASE WHEN a.DealStatus&amp;2048=2048 AND a.CardType in (0,2,26) THEN a.CarNum ELSE 0 END),0) AS badNum,
         IFNULL(SUM(CASE WHEN a.PayType=2 AND RIGHT(a.OperatorID,3) != 981 THEN a.CarNum ELSE 0 END),0) AS etcNum,
-        IFNULL(SUM(CASE WHEN a.CardType=254 AND a.DealStatus&amp;14 != 14 THEN a.CardNum ELSE 0 END),0) AS paperNum
+        IFNULL(SUM(CASE WHEN a.CardType=254 AND a.DealStatus&amp;14 != 14 THEN a.CarNum ELSE 0 END),0) AS paperNum
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
             SELECT

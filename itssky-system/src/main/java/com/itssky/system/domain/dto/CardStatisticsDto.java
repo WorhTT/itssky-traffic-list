@@ -36,5 +36,5 @@ public class CardStatisticsDto {
      * 0  查entry表
      * 1  查exit表
      */
-    private Integer tableFlag = 0;
+    private String tableFlag = "0";
 }

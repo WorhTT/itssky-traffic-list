@@ -35,6 +35,7 @@
                 AND a.ShiftID = #{shiftId}
             </if>
             AND CancelFlag = 0 AND RecordType&amp;1 =1
+            AND substring(LaneID,-3,1)  = 1 AND substring(LaneID,-4,1) = 0
         </where>
         GROUP BY OperatorID
         ORDER BY OperatorID ASC

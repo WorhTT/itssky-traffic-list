@@ -75,6 +75,7 @@ export default {
         stationId: null,
         time: null,
         tableFlag: '1',
+        shiftId: null,
       },
       // 表单参数
       form: {},
