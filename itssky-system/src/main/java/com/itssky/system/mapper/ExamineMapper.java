@@ -4,10 +4,7 @@ import com.itssky.db.Dbedge;
 import com.itssky.db.Dbstats;
 import com.itssky.db.ItsData;
 import com.itssky.system.domain.*;
-import com.itssky.system.domain.dto.FD06Dto;
-import com.itssky.system.domain.dto.FD26Dto;
-import com.itssky.system.domain.dto.FD27Dto;
-import com.itssky.system.domain.dto.FlowStatisticsDto;
+import com.itssky.system.domain.dto.*;
 import com.itssky.system.domain.vo.*;
 
 import java.util.List;
@@ -35,4 +32,7 @@ public interface ExamineMapper {
 
     @Dbedge
     public List<FD26Vo> getFd26(FD26Dto dto);
+
+    @ItsData
+    public List<CardboxResortVo> cardboxResort(StationAndDateRangeDTO dto);
 }

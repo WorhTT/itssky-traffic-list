@@ -9,6 +9,7 @@ import com.itssky.system.domain.TbUserInfo;
 import com.itssky.system.domain.dto.FD06Dto;
 import com.itssky.system.domain.dto.FD26Dto;
 import com.itssky.system.domain.dto.FD27Dto;
+import com.itssky.system.domain.dto.StationAndDateRangeDTO;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.service.CardService;
 import com.itssky.system.service.TbUserInfoService;
@@ -166,4 +167,19 @@ public class ExamineController extends BaseController {
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         return util.exportDynamic(list, "FD29升档排名汇总表", conditionList, 5, reportTitleName, loginUserInfo.getUsername());
     }
+
+    /**
+     * 自助卡机求助响应考核表
+     */
+    @RequestMapping(value = "/cardbox/resort")
+    public TableDataVo cardboxResort(@RequestBody @Valid StationAndDateRangeDTO dto) {
+        TableDataVo data = new TableDataVo();
+        data.setRows(examineService.cardboxResort(dto));
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        data.setOperatorName(loginUserInfo.getUsername());
+        data.setTitle(reportTitleName);
+        return data;
+    }
+
 }
