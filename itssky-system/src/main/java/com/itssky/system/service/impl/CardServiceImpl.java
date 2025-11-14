@@ -124,7 +124,16 @@ public class CardServiceImpl implements CardService {
         //计算应发卡和总流量
         cardStatisticsVos.forEach(i -> {
             i.setIssuedNum(i.getCustSubTotal() + i.getTruckSubTotal() + i.getSpecSubTotal());
-            i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getFleetNum() + i.getPreferNum() + i.getEtcNum() + i.getNoneNum() + i.getBadNum() + i.getPaperNum());
+            //S1 S2
+            if ("0".equals(dto.getTableFlag())) {
+                //SET @allflux = @yfk + @gw + @cd  + @etc+@yh ;
+                i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getFleetNum() + i.getEtcNum() + i.getPreferNum());
+            }
+            //C1 C2
+            else if ("1".equals(dto.getTableFlag())) {
+                //SET @allflux = @ysk + @gw + @cd  + @wk + @etc+ @yh+@zhijuan;
+                i.setTotalFlow(i.getIssuedNum() + i.getOfficialNum() + i.getFleetNum() + i.getPreferNum() + i.getEtcNum() + i.getNoneNum() + i.getPaperNum());
+            }
         });
         //合计行
         CardStatisticsVo totalRow = buildTotalRow(cardStatisticsVos);
