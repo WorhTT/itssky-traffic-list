@@ -68,7 +68,7 @@
 
 <script>
 
-import {exportTkFlowAll, tkFlowAll} from "@/api/report/exitFlow"
+import {exportTkFlow, tkFlow} from "@/api/report/exitFlow"
 import {getLoginUser} from "@/api/login";
 
 export default {
@@ -146,7 +146,7 @@ export default {
     },
     getList() {
       this.loading = true;
-      tkFlowAll(this.queryParams).then(response => {
+      tkFlow(this.queryParams).then(response => {
         this.dataList = response.rows;
         this.total = response.total;
         this.conditionList = response.conditionList;
@@ -159,12 +159,12 @@ export default {
     handleExport() {
       this.loading = true;
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出TK入出口(MTC+ETC)交通流量按车种统计表?', "警告", {
+      this.$confirm('是否确认导出TK入出口(MTC)交通流量按车种统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-        return exportTkFlowAll(queryParams);
+        return exportTkFlow(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       }).finally(() => {

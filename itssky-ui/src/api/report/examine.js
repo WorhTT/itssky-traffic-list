@@ -79,3 +79,19 @@ export function exportFd29(data) {
     data: data
   })
 }
+
+export function getCardboxResort(data) {
+  return request({
+    url: '/examine/cardbox/resort',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportCardboxResort(data) {
+  return request({
+    url: '/examine/export/cardbox/resort',
+    method: 'post',
+    data: data
+  })
+}

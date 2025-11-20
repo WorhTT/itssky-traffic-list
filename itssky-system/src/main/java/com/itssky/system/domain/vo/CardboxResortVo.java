@@ -28,11 +28,11 @@ public class CardboxResortVo {
     @Excel(name = "车牌")
     private String vehicleLicense;
 
-    @Excel(name = "求助时间")
+    @Excel(name = "求助时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date resortTime;
 
-    @Excel(name = "响应时间")
+    @Excel(name = "响应时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date operateTime;
 

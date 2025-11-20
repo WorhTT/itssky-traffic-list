@@ -733,8 +733,8 @@
         (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
         LEFT(a.StaDate, 6) AS monthDate,
         a.StaDate AS staDate,
-        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=0 THEN a.CarNum ELSE 0 END),0) rxj,
-        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.cardtype in(22,23) THEN a.CarNum ELSE 0 END),0) rdz,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND CardType not IN (22,23) THEN a.CarNum ELSE 0 END),0) rxj,
+        IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.cardtype in(22,23) AND a.dealstatus&amp;14=2 THEN a.CarNum ELSE 0 END),0) rdz,
         IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=6 THEN a.CarNum ELSE 0 END),0) rgw,
         IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=8 THEN a.CarNum ELSE 0 END),0) rjc,
         IFNULL(SUM(CASE WHEN substring(a.LaneID,-3,1)=0 AND substring(a.LaneID,-4,1)=0 AND a.dealstatus&amp;14=10 THEN a.CarNum ELSE 0 END),0) ryh,
@@ -752,6 +752,7 @@
             SELECT StationID,LaneID,StaDate,VehicleClass,CarNum,VehicleStatus,DealStatus,NULL AS PayType,CardType FROM tbstatentry${month} AS alias${index + 1}
             <where>
                 AND CancelFlag = 0
+                AND RecordType &amp;3=3
                 AND StationID in
                 <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
                     #{stationId}

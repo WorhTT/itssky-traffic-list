@@ -223,14 +223,15 @@
 
     <select id="cardboxResort" parameterType="com.itssky.system.domain.dto.StationAndDateRangeDTO"
             resultType="com.itssky.system.domain.vo.CardboxResortVo">
-        SELECT a.ExitDate AS resortTime,
+        SELECT a.inTime AS resortTime,
         a.StationID AS stationId,
         (SELECT StationName FROM dbtoms.tbstationinfo WHERE a.StationID = StationID LIMIT 1 ) AS stationName,
         a.LaneID AS laneId,
         a.OperatorID AS operatorId,
         (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID ORDER BY LastUpdateTime DESC LIMIT 1 ) AS operatorName,
         a.vehiclePlate AS vehicleLicense,
-        a.inTime AS inTime
+        a.inTime AS inTime,
+        a.keyType AS keyType
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
             SELECT
@@ -245,10 +246,10 @@
                     </foreach>
                 </if>
                 <if test="intBeginTime != null and intBeginTime != ''">
-                    AND tradaDate >= #{intBeginTime}
+                    AND tradeDate >= #{intBeginTime}
                 </if>
                 <if test="intEndTime != null and intEndTime != ''">
-                    AND tradaDate <![CDATA[<=]]> #{intEndTime}
+                    AND tradeDate <![CDATA[<=]]> #{intEndTime}
                 </if>
             </where>
         </foreach>

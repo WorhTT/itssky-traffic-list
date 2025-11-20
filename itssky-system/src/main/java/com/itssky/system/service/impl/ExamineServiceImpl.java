@@ -197,7 +197,7 @@ public class ExamineServiceImpl {
         dto.setStationIdList(authRangeStationIdList);
         //构建会查询到的表集合
         dto.setTableNameList(
-                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tbstatexit",
+                TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "tblog",
                         DatePattern.SIMPLE_MONTH_PATTERN));
         if (CollectionUtils.isEmpty(dto.getTableNameList())) {
             return new ArrayList<>();

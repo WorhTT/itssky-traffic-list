@@ -182,4 +182,13 @@ public class ExamineController extends BaseController {
         return data;
     }
 
+    @PostMapping(value = "/export/cardbox/resort")
+    public AjaxResult exportCardboxResort(@RequestBody @Valid StationAndDateRangeDTO dto) throws IOException {
+        List<CardboxResortVo> list = examineService.cardboxResort(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<CardboxResortVo> util = new ExcelUtil<CardboxResortVo>(CardboxResortVo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "自助卡机求助响应考核表", conditionList, 7, reportTitleName, loginUserInfo.getUsername());
+    }
+
 }

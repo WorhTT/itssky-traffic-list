@@ -274,6 +274,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/cardboxResortDetail',
+    component: () => import("@/views/report/examine/cardboxResortDetail.vue"),
+    hidden: true
+  },
+  {
     path: '/',
     redirect: '/f1StationShift'
   },
@@ -566,6 +571,12 @@ export const constantRoutes = [
   //       name: 'FD29升档排名汇总',
   //       meta: {title: 'FD29升档排名汇总', icon: 'chart'},
   //       component: () => import('@/views/report/examine/fd29.vue'),
+  //     },
+  //     {
+  //       path: '/cardboxResort',
+  //       name: '自助卡机求助响应考核表',
+  //       meta: {title: '自助卡机求助响应考核表', icon: 'chart'},
+  //       component: () => import('@/views/report/examine/cardboxResort.vue'),
   //     },
   //   ]
   // }

@@ -2016,8 +2016,14 @@ public class ExcelUtil<T>
                     field.setAccessible(true);
                     try {
                         if (!attr.onlyHeader()) {
-                            if (field.get(i) != null) {
-                                dataList.add(Objects.requireNonNull(field.get(i)).toString());
+                            Object value = field.get(i);
+                            if (value != null) {
+                                if (value instanceof Date && StringUtils.isNotEmpty(attr.dateFormat())) {
+                                    // 如果是Date类型且有日期格式设置，则格式化日期
+                                    dataList.add(parseDateToStr(attr.dateFormat(), value));
+                                } else {
+                                    dataList.add(Objects.requireNonNull(value).toString());
+                                }
                             }
                         }
                     } catch (IllegalAccessException e) {
