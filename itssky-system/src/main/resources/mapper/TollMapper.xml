@@ -543,8 +543,8 @@
         a.OperatorID AS operatorId,
         a.StationID AS stationId,
         IFNULL(CAST(SUM(a.AddedToll)/100 as DECIMAL(10,2)) ,0) AS extAddToll,
-        IFNULL(SUM(CASE WHEN a.payType=0 THEN a.AddedToll ELSE 0 END),0) as xjMoney,
-        IFNULL(SUM(CASE WHEN a.payType=16 THEN a.AddedToll ELSE 0 END),0) as ydzfMoney
+        IFNULL(CAST(SUM(CASE WHEN a.payType=0 THEN a.AddedToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) as xjMoney,
+        IFNULL(CAST(SUM(CASE WHEN a.payType=16 THEN a.AddedToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) as ydzfMoney
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")">
             SELECT
@@ -596,8 +596,8 @@
         a.OperatorID AS operatorId,
         a.StationID AS stationId,
         IFNULL(CAST(SUM(a.AddedToll)/100 as DECIMAL(10,2)) ,0) AS extAddToll,
-        IFNULL(SUM(CASE WHEN a.payType=0 THEN a.AddedToll ELSE 0 END),0) as xjMoney,
-        IFNULL(SUM(CASE WHEN a.payType=16 THEN a.AddedToll ELSE 0 END),0) as ydzfMoney
+        IFNULL(CAST(SUM(CASE WHEN a.payType=0 THEN a.AddedToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) as xjMoney,
+        IFNULL(CAST(SUM(CASE WHEN a.payType=16 THEN a.AddedToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) as ydzfMoney
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")">
             SELECT

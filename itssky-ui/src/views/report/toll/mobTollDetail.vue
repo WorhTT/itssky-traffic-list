@@ -247,7 +247,7 @@ export default {
           </thead>
           <tbody>
       `;
-      
+
       // 填充表格数据
       this.dataList.forEach(row => {
         // 处理可能为0的数值，确保0也能正确显示
@@ -270,7 +270,7 @@ export default {
         const qtToll = row.qtToll !== undefined && row.qtToll !== null ? row.qtToll : '';
         const hjCount = row.hjCount !== undefined && row.hjCount !== null ? row.hjCount : '';
         const hjToll = row.hjToll !== undefined && row.hjToll !== null ? row.hjToll : '';
-        
+
         tableHtml += `
           <tr>
             <td>${statType}</td>
@@ -295,12 +295,12 @@ export default {
           </tr>
         `;
       });
-      
+
       tableHtml += `
           </tbody>
         </table>
       `;
-      
+
       let htmlContent = `
       <!DOCTYPE html>
         <html>

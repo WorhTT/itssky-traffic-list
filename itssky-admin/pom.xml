@@ -70,6 +70,7 @@
     </dependencies>
 
     <build>
+        <finalName>itssky-report</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -96,8 +97,6 @@
                 </configuration>   
            </plugin>   
         </plugins>
-        <finalName>${project.artifactId}</finalName>
-
         <resources>
             <resource>
                 <!-- 指定配置文件所在的resource目录 -->
