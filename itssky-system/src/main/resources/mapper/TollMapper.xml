@@ -849,4 +849,76 @@
             </when>
         </choose>
     </select>
+
+    <!-- 集装箱、绿色通道、抗震救灾、运管苏通卡货车、军车、专用工作卡、收割机、应急、大件运输、合计-->
+    <select id="yh" parameterType="com.itssky.system.domain.dto.TollYhDto" resultType="com.itssky.system.domain.vo.TollYhVo">
+        SELECT
+        a.OperatorID AS operatorId,
+        a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        (SELECT operatorname FROM dbtoms.tboperatorinfo WHERE a.OperatorID = operatorid ORDER BY LastUpdateTime DESC LIMIT 1) AS operatorName,
+        a.StaDate AS staDate,
+        LEFT(a.StaDate, 6) AS monthDate,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=10 AND a.VehicleStatus = 1 THEN a.TotalFee ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS jzxq,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=10 AND a.VehicleStatus = 1 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS jzxh,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=10 AND a.VehicleStatus = 1 THEN (a.TotalFee-a.TotalToll) ELSE 0 END)/100 as DECIMAL(10,2)),0) jzxd,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=10 AND a.VehicleStatus = 102 THEN a.TotalFee ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS lstdq,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=10 AND a.VehicleStatus = 102 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS lstdh,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=10 AND a.VehicleStatus = 102 THEN (a.TotalFee-a.TotalToll) ELSE 0 END)/100 as DECIMAL(10,2)),0) lstdd,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=10 AND a.VehicleStatus = 104 THEN a.TotalFee ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS kzjzq,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=10 AND a.VehicleStatus = 104 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS kzjzh,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=10 AND a.VehicleStatus = 104 THEN (a.TotalFee-a.TotalToll) ELSE 0 END)/100 as DECIMAL(10,2)),0) kzjzd,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=105 AND (a.DealStatus &amp;14 = 2 OR a.PayType = 2) THEN a.TotalFee ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS ygstkq,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=105 AND (a.DealStatus &amp;14 = 2 OR a.PayType = 2) THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS ygstkh,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=105 AND (a.DealStatus &amp;14 = 2 OR a.PayType = 2) THEN (a.TotalFee-a.TotalToll) ELSE 0 END)/100 as DECIMAL(10,2)),0) ygstkd,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=8 THEN a.TotalFee ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS jcq,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=8 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS jch,
+        IFNULL(CAST(SUM(CASE WHEN a.DealStatus &amp;14=8 THEN (a.TotalFee-a.TotalToll) ELSE 0 END)/100 as DECIMAL(10,2)),0) jcd,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=105 AND (a.PayType = 2 OR a.RecordType &amp;16777216 = 16777216) THEN a.TotalFee ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS zygzkq,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=105 AND (a.PayType = 2 OR a.RecordType &amp;16777216 = 16777216) THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS zygzkh,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=105 AND (a.PayType = 2 OR a.RecordType &amp;16777216 = 16777216) THEN (a.TotalFee-a.TotalToll) ELSE 0 END)/100 as DECIMAL(10,2)),0) zygzkd,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=106 AND a.DealStatus &amp;14=10 THEN a.TotalFee ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS sgjq,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=106 AND a.DealStatus &amp;14=10 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS sgjh,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=106 AND a.DealStatus &amp;14=10 THEN (a.TotalFee-a.TotalToll) ELSE 0 END)/100 as DECIMAL(10,2)),0) sgjd,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=26 AND a.DealStatus &amp;14=10 THEN a.TotalFee ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS yjq,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=26 AND a.DealStatus &amp;14=10 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS yjh,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=26 AND a.DealStatus &amp;14=10 THEN (a.TotalFee-a.TotalToll) ELSE 0 END)/100 as DECIMAL(10,2)),0) yjd,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=212 AND a.DealStatus &amp;14=10 THEN a.TotalFee ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS djysq,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=212 AND a.DealStatus &amp;14=10 THEN a.TotalToll ELSE 0 END)/100 as DECIMAL(10,2)), 0) AS djysh,
+        IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=212 AND a.DealStatus &amp;14=10 THEN (a.TotalFee-a.TotalToll) ELSE 0 END)/100 as DECIMAL(10,2)),0) djysd
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")">
+        SELECT
+        *
+        FROM ${tableName}
+        <where>
+            AND CancelFlag = 0
+            AND StationID in
+            <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                #{stationId}
+            </foreach>
+            <if test="intBeginTime != null and intBeginTime != ''">
+                AND StaDate >= #{intBeginTime}
+            </if>
+            <if test="intEndTime != null and intEndTime != ''">
+                AND StaDate <![CDATA[<=]]> #{intEndTime}
+            </if>
+        </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statType != null and statType != '' and statType == 1">
+                GROUP BY OperatorID ORDER BY OperatorID
+            </when>
+            <when test="statType != null and statType != '' and statType == 2">
+                GROUP BY StaDate ORDER BY StaDate
+            </when>
+            <when test="statType != null and statType != '' and statType == 3">
+                GROUP BY monthDate ORDER BY monthDate
+            </when>
+            <when test="statType != null and statType != '' and statType == 4">
+                GROUP BY StationID  ORDER BY StationID
+            </when>
+        </choose>
+    </select>
 </mapper>

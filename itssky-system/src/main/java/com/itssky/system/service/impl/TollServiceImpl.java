@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itssky.common.annotation.DynamicTableName;
 import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.system.domain.TbStationInfo;
+import com.itssky.system.domain.dto.TollYhDto;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.domain.dto.FtStationDto;
 import com.itssky.system.domain.dto.StationShiftDto;
@@ -1229,5 +1230,80 @@ public class TollServiceImpl implements ITollService {
         hjRow.setStatType("合计");
         stationShiftVos.add(hjRow);
         return localResult;
+    }
+
+    /**
+     * 集装箱、绿色通道、抗震救灾、运管苏通卡货车、军车、专用工作卡、收割机、应急、大件运输、合计
+     */
+    @Override
+    public List<TollYhVo> yh(TollYhDto dto) {
+        //获取收费站ID列表
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
+        int intBeginDate = Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN));
+        int intEndDate = Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN));
+        List<String> tableNameList = TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(),
+                "tbstatexit", DatePattern.SIMPLE_MONTH_PATTERN);
+        if (CollectionUtils.isEmpty(tableNameList)) {
+            return new ArrayList<>();
+        }
+        dto.setTableNameList(tableNameList);
+        dto.setIntBeginTime(intBeginDate);
+        dto.setIntEndTime(intEndDate);
+        List<TollYhVo> yhList = tollMapper.yh(dto);
+        yhList.forEach(item -> {
+            if ("1".equals(dto.getStatType())) {
+//                item.setStatType(item.getOperatorName() + "(" + item.getOperatorId().substring(item.getOperatorId().length() - 3) + ")");
+                item.setStatType(item.getOperatorId());
+            } else if ("2".equals(dto.getStatType())) {
+                item.setStatType(item.getStaDate());
+            } else if ("3".equals(dto.getStatType())) {
+                item.setStatType(item.getMonthDate());
+            } else if ("4".equals(dto.getStatType())) {
+                item.setStatType(item.getStationName());
+            }
+            //合计列设置
+            item.setSumq(item.getJzxq().add(item.getLstdq()).add(item.getKzjzq()).add(item.getZygzkq()).add(item.getSgjq()).add(item.getYjq()).add(item.getDjysq()));
+            item.setSumh(item.getJzxh().add(item.getLstdh()).add(item.getKzjzh()).add(item.getZygzkh()).add(item.getSgjh()).add(item.getYjh()).add(item.getDjysh()));
+            item.setSumd(item.getJzxd().add(item.getLstdd()).add(item.getKzjzd()).add(item.getZygzkd()).add(item.getSgjd()).add(item.getYjd()).add(item.getDjysd()));
+        });
+        //添加合计行
+        TollYhVo sumRow = new TollYhVo();
+        sumRow.setTotalRow(true);
+        sumRow.setStatType("合计");
+        sumRow.setJzxq(yhList.stream().map(TollYhVo::getJzxq).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setJzxh(yhList.stream().map(TollYhVo::getJzxh).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setJzxd(yhList.stream().map(TollYhVo::getJzxd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setLstdq(yhList.stream().map(TollYhVo::getLstdq).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setLstdh(yhList.stream().map(TollYhVo::getLstdh).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setLstdd(yhList.stream().map(TollYhVo::getLstdd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setKzjzq(yhList.stream().map(TollYhVo::getKzjzq).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setKzjzh(yhList.stream().map(TollYhVo::getKzjzh).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setKzjzd(yhList.stream().map(TollYhVo::getKzjzd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setYgstkq(yhList.stream().map(TollYhVo::getYgstkq).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setYgstkh(yhList.stream().map(TollYhVo::getYgstkh).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setYgstkd(yhList.stream().map(TollYhVo::getYgstkd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setJcq(yhList.stream().map(TollYhVo::getJcq).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setJch(yhList.stream().map(TollYhVo::getJch).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setJcd(yhList.stream().map(TollYhVo::getJcd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setZygzkq(yhList.stream().map(TollYhVo::getZygzkq).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setZygzkh(yhList.stream().map(TollYhVo::getZygzkh).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setZygzkd(yhList.stream().map(TollYhVo::getZygzkd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setSgjq(yhList.stream().map(TollYhVo::getSgjq).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setSgjh(yhList.stream().map(TollYhVo::getSgjh).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setSgjd(yhList.stream().map(TollYhVo::getSgjd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setYjq(yhList.stream().map(TollYhVo::getYjq).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setYjh(yhList.stream().map(TollYhVo::getYjh).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setYjd(yhList.stream().map(TollYhVo::getYjd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setDjysq(yhList.stream().map(TollYhVo::getDjysq).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setDjysh(yhList.stream().map(TollYhVo::getDjysh).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setDjysd(yhList.stream().map(TollYhVo::getDjysd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setSumq(yhList.stream().map(TollYhVo::getSumq).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setSumh(yhList.stream().map(TollYhVo::getSumh).reduce(BigDecimal.ZERO, BigDecimal::add));
+        sumRow.setSumd(yhList.stream().map(TollYhVo::getSumd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        yhList.add(sumRow);
+        return yhList;
     }
 }

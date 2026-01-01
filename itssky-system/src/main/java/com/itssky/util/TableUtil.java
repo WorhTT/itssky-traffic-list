@@ -2,6 +2,7 @@ package com.itssky.util;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import com.itssky.common.utils.uuid.UUID;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -70,5 +71,10 @@ public class TableUtil {
             index++;
         }
         return tableNamesList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
+    }
+
+    public static void main(String[] args) {
+        UUID uuid = UUID.randomUUID();
+        System.out.println(uuid);
     }
 }

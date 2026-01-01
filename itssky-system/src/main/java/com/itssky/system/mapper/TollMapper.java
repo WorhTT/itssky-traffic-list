@@ -2,6 +2,7 @@ package com.itssky.system.mapper;
 
 
 import com.itssky.db.*;
+import com.itssky.system.domain.dto.TollYhDto;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.domain.dto.FtStationDto;
 import com.itssky.system.domain.dto.StationShiftDto;
@@ -58,5 +59,7 @@ public interface TollMapper {
     public List<Cf1Vo> getCf1Vo(StationShiftDto dto);
 
     public List<MOBTollVo> getMOBToll(FtStationDto dto);
+
+    public List<TollYhVo> yh(TollYhDto dto);
 }
 

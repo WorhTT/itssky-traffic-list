@@ -241,7 +241,7 @@ export default {
           </thead>
           <tbody>
       `;
-      
+
       // 填充表格数据
       this.dataList.forEach(row => {
         // 处理可能为0的数值，确保0也能正确显示
@@ -260,7 +260,7 @@ export default {
         const militaryIcCardCount = row.militaryIcCardCount !== undefined && row.militaryIcCardCount !== null ? row.militaryIcCardCount : '';
         const freeIcCardCount = row.freeIcCardCount !== undefined && row.freeIcCardCount !== null ? row.freeIcCardCount : '';
         const dueIcCardCount = row.dueIcCardCount !== undefined && row.dueIcCardCount !== null ? row.dueIcCardCount : '';
-        
+
         // 检查是否为合计行
         if (row.totalRow === true) {
           tableHtml += `
@@ -302,12 +302,12 @@ export default {
           `;
         }
       });
-      
+
       tableHtml += `
           </tbody>
         </table>
       `;
-      
+
       let htmlContent = `
       <!DOCTYPE html>
         <html>
@@ -498,5 +498,63 @@ export default {
 
 ::v-deep .el-table--medium .el-table__cell {
   padding: 4px 0;
+}
+
+// 自定义滚动条样式
+::v-deep .el-table {
+  &::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 7px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #409eff, #4a9eff);
+    border-radius: 7px;
+    border: 3px solid #f0f0f0;
+    min-height: 30px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #3a8ee6, #409eff);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #f0f0f0;
+  }
+}
+
+// 如果表格内容区域也有滚动条，也应用样式
+::v-deep .el-table__body-wrapper {
+  &::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 7px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #409eff, #4a9eff);
+    border-radius: 7px;
+    border: 3px solid #f0f0f0;
+    min-height: 30px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #3a8ee6, #409eff);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #f0f0f0;
+  }
 }
 </style>

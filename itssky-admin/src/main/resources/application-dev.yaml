@@ -13,38 +13,38 @@ spring:
           password: 12345678
           driver-class-name: com.mysql.jdbc.Driver
         dbedge:
-          url: jdbc:mysql://localhost:3307/dbedge?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-          username: root
-          password: 12345678
-          driver-class-name: com.mysql.jdbc.Driver
-        dbstats:
-          url: jdbc:mysql://localhost:3307/dbstats?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-          username: root
-          password: 12345678
-          driver-class-name: com.mysql.jdbc.Driver
-        itsdata:
-          url: jdbc:mysql://localhost:3307/itsdata?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-          username: root
-          password: 12345678
-          driver-class-name: com.mysql.jdbc.Driver
-        #备用数据源 用于一些特殊的报表 例如沿江的沿江总值 需要额外查询沪苏浙的数据源
-        dbstats2:
-          url: jdbc:mysql://localhost:3306/dbstats?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-          username: root
-          password: 123456
-          driver-class-name: com.mysql.jdbc.Driver
-        #备用数据源 用于一些特殊的报表 例如沿江的沿江总值 需要额外查询沪苏浙的数据源
-        itsdata2:
-          url: jdbc:mysql://localhost:3306/itsdata?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-          username: root
-          password: 123456
-          driver-class-name: com.mysql.jdbc.Driver
-        #备用数据源 用于一些特殊的报表 例如沿江的沿江总值 需要额外查询沪苏浙的数据源
-        dbedge2:
           url: jdbc:mysql://localhost:3306/dbedge?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
           password: 123456
           driver-class-name: com.mysql.jdbc.Driver
+        dbstats:
+          url: jdbc:mysql://localhost:3306/dbstats?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+        itsdata:
+          url: jdbc:mysql://localhost:3306/itsdata?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+#        #备用数据源 用于一些特殊的报表 例如沿江的沿江总值 需要额外查询沪苏浙的数据源
+#        dbstats2:
+#          url: jdbc:mysql://localhost:3306/dbstats?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+#          username: root
+#          password: 123456
+#          driver-class-name: com.mysql.jdbc.Driver
+#        #备用数据源 用于一些特殊的报表 例如沿江的沿江总值 需要额外查询沪苏浙的数据源
+#        itsdata2:
+#          url: jdbc:mysql://localhost:3306/itsdata?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+#          username: root
+#          password: 123456
+#          driver-class-name: com.mysql.jdbc.Driver
+#        #备用数据源 用于一些特殊的报表 例如沿江的沿江总值 需要额外查询沪苏浙的数据源
+#        dbedge2:
+#          url: jdbc:mysql://localhost:3306/dbedge?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+#          username: root
+#          password: 123456
+#          driver-class-name: com.mysql.jdbc.Driver
 
 # token配置
 token:
@@ -56,7 +56,8 @@ token:
   expireTime: 30
 
 #current-service-ip: 172.20.10.3
-current-service-ip: 192.168.200.127
+#current-service-ip: 192.168.200.127
+current-service-ip: 192.168.31.98
 #current-service-ip: 192.168.50.66
 #current-service-ip: 172.20.10.4
 itssky:

@@ -6,7 +6,6 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-import BlankIndex from "@/views/report/toll/blankIndex";
 
 /**
  * Note: 路由配置项
@@ -279,6 +278,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/yhTollDetail',
+    component: () => import("@/views/report/toll/yhTollDetail.vue"),
+    hidden: true
+  },
+  {
     path: '/',
     redirect: '/f1StationShift'
   },
@@ -292,6 +296,12 @@ export const constantRoutes = [
   //   name: '通行费类',
   //   meta: {title: '通行费类', icon: 'list'},
   //   children: [
+  //         {
+  //           path: '/yhToll',
+  //           name: 'YH优惠金额综合报表',
+  //           meta: {title: 'YH优惠金额综合报表', icon: 'chart'},
+  //           component: () => import('@/views/report/toll/yhToll.vue'),
+  //         },
   //     {
   //       path: '/eefEPayMtcToll',
   //       name: 'EEF_MTC电子支付通行费统计表',

@@ -103,7 +103,7 @@ export default {
       })
     },
     escapeHtml(unsafe) {
-      return unsafe && typeof unsafe === 'string' 
+      return unsafe && typeof unsafe === 'string'
         ? unsafe
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
@@ -395,5 +395,61 @@ export default {
 </template>
 
 <style scoped lang="scss">
+// 自定义滚动条样式
+::v-deep .el-table {
+  &::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
 
+  &::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 7px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #409eff, #4a9eff);
+    border-radius: 7px;
+    border: 3px solid #f0f0f0;
+    min-height: 30px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #3a8ee6, #409eff);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #f0f0f0;
+  }
+}
+
+// 如果表格内容区域也有滚动条，也应用样式
+::v-deep .el-table__body-wrapper {
+  &::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 7px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #409eff, #4a9eff);
+    border-radius: 7px;
+    border: 3px solid #f0f0f0;
+    min-height: 30px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #3a8ee6, #409eff);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #f0f0f0;
+  }
+}
 </style>

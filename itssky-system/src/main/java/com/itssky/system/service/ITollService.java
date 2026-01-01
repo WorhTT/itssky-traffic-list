@@ -1,5 +1,6 @@
 package com.itssky.system.service;
 
+import com.itssky.system.domain.dto.TollYhDto;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.domain.dto.FtStationDto;
 import com.itssky.system.domain.dto.StationShiftDto;
@@ -35,4 +36,5 @@ public interface ITollService {
 
     public List<StationShiftVo> yjzz(FtStationDto dto);
 
+    public List<TollYhVo> yh(TollYhDto dto);
 }

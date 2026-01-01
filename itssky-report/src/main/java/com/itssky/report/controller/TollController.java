@@ -6,6 +6,7 @@ import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.SecurityUtils;
 import com.itssky.common.utils.poi.ExcelUtil;
 import com.itssky.system.domain.TbUserInfo;
+import com.itssky.system.domain.dto.TollYhDto;
 import com.itssky.system.domain.dto.VehicleClassStatDto;
 import com.itssky.system.domain.dto.FtStationDto;
 import com.itssky.system.domain.dto.StationShiftDto;
@@ -270,5 +271,32 @@ public class TollController extends BaseController {
         //构建查询条件
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
         return data;
+    }
+
+
+    /**
+     * YH优惠金额综合报表 2025年12月29日 10:24:54
+     * 集装箱、绿色通道、抗震救灾、运管苏通卡货车、军车、专用工作卡、收割机、应急、大件运输、合计
+     * 统计方式 人员、日、月、站
+     */
+    @PostMapping(value = "/yh")
+    public TableDataVo yh(@RequestBody @Valid TollYhDto dto) {
+        TableDataVo data = new TableDataVo();
+        List<TollYhVo> list = tollService.yh(dto);
+        data.setRows(list);
+        data.setTitle(reportTitleName);
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        //构建查询条件
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return data;
+    }
+
+    @PostMapping(value = "/export/yh")
+    public AjaxResult exportYh(@RequestBody @Valid TollYhDto dto) throws IOException {
+        List<TollYhVo> list = tollService.yh(dto);
+        ExcelUtil<TollYhVo> util = new ExcelUtil<>(TollYhVo.class);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "YH优惠金额综合报表", conditionList, 31, reportTitleName, loginUserInfo.getUsername());
     }
 }

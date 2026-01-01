@@ -429,7 +429,7 @@
         ShiftID AS shiftId,
         StockNum AS stockNum,
         SendNum AS sendNum,
-        ReceivedNum AS receivedNum,
+        ReceiveNum AS receivedNum,
         InNum AS inNum,
         OutNum AS outNum,
         RecoverNum AS recoverNum,
@@ -466,15 +466,14 @@
         LEFT(a.StaDate, 6) AS monthDate,
         SUM(a.StockNum) AS stockNum,
         SUM(a.SendNum) AS sendNum,
-        SUM(a.ReceivedNum) AS receivedNum,
+        SUM(a.ReceiveNum) AS receivedNum,
         SUM(a.InNum) AS inNum,
         SUM(a.OutNum) AS outNum,
         SUM(a.RecoverNum) AS recoverNum,
         SUM(a.BadStockNum) AS badStockNum,
         SUM(a.BadRecNum) AS badRecNum,
         SUM(a.BadOutNum) AS badOutNum,
-        SUM(a.AdjustNum) AS adjustNum,
-        SUM(a.BalanceOP) AS balanceOp
+        SUM(a.AdjustNum) AS adjustNum
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")" index="index">
         SELECT

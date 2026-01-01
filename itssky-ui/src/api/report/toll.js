@@ -143,3 +143,19 @@ export function exportMobToll(data) {
     data: data
   })
 }
+
+export function yh(data) {
+  return request({
+    url: '/toll/yh',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportYh(data) {
+  return request({
+    url: '/toll/export/yh',
+    method: 'post',
+    data: data
+  })
+}
