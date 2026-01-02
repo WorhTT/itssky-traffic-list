@@ -806,6 +806,7 @@
             *
             FROM ${tableName}
             <where>
+                AND CancelFlag = 0
                 AND PayType = 16
                 AND StationID in
                 <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
