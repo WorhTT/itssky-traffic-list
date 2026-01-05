@@ -390,7 +390,7 @@ export default {
         }
         .el-table th, .el-table td {
           border: 1px solid #000;
-          padding: 8px 5px;
+          padding: 12px 5px; /* 增大内边距以增加行高 */
           text-align: center;
           word-wrap: break-word;
           white-space: normal; /* 允许内容换行 */
@@ -451,11 +451,11 @@ export default {
             width: 100% !important;
             table-layout: auto !important; /* 自动调整列宽 */
             font-size: 11px;
-            zoom: 0.75; /* 确保表格容器也进行缩放 */
+            zoom: 0.7; /* 调整缩放比例以适应增加的行高 */
           }
           .el-table th, .el-table td {
-            padding: 4px 3px; /* 减小内边距 */
-            font-size: 16px;
+            padding: 8px 3px; /* 增大内边距以增加行高 */
+            font-size: 17px;
             min-width: 40px;
             white-space: normal;
             word-wrap: break-word;
@@ -463,19 +463,19 @@ export default {
             break-inside: avoid;
           }
           .el-table th {
-            font-size: 18px; /* 表头字体稍大 */
+            font-size: 19px; /* 表头字体稍大 */
             font-weight: bold;
             break-inside: avoid;
           }
           .container span {
-            font-size: 18px;
+            font-size: 19px;
           }
           .print-title {
             font-size: 22px;
           }
           .footer-info {
             margin-top: 10px;
-            font-size: 18px;
+            font-size: 19px;
           }
           /* 防止表格跨页截断 */
           thead {

@@ -218,36 +218,36 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th style="min-width: 90px;">统计方式</th>
-              <th style="min-width: 50px;">客一</th>
+              <th style="min-width: 120px;">统计方式</th>
+              <th style="min-width: 70px;">客一</th>
               <th style="min-width: 50px;">客二</th>
               <th style="min-width: 50px;">客三</th>
               <th style="min-width: 50px;">客四</th>
-              <th style="min-width: 80px;">客车小计</th>
+              <th style="min-width: 90px;">客车小计</th>
               <th style="min-width: 50px;">货一</th>
               <th style="min-width: 50px;">货二</th>
               <th style="min-width: 50px;">货三</th>
               <th style="min-width: 50px;">货四</th>
               <th style="min-width: 50px;">货五</th>
               <th style="min-width: 50px;">货六</th>
-              <th style="min-width: 80px;">货车小计</th>
+              <th style="min-width: 90px;">货车小计</th>
               <th style="min-width: 50px;">专一</th>
               <th style="min-width: 50px;">专二</th>
               <th style="min-width: 50px;">专三</th>
               <th style="min-width: 50px;">专四</th>
               <th style="min-width: 50px;">专五</th>
               <th style="min-width: 50px;">专六</th>
-              <th style="min-width: 80px;">专车小计</th>
+              <th style="min-width: 90px;">专车小计</th>
               <th style="min-width: 50px;">军车</th>
               <th style="min-width: 50px;">公务</th>
               <th style="min-width: 50px;">车队</th>
               <th style="min-width: 50px;">优惠</th>
-              <th style="min-width: 50px;">ETC</th>
-              <th style="min-width: 60px;">恢复卡</th>
+              <th style="min-width: 70px;">ETC</th>
+              <th style="min-width: 70px;">恢复卡</th>
               <th style="min-width: 50px;">纸券</th>
-              <th style="min-width: 60px;">应发卡</th>
-              <th style="min-width: 60px;">实发卡</th>
-              <th style="min-width: 60px;">总流量</th>
+              <th style="min-width: 70px;">应发卡</th>
+              <th style="min-width: 70px;">实发卡</th>
+              <th style="min-width: 70px;">总流量</th>
             </tr>
           </thead>
           <tbody>
@@ -436,25 +436,25 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 6px 4px;
-            font-size: 17px;
+            font-size: 20px;
             min-width: 50px;
             white-space: normal;
             word-wrap: break-word;
             word-break: break-word; /* 允许单词内换行 */
           }
           .el-table th {
-            font-size: 18px;
+            font-size: 22px;
             font-weight: bold;
           }
           .container span {
-            font-size: 13px;
+            font-size: 22px;
           }
           .print-title {
-            font-size: 18px;
+            font-size: 22px;
           }
           .footer-info {
             margin-top: 15px;
-            font-size: 12px;
+            font-size: 22px;
           }
           /* 防止表格跨页截断 */
           thead {
@@ -497,6 +497,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::v-deep .el-table .el-table__header-wrapper th {
+  height: 20px;
+}
+
+::v-deep .el-table__header-wrapper {
+  & thead {
+    tr {
+      background-color: #f5f7fa !important; // 设置表头行背景色
+    }
+  }
+}
+
+::v-deep .el-table th {
+  background-color: #f5f7fa !important; // 确保表头单元格背景色
+}
 // 自定义滚动条样式
 ::v-deep .el-table {
   &::-webkit-scrollbar {

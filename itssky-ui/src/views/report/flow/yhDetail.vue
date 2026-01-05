@@ -344,7 +344,7 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 4px 3px; /* 减小内边距以节省空间 */
-            font-size: 15px;
+            font-size: 18px;
             min-width: 40px; /* 调整最小宽度 */
             white-space: normal;
             word-wrap: break-word;
@@ -352,19 +352,19 @@ export default {
             break-inside: avoid; /* 防止单元格跨页 */
           }
           .el-table th {
-            font-size: 16px; /* 表头字体稍大 */
+            font-size: 20px; /* 表头字体稍大 */
             font-weight: bold;
             break-inside: avoid; /* 防止表头单元格跨页 */
           }
           .container span {
-            font-size: 13px;
+            font-size: 20px;
           }
           .print-title {
-            font-size: 18px;
+            font-size: 20px;
           }
           .footer-info {
             margin-top: 15px;
-            font-size: 12px;
+            font-size: 20px;
           }
           /* 防止表格跨页截断 */
           thead {
@@ -410,6 +410,17 @@ export default {
 <style lang="scss" scoped>
 ::v-deep .el-table .el-table__header-wrapper th {
   height: 20px;
+}
+::v-deep .el-table__header-wrapper {
+  & thead {
+    tr {
+      background-color: #f5f7fa !important; // 设置表头行背景色
+    }
+  }
+}
+
+::v-deep .el-table th {
+  background-color: #f5f7fa !important; // 确保表头单元格背景色
 }
 ::v-deep .el-table--medium .el-table__cell {
   padding: 4px 0;

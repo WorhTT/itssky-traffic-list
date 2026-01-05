@@ -198,7 +198,7 @@ export default {
               <th rowspan="2" style="min-width: 60px;">总计</th>
             </tr>
             <tr>
-              <th style="min-width: 50px;">现金</th>
+              <th style="min-width: 60px;">现金</th>
               <th style="min-width: 70px;">电子支付</th>
               <th style="min-width: 60px;">公务车</th>
               <th style="min-width: 50px;">军车</th>
@@ -213,7 +213,7 @@ export default {
               <th style="min-width: 60px;">优惠车</th>
               <th style="min-width: 60px;">免费车</th>
               <th style="min-width: 50px;">车队</th>
-              <th style="min-width: 70px;">出口小计</th>
+              <th style="min-width: 90px;">出口小计</th>
             </tr>
           </thead>
           <tbody>
@@ -380,14 +380,14 @@ export default {
             break-inside: avoid; /* 防止表头单元格跨页 */
           }
           .container span {
-            font-size: 13px;
+            font-size: 20px;
           }
           .print-title {
-            font-size: 18px;
+            font-size: 20px;
           }
           .footer-info {
             margin-top: 15px;
-            font-size: 12px;
+            font-size: 20px;
           }
           /* 防止表格跨页截断 */
           thead {
@@ -433,6 +433,17 @@ export default {
 <style lang="scss" scoped>
 ::v-deep .el-table .el-table__header-wrapper th {
   height: 20px;
+}
+::v-deep .el-table__header-wrapper {
+  & thead {
+    tr {
+      background-color: #f5f7fa !important; // 设置表头行背景色
+    }
+  }
+}
+
+::v-deep .el-table th {
+  background-color: #f5f7fa !important; // 确保表头单元格背景色
 }
 ::v-deep .el-table--medium .el-table__cell {
   padding: 4px 0;

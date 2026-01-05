@@ -387,7 +387,7 @@ export default {
         .table-container {
           margin-top: 10px;
           width: 100%;
-          zoom: 0.45;
+          zoom: 0.42; /* 稍微减小缩放比例以适应底部信息 */
         }
         .el-table {
           width: 100%;
@@ -439,8 +439,10 @@ export default {
         .footer-info {
             display: flex;
             justify-content: space-between;
-            margin-top: 15px;
-            font-size: 16px; /* 增大底部信息字体 */
+            margin-top: 5px; /* 减小顶部边距以节省空间 */
+            font-size: 14px; /* 减小底部信息字体 */
+            page-break-inside: avoid; /* 防止底部信息单独分页 */
+            break-inside: avoid; /* 防止底部信息跨页 */
         }
         .operator {
             text-align: left;
@@ -467,7 +469,7 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 4px 3px; /* 减小内边距以节省空间 */
-            font-size: 20px;
+            font-size: 24px;
             min-width: 40px; /* 调整最小宽度 */
             white-space: normal;
             word-wrap: break-word;
@@ -480,14 +482,16 @@ export default {
             break-inside: avoid; /* 防止表头单元格跨页 */
           }
           .container span {
-            font-size: 22px; /* 2026/1/5打印字体样式增加修改 - 增大条件信息字体 */
+            font-size: 20px; /* 2026/1/5打印字体样式增加修改 - 增大条件信息字体 */
           }
           .print-title {
-            font-size: 24px; /* 2026/1/5打印字体样式增加修改 - 增大标题字体 */
+            font-size: 20px; /* 2026/1/5打印字体样式增加修改 - 增大标题字体 */
           }
           .footer-info {
-            margin-top: 15px;
-            font-size: 16px; /* 2026/1/5打印字体样式增加修改 - 增大底部信息字体 */
+            margin-top: 5px; /* 减小顶部边距以节省空间 */
+            font-size: 14px; /* 减小底部信息字体 */
+            page-break-inside: avoid; /* 防止底部信息单独分页 */
+            break-inside: avoid; /* 防止底部信息跨页 */
           }
         </style>
         </head>

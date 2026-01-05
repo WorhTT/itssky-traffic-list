@@ -240,13 +240,13 @@ export default {
               <th style="min-width: 50px;">公务</th>
               <th style="min-width: 50px;">车队</th>
               <th style="min-width: 50px;">优惠</th>
-              <th style="min-width: 80px;">无卡</th>
+              <th style="min-width: 50px;">无卡</th>
               <th style="min-width: 50px;">卡损</th>
-              <th style="min-width: 50px;">ETC</th>
+              <th style="min-width: 80px;">ETC</th>
               <th style="min-width: 50px;">纸券</th>
               <th style="min-width: 60px;">应收卡</th>
               <th style="min-width: 60px;">实收卡</th>
-              <th style="min-width: 100px;">总流量</th>
+              <th style="min-width: 80px;">总流量</th>
             </tr>
           </thead>
           <tbody>
@@ -498,6 +498,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::v-deep .el-table .el-table__header-wrapper th {
+  height: 20px;
+}
+
+::v-deep .el-table__header-wrapper {
+  & thead {
+    tr {
+      background-color: #f5f7fa !important; // 设置表头行背景色
+    }
+  }
+}
+
+::v-deep .el-table th {
+  background-color: #f5f7fa !important; // 确保表头单元格背景色
+}
 // 自定义滚动条样式
 ::v-deep .el-table {
   &::-webkit-scrollbar {
