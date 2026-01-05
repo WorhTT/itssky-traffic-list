@@ -284,7 +284,7 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th style="min-width: 80px;">统计方式</th>
+              <th rowspan="2" style="min-width: 80px;">统计方式</th>
               <th colspan="3">客一</th>
               <th colspan="3">客二</th>
               <th colspan="3">客三</th>
@@ -292,7 +292,6 @@ export default {
               <th colspan="3">小计</th>
             </tr>
             <tr>
-              <th></th>
               <th>C卡</th>
               <th>D卡</th>
               <th>合计</th>
@@ -318,7 +317,7 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th style="min-width: 80px;">统计方式</th>
+              <th rowspan="2" style="min-width: 80px;">统计方式</th>
               <th colspan="3">货一</th>
               <th colspan="3">货二</th>
               <th colspan="3">货三</th>
@@ -328,7 +327,6 @@ export default {
               <th colspan="3">小计</th>
             </tr>
             <tr>
-              <th></th>
               <th>C卡</th>
               <th>D卡</th>
               <th>合计</th>
@@ -360,7 +358,7 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th style="min-width: 80px;">统计方式</th>
+              <th rowspan="2" style="min-width: 80px;">统计方式</th>
               <th colspan="3">专一</th>
               <th colspan="3">专二</th>
               <th colspan="3">专三</th>
@@ -370,7 +368,6 @@ export default {
               <th colspan="3">小计</th>
             </tr>
             <tr>
-              <th></th>
               <th>C卡</th>
               <th>D卡</th>
               <th>合计</th>
@@ -674,7 +671,7 @@ export default {
             padding: 0;
             margin: 0;
             width: 100%;
-            font-size: 12px; /* 适当增大字体以提高可读性 */
+            font-size: 20px; /* 适当增大字体以提高可读性 */
           }
           .el-table {
             width: 100% !important;
@@ -683,26 +680,26 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 4px 2px; /* 减小内边距以节省空间 */
-            font-size: 10px; /* 优化字体大小 */
+            font-size: 16px; /* 优化字体大小 */
             white-space: nowrap; /* 防止内容换行 */
             word-wrap: break-word;
             word-break: keep-all; /* 避免在单词内换行 */
             break-inside: avoid;
           }
           .el-table th {
-            font-size: 12px; /* 表头字体大小 */
+            font-size: 18px; /* 表头字体大小 */
             font-weight: bold;
             break-inside: avoid;
           }
           .container span {
-            font-size: 14px;
+            font-size: 20px;
           }
           .print-title {
-            font-size: 16px;
+            font-size: 24px;
           }
           .footer-info {
             margin-top: 10px;
-            font-size: 12px;
+            font-size: 20px;
           }
           /* 防止表格跨页截断 */
           thead {

@@ -361,20 +361,20 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 6px 4px;
-            font-size: 12px;
+            font-size: 14px;
           }
           .el-table th {
-            font-size: 13px;
+            font-size: 15px;
           }
           .container span {
-            font-size: 13px;
+            font-size: 15px;
           }
           .print-title {
             font-size: 18px;
           }
           .footer-info {
             margin-top: 15px;
-            font-size: 12px;
+            font-size: 15px;
           }
           /* 防止表格跨页截断 */
           thead {

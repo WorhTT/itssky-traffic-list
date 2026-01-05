@@ -218,7 +218,7 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th rowspan="2">统计方式</th>
+              <th rowspan="2" style="min-width: 100px;">统计方式</th>
               <th colspan="3">集装箱优惠</th>
               <th colspan="3">绿色通道优惠</th>
               <th colspan="3">抗震救灾</th>
@@ -234,6 +234,21 @@ export default {
               <th>优惠前</th>
               <th>优惠后</th>
               <th>优惠掉</th>
+              <th style="min-width: 80px;">优惠前</th>
+              <th>优惠后</th>
+              <th style="min-width: 80px;">优惠掉</th>
+              <th>优惠前</th>
+              <th>优惠后</th>
+              <th>优惠掉</th>
+              <th style="min-width: 80px;">优惠前</th>
+              <th style="min-width: 80px;">优惠后</th>
+              <th style="min-width: 70px;">优惠掉</th>
+              <th style="min-width: 50px;">优惠前</th>
+              <th>优惠后</th>
+              <th style="min-width: 50px;">优惠掉</th>
+              <th style="min-width: 80px;">优惠前</th>
+              <th style="min-width: 80px;">优惠后</th>
+              <th style="min-width: 70px;">优惠掉</th>
               <th>优惠前</th>
               <th>优惠后</th>
               <th>优惠掉</th>
@@ -243,24 +258,9 @@ export default {
               <th>优惠前</th>
               <th>优惠后</th>
               <th>优惠掉</th>
-              <th>优惠前</th>
-              <th>优惠后</th>
-              <th>优惠掉</th>
-              <th>优惠前</th>
-              <th>优惠后</th>
-              <th>优惠掉</th>
-              <th>优惠前</th>
-              <th>优惠后</th>
-              <th>优惠掉</th>
-              <th>优惠前</th>
-              <th>优惠后</th>
-              <th>优惠掉</th>
-              <th>优惠前</th>
-              <th>优惠后</th>
-              <th>优惠掉</th>
-              <th>优惠前</th>
-              <th>优惠后</th>
-              <th>优惠掉</th>
+              <th style="min-width: 80px;">优惠前</th>
+              <th style="min-width: 80px;">优惠后</th>
+              <th style="min-width: 80px;">优惠掉</th>
             </tr>
           </thead>
           <tbody>
@@ -376,7 +376,7 @@ export default {
         .table-container {
           margin-top: 10px;
           width: 100%;
-          zoom: 0.85; /* 屏幕显示时也进行适当缩放 */
+          zoom: 0.8; /* 屏幕显示时也进行适当缩放 */
         }
         .el-table {
           width: 100%;
@@ -455,7 +455,7 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 4px 3px; /* 减小内边距 */
-            font-size: 11px;
+            font-size: 16px;
             min-width: 40px;
             white-space: normal;
             word-wrap: break-word;
@@ -463,19 +463,19 @@ export default {
             break-inside: avoid;
           }
           .el-table th {
-            font-size: 12px; /* 表头字体稍大 */
+            font-size: 18px; /* 表头字体稍大 */
             font-weight: bold;
             break-inside: avoid;
           }
           .container span {
-            font-size: 12px;
+            font-size: 18px;
           }
           .print-title {
-            font-size: 16px;
+            font-size: 22px;
           }
           .footer-info {
             margin-top: 10px;
-            font-size: 11px;
+            font-size: 18px;
           }
           /* 防止表格跨页截断 */
           thead {
