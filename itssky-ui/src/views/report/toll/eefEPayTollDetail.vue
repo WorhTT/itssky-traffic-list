@@ -604,6 +604,10 @@ export default {
           margin-top: 10px;
           width: 100%;
         }
+        .table-section {
+          page-break-inside: avoid;
+          margin-bottom: 20px;
+        }
         .el-table {
           width: 100%;
           border-collapse: collapse;
@@ -616,11 +620,11 @@ export default {
         }
         .el-table th, .el-table td {
           border: 1px solid #000;
-          padding: 8px 4px; /* 适当增加内边距以提高可读性 */
+          padding: 6px 3px; /* 适中内边距以节省空间 */
           text-align: center;
           word-wrap: break-word;
           white-space: nowrap; /* 防止内容换行 */
-          font-size: 14px; /* 增大字体以提高可读性 */
+          font-size: 12px; /* 适中字体大小 */
           word-break: keep-all; /* 避免在单词内换行 */
           break-inside: avoid; /* 防止单元格内容跨页 */
         }
@@ -661,8 +665,8 @@ export default {
         }
         @media print {
           @page {
-            size: A4 landspace; /* 纵向打印，因为表格已拆分 */
-            margin: 10mm;
+            size: A4 landscape; /* 横向打印，适应表格宽度 */
+            margin: 8mm;
           }
           body {
             -webkit-print-color-adjust: exact;
@@ -678,8 +682,8 @@ export default {
             font-size: 12px;
           }
           .el-table th, .el-table td {
-            padding: 6px 3px; /* 适中内边距 */
-            font-size: 12px; /* 优化字体大小 */
+            padding: 4px 2px; /* 减小内边距以节省空间 */
+            font-size: 10px; /* 优化字体大小 */
             white-space: nowrap; /* 防止内容换行 */
             word-wrap: break-word;
             word-break: keep-all; /* 避免在单词内换行 */
@@ -726,13 +730,18 @@ export default {
             <div class="print-title">EEF电子支付通行费(MTC+ETC)统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">
-              ${passengerTableHtml}
-              <div style="page-break-after: always;"></div> <!-- 在客车表后分页 -->
-              ${truckTableHtml}
-              <div style="page-break-after: always;"></div> <!-- 在货车表后分页 -->
-              ${specialTableHtml}
-              <div style="page-break-after: always;"></div> <!-- 在专车表后分页 -->
-              ${totalTableHtml}
+              <div class="table-section">
+                ${passengerTableHtml}
+              </div>
+              <div class="table-section">
+                ${truckTableHtml}
+              </div>
+              <div class="table-section">
+                ${specialTableHtml}
+              </div>
+              <div class="table-section">
+                ${totalTableHtml}
+              </div>
             </div>
             ${footerHtml}
         </body>
