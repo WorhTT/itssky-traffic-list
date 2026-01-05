@@ -1,7 +1,8 @@
 <script>
 
 import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
-import {listStationSelect} from "@/api/system/station";
+import {listStationSelectV2} from "@/api/system/station";
+
 
 export default {
   name: "CardboxResort",
@@ -51,7 +52,7 @@ export default {
     //获取收费站下拉框
     this.queryParams.beginTime = getMidnightTime();
     this.queryParams.endTime = getCurrentTime();
-    listStationSelect({needCenter: true}).then((res) => {
+    listStationSelectV2({needCenter: true}).then((res) => {
       this.stationOptions = res.data.array
       this.currentStationId = res.data.defaultValue
       this.$set(this.queryParams, 'stationId', this.currentStationId);
@@ -104,20 +105,10 @@ export default {
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="openChildPage">查询</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="openChildPage">查看详细报表</el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          icon="el-icon-view"
-          size="mini"
-          @click="openChildPage"
-        >查看详细报表
-        </el-button>
-      </el-col>
-    </el-row>
+
   </div>
 
 </template>

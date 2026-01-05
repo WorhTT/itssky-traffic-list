@@ -250,7 +250,7 @@ export default {
   `;
 
       let passengerTableHtml = `
-        <h3 style="text-align: center; margin: 10px 0;font-size: 26px;">客车数据</h3>
+        <h3 style="text-align: center; margin: 10px 0;font-size: 22px;">客车数据</h3>
         <table class="el-table">
           <thead>
             <tr>
@@ -278,7 +278,7 @@ export default {
       `;
 
       let truckTableHtml = `
-        <h3 style="text-align: center; margin: 10px 0;font-size: 26px;">货车数据</h3>
+        <h3 style="text-align: center; margin: 10px 0;font-size: 22px;">货车数据</h3>
         <table class="el-table">
           <thead>
             <tr>
@@ -312,7 +312,7 @@ export default {
       `;
 
       let specialTableHtml = `
-        <h3 style="text-align: center; margin: 10px 0;font-size: 26px;">专车数据</h3>
+        <h3 style="text-align: center; margin: 10px 0;font-size: 22px;">专车数据</h3>
         <table class="el-table">
           <thead>
             <tr>
@@ -346,7 +346,7 @@ export default {
       `;
 
       let totalTableHtml = `
-        <h3 style="text-align: center; margin: 10px 0; font-size: 26px;">总计数据</h3>
+        <h3 style="text-align: center; margin: 10px 0; font-size: 22px;">总计数据</h3>
         <table class="el-table">
           <thead>
             <tr>

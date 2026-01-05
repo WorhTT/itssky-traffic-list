@@ -11,6 +11,10 @@
             (SELECT LaneName FROM dbtoms.tblaneinfo WHERE a.LaneID = LaneID AND a.StationID = StationID limit 1) AS laneName
         FROM tbstatentry a
         <where>
+            AND CancelFlag = 0
+            AND CardType = 26
+            AND SUBSTRING(LaneID,-3,1)=0
+            AND SUBSTRING(LaneID,-4,1)=0
             <if test="stationId != null and stationId != ''">
                 AND StationID = #{stationId}
             </if>
@@ -33,6 +37,7 @@
         IFNULL(SUM(AddedToll)/100, 0) AS addedToll
         FROM ${tableName}
         <where>
+            AND CancelFlag = 0
             <if test="stationId != null and stationId != ''">
                 AND StationID = #{stationId}
             </if>
@@ -58,6 +63,7 @@
         IFNULL(CAST(SUM(CASE WHEN a.PayType=2 THEN a.TotalToll ELSE 0 END) /100 as DECIMAL(10,2)), 0) as ePay
         FROM tbstatexit a
         <where>
+            AND a.CancelFlag = 0
             <if test="stationId != null and stationId != ''">
                 AND a.StationID = #{stationId}
             </if>

@@ -249,75 +249,111 @@ export default {
     </div>
   `;
 
-      // 创建一个新的表格结构，模拟原表格的复杂嵌套结构
-      let tableHtml = `
-        <table class="el-table" border="1" style="border-collapse: collapse; width: 100%;">
+      let passengerTableHtml = `
+        <h3 style="text-align: center; margin: 10px 0;font-size: 22px;">客车数据</h3>
+        <table class="el-table">
           <thead>
             <tr>
-              <th rowspan="2" style="min-width: 120px; text-align: center; padding: 8px;">统计方式</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">客一</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">客二</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">客三</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">客四</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">客车小计</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">货一</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">货二</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">货三</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">货四</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">货五</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">货六</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">货车小计</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">专一</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">专二</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">专三</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">专四</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">专五</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">专六</th>
-              <th colspan="2" style="min-width: 100px; text-align: center; padding: 8px;">专车小计</th>
-              <th colspan="3" style="min-width: 150px; text-align: center; padding: 8px;">总计</th>
+              <th rowspan="2" style="min-width: 60px;">统计方式</th>
+              <th colspan="2">客一</th>
+              <th colspan="2">客二</th>
+              <th colspan="2">客三</th>
+              <th colspan="2">客四</th>
+              <th colspan="2">客车小计</th>
             </tr>
             <tr>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">C卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">D卡</th>
-              <th style="min-width: 50px; text-align: center; padding: 8px;">合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let truckTableHtml = `
+        <h3 style="text-align: center; margin: 10px 0;font-size: 22px;">货车数据</h3>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="min-width: 60px;">统计方式</th>
+              <th colspan="2">货一</th>
+              <th colspan="2">货二</th>
+              <th colspan="2">货三</th>
+              <th colspan="2">货四</th>
+              <th colspan="2">货五</th>
+              <th colspan="2">货六</th>
+              <th colspan="2">货车小计</th>
+            </tr>
+            <tr>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let specialTableHtml = `
+        <h3 style="text-align: center; margin: 10px 0;font-size: 22px;">专车数据</h3>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="min-width: 60px;">统计方式</th>
+              <th colspan="2">专一</th>
+              <th colspan="2">专二</th>
+              <th colspan="2">专三</th>
+              <th colspan="2">专四</th>
+              <th colspan="2">专五</th>
+              <th colspan="2">专六</th>
+              <th colspan="2">专车小计</th>
+            </tr>
+            <tr>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>C卡</th>
+              <th>D卡</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let totalTableHtml = `
+        <h3 style="text-align: center; margin: 10px 0; font-size: 22px;">总计数据</h3>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th style="min-width: 60px;">统计方式</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
             </tr>
           </thead>
           <tbody>
@@ -325,67 +361,130 @@ export default {
 
       // 填充表格数据
       this.dataList.forEach(row => {
-        tableHtml += `
+        const statType = row.statType !== undefined && row.statType !== null ? row.statType : '';
+        const k1c = row.k1c !== undefined && row.k1c !== null ? row.k1c : '';
+        const k1d = row.k1d !== undefined && row.k1d !== null ? row.k1d : '';
+        const k2c = row.k2c !== undefined && row.k2c !== null ? row.k2c : '';
+        const k2d = row.k2d !== undefined && row.k2d !== null ? row.k2d : '';
+        const k3c = row.k3c !== undefined && row.k3c !== null ? row.k3c : '';
+        const k3d = row.k3d !== undefined && row.k3d !== null ? row.k3d : '';
+        const k4c = row.k4c !== undefined && row.k4c !== null ? row.k4c : '';
+        const k4d = row.k4d !== undefined && row.k4d !== null ? row.k4d : '';
+        const kamountc = row.kamountc !== undefined && row.kamountc !== null ? row.kamountc : '';
+        const kamountd = row.kamountd !== undefined && row.kamountd !== null ? row.kamountd : '';
+        const h1c = row.h1c !== undefined && row.h1c !== null ? row.h1c : '';
+        const h1d = row.h1d !== undefined && row.h1d !== null ? row.h1d : '';
+        const h2c = row.h2c !== undefined && row.h2c !== null ? row.h2c : '';
+        const h2d = row.h2d !== undefined && row.h2d !== null ? row.h2d : '';
+        const h3c = row.h3c !== undefined && row.h3c !== null ? row.h3c : '';
+        const h3d = row.h3d !== undefined && row.h3d !== null ? row.h3d : '';
+        const h4c = row.h4c !== undefined && row.h4c !== null ? row.h4c : '';
+        const h4d = row.h4d !== undefined && row.h4d !== null ? row.h4d : '';
+        const h5c = row.h3c !== undefined && row.h3c !== null ? row.h3c : '';
+        const h5d = row.h3d !== undefined && row.h3d !== null ? row.h3d : '';
+        const h6c = row.h4c !== undefined && row.h4c !== null ? row.h4c : '';
+        const h6d = row.h4d !== undefined && row.h4d !== null ? row.h4d : '';
+        const hamountc = row.hamountc !== undefined && row.hamountc !== null ? row.hamountc : '';
+        const hamountd = row.hamountd !== undefined && row.hamountd !== null ? row.hamountd : '';
+        const z1c = row.z1c !== undefined && row.z1c !== null ? row.z1c : '';
+        const z1d = row.z1d !== undefined && row.z1d !== null ? row.z1d : '';
+        const z2c = row.z2c !== undefined && row.z2c !== null ? row.z2c : '';
+        const z2d = row.z2d !== undefined && row.z2d !== null ? row.z2d : '';
+        const z3c = row.z3c !== undefined && row.z3c !== null ? row.z3c : '';
+        const z3d = row.z3d !== undefined && row.z3d !== null ? row.z3d : '';
+        const z4c = row.z4c !== undefined && row.z4c !== null ? row.z4c : '';
+        const z4d = row.z4d !== undefined && row.z4d !== null ? row.z4d : '';
+        const z5c = row.z3c !== undefined && row.z3c !== null ? row.z3c : '';
+        const z5d = row.z3d !== undefined && row.z3d !== null ? row.z3d : '';
+        const z6c = row.z4c !== undefined && row.z4c !== null ? row.z4c : '';
+        const z6d = row.z4d !== undefined && row.z4d !== null ? row.z4d : '';
+        const zamountc = row.zamountc !== undefined && row.zamountc !== null ? row.zamountc : '';
+        const zamountd = row.zamountd !== undefined && row.zamountd !== null ? row.zamountd : '';
+        const allamountc = row.allAmountc !== undefined && row.allAmountc !== null ? row.allAmountc : '';
+        const allamountd = row.allAmountd !== undefined && row.allAmountd !== null ? row.allAmountd : '';
+        const total = row.total !== undefined && row.total !== null ? row.total : '';
+        // 客车表格行
+        passengerTableHtml += `
           <tr>
-            <td style="padding: 8px; text-align: center;">${row.statType !== undefined && row.statType !== null ? row.statType : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.k1c !== undefined && row.k1c !== null ? row.k1c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.k1d !== undefined && row.k1d !== null ? row.k1d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.k2c !== undefined && row.k2c !== null ? row.k2c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.k2d !== undefined && row.k2d !== null ? row.k2d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.k3c !== undefined && row.k3c !== null ? row.k3c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.k3d !== undefined && row.k3d !== null ? row.k3d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.k4c !== undefined && row.k4c !== null ? row.k4c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.k4d !== undefined && row.k4d !== null ? row.k4d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.kamountc !== undefined && row.kamountc !== null ? row.kamountc : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.kamountd !== undefined && row.kamountd !== null ? row.kamountd : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h1c !== undefined && row.h1c !== null ? row.h1c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h1d !== undefined && row.h1d !== null ? row.h1d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h2c !== undefined && row.h2c !== null ? row.h2c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h2d !== undefined && row.h2d !== null ? row.h2d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h3c !== undefined && row.h3c !== null ? row.h3c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h3d !== undefined && row.h3d !== null ? row.h3d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h4c !== undefined && row.h4c !== null ? row.h4c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h4d !== undefined && row.h4d !== null ? row.h4d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h5c !== undefined && row.h5c !== null ? row.h5c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h5d !== undefined && row.h5d !== null ? row.h5d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h6c !== undefined && row.h6c !== null ? row.h6c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.h6d !== undefined && row.h6d !== null ? row.h6d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.hamountc !== undefined && row.hamountc !== null ? row.hamountc : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.hamountd !== undefined && row.hamountd !== null ? row.hamountd : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z1c !== undefined && row.z1c !== null ? row.z1c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z1d !== undefined && row.z1d !== null ? row.z1d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z2c !== undefined && row.z2c !== null ? row.z2c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z2d !== undefined && row.z2d !== null ? row.z2d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z3c !== undefined && row.z3c !== null ? row.z3c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z3d !== undefined && row.z3d !== null ? row.z3d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z4c !== undefined && row.z4c !== null ? row.z4c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z4d !== undefined && row.z4d !== null ? row.z4d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z5c !== undefined && row.z5c !== null ? row.z5c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z5d !== undefined && row.z5d !== null ? row.z5d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z6c !== undefined && row.z6c !== null ? row.z6c : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.z6d !== undefined && row.z6d !== null ? row.z6d : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.zamountc !== undefined && row.zamountc !== null ? row.zamountc : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.zamountd !== undefined && row.zamountd !== null ? row.zamountd : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.allAmountc !== undefined && row.allAmountc !== null ? row.allAmountc : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.allAmountd !== undefined && row.allAmountd !== null ? row.allAmountd : ''}</td>
-            <td style="padding: 8px; text-align: center;">${row.total !== undefined && row.total !== null ? row.total : ''}</td>
+            <td>${statType}</td>
+            <td>${k1c}</td>
+            <td>${k1d}</td>
+            <td>${k2c}</td>
+            <td>${k2d}</td>
+            <td>${k3c}</td>
+            <td>${k3d}</td>
+            <td>${k4c}</td>
+            <td>${k4d}</td>
+            <td>${kamountc}</td>
+            <td>${kamountd}</td>
+          </tr>
+        `;
+        // 货车表格行
+        truckTableHtml += `
+          <tr>
+            <td>${statType}</td>
+            <td>${h1c}</td>
+            <td>${h1d}</td>
+            <td>${h2c}</td>
+            <td>${h2d}</td>
+            <td>${h3c}</td>
+            <td>${h3d}</td>
+            <td>${h4c}</td>
+            <td>${h4d}</td>
+            <td>${h5c}</td>
+            <td>${h5d}</td>
+            <td>${h6c}</td>
+            <td>${h6d}</td>
+            <td>${hamountc}</td>
+            <td>${hamountd}</td>
+          </tr>
+        `;
+        // 专车表格行
+        specialTableHtml += `
+          <tr>
+            <td>${statType}</td>
+            <td>${z1c}</td>
+            <td>${z1d}</td>
+            <td>${z2c}</td>
+            <td>${z2d}</td>
+            <td>${z3c}</td>
+            <td>${z3d}</td>
+            <td>${z4c}</td>
+            <td>${z4d}</td>
+            <td>${z5c}</td>
+            <td>${z5d}</td>
+            <td>${z6c}</td>
+            <td>${z6d}</td>
+            <td>${zamountc}</td>
+            <td>${zamountd}</td>
+          </tr>
+        `;
+        // 总计表格行
+        totalTableHtml += `
+          <tr>
+            <td>${statType}</td>
+            <td>${allamountc}</td>
+            <td>${allamountd}</td>
+            <td>${total}</td>
           </tr>
         `;
       });
-
-      tableHtml += `
-          </tbody>
-        </table>
-      `;
-
+      passengerTableHtml += `</tbody></table>`;
+      truckTableHtml += `</tbody></table>`;
+      specialTableHtml += `</tbody></table>`;
+      totalTableHtml += `</tbody></table>`;
       let htmlContent = `
       <!DOCTYPE html>
         <html>
         <head>
         <title>Print</title>
         <style>
+        @page {
+          margin: 0.2in;
+          size: A4 landscape;
+        }
         body {
-          margin: 0;
+          margin: 0.2in;
           padding: 15px;
           font-family: "Microsoft YaHei", SimHei, Arial, sans-serif;
           box-sizing: border-box;
@@ -411,7 +510,7 @@ export default {
         .table-container {
           margin-top: 10px;
           width: 100%;
-          zoom: 0.45;
+          overflow-x: auto;
         }
         .el-table {
           width: 100%;
@@ -491,7 +590,7 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 4px 3px; /* 减小内边距以节省空间 */
-            font-size: 15px;
+            font-size: 16px;
             min-width: 40px; /* 调整最小宽度 */
             white-space: normal;
             word-wrap: break-word;
@@ -499,19 +598,19 @@ export default {
             break-inside: avoid; /* 防止单元格跨页 */
           }
           .el-table th {
-            font-size: 16px; /* 表头字体稍大 */
+            font-size: 18px; /* 表头字体稍大 */
             font-weight: bold;
             break-inside: avoid; /* 防止表头单元格跨页 */
           }
           .container span {
-            font-size: 13px;
+            font-size: 18px;
           }
           .print-title {
-            font-size: 18px;
+            font-size: 20px;
           }
           .footer-info {
             margin-top: 15px;
-            font-size: 12px;
+            font-size: 18px;
           }
         </style>
         </head>
@@ -519,7 +618,20 @@ export default {
             <div class="print-title">${corpName}</div>
             <div class="print-title">ECS电子支付(MTC+ETC)出口流量统计表</div>
             <div class="container">${conditionListHtml}</div>
-            <div class="table-container">${tableHtml}</div>
+            <div class="table-container">
+              <div class="table-section">
+                ${passengerTableHtml}
+              </div>
+              <div class="table-section">
+                ${truckTableHtml}
+              </div>
+              <div class="table-section">
+                ${specialTableHtml}
+              </div>
+              <div class="table-section">
+                ${totalTableHtml}
+              </div>
+            </div>
             ${footerHtml}
         </body>
         </html>
@@ -531,6 +643,7 @@ export default {
       printFrame.contentWindow.focus();
       printFrame.contentWindow.print();
     },
+
   }
 };
 </script>

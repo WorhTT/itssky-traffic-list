@@ -373,6 +373,20 @@ export default {
 </template>
 
 <style scoped lang="scss">
+::v-deep .el-table .el-table__header-wrapper th {
+  height: 20px;
+}
+::v-deep .el-table__header-wrapper {
+  & thead {
+    tr {
+      background-color: #f5f7fa !important; // 设置表头行背景色
+    }
+  }
+}
+
+::v-deep .el-table th {
+  background-color: #f5f7fa !important; // 确保表头单元格背景色
+}
 // 自定义滚动条样式
 ::v-deep .el-table {
   &::-webkit-scrollbar {
