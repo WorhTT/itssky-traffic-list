@@ -288,6 +288,16 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/euDetail',
+    component: () => import("@/views/report/toll/euDetail.vue"),
+    hidden: true
+  },
+  // {
+  //   path: '/mobVcDetail',
+  //   component: () => import("@/views/report/toll/mobVc.vue.vue"),
+  //   hidden: true
+  // },
+  {
     path: '/',
     redirect: '/f1StationShift'
   },
@@ -295,12 +305,12 @@ export const constantRoutes = [
     path: '/itssky',
     redirect: '/f1StationShift'
   },
-  // {
-  //   path: '/toll',
-  //   component: Layout,
-  //   name: '通行费类',
-  //   meta: {title: '通行费类', icon: 'list'},
-  //   children: [
+  {
+    path: '/toll',
+    component: Layout,
+    name: '通行费类',
+    meta: {title: '通行费类', icon: 'list'},
+    children: [
   //         {
   //           path: '/yhToll',
   //           name: 'YH优惠金额综合报表',
@@ -374,8 +384,14 @@ export const constantRoutes = [
   // //       meta: {title: 'MOB移动支付收费统计报表', icon: 'chart'},
   // //       component: () => import('@/views/report/toll/mobToll.vue'),
   // //     }
-  //   ],
-  // },
+          {
+            path: '/eu',
+            name: 'EU电子支付通行费(MTC+ETC)统计按车型',
+            meta: {title: 'EU电子支付通行费(MTC+ETC)统计按车型', icon: 'chart'},
+            component: () => import('@/views/report/toll/eu.vue'),
+          }
+    ],
+  },
   // {
   //   path: '/card',
   //   component: Layout,

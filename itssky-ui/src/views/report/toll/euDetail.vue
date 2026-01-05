@@ -37,21 +37,21 @@
 
     <el-table v-loading="loading" :data="dataList" border ref="myTable"
               :cell-style="cellStyle" >
-      <el-table-column label="统计方式" align="center" prop="statType"/>
+      <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
       <el-table-column label="一车型" align="center">
-        <el-table-column label="C卡" align="center" prop="vc1"/>
-        <el-table-column label="D卡" align="center" prop="vd1"/>
-        <el-table-column label="小计" align="center" prop="v1"/>
+        <el-table-column label="C卡" align="center" prop="vc1" min-width="100"/>
+        <el-table-column label="D卡" align="center" prop="vd1" min-width="100"/>
+        <el-table-column label="小计" align="center" prop="v1" min-width="100"/>
       </el-table-column>
       <el-table-column label="二车型" align="center">
         <el-table-column label="C卡" align="center" prop="vc2"/>
-        <el-table-column label="D卡" align="center" prop="vd2"/>
-        <el-table-column label="小计" align="center" prop="v2"/>
+        <el-table-column label="D卡" align="center" prop="vd2" min-width="100"/>
+        <el-table-column label="小计" align="center" prop="v2" min-width="100"/>
       </el-table-column>
       <el-table-column label="三车型" align="center">
         <el-table-column label="C卡" align="center" prop="vc3"/>
-        <el-table-column label="D卡" align="center" prop="vd3"/>
-        <el-table-column label="小计" align="center" prop="v3"/>
+        <el-table-column label="D卡" align="center" prop="vd3" min-width="100"/>
+        <el-table-column label="小计" align="center" prop="v3" min-width="100"/>
       </el-table-column>
       <el-table-column label="四车型" align="center">
         <el-table-column label="C卡" align="center" prop="vc4"/>
@@ -65,8 +65,8 @@
       </el-table-column>
       <el-table-column label="六车型" align="center">
         <el-table-column label="C卡" align="center" prop="vc6"/>
-        <el-table-column label="D卡" align="center" prop="vd6"/>
-        <el-table-column label="小计" align="center" prop="v6"/>
+        <el-table-column label="D卡" align="center" prop="vd6" min-width="100"/>
+        <el-table-column label="小计" align="center" prop="v6" min-width="100"/>
       </el-table-column>
       <el-table-column label="专项车" align="center">
         <el-table-column label="C卡" align="center" prop="vcz"/>
@@ -74,9 +74,9 @@
         <el-table-column label="小计" align="center" prop="vz"/>
       </el-table-column>
       <el-table-column label="合计" align="center">
-        <el-table-column label="C卡" align="center" prop="sumc"/>
-        <el-table-column label="D卡" align="center" prop="sumd"/>
-        <el-table-column label="小计" align="center" prop="sum"/>
+        <el-table-column label="C卡" align="center" prop="sumc" min-width="100"/>
+        <el-table-column label="D卡" align="center" prop="sumd" min-width="120"/>
+        <el-table-column label="小计" align="center" prop="sum" min-width="120"/>
       </el-table-column>
     </el-table>
     <!-- 添加底部信息区域 -->
@@ -221,27 +221,60 @@ export default {
       <span class="print-time">打印时间：${printTime}</span>
     </div>
   `;
-      // 创建一个新的表格结构，避免样式冲突
-      let tableHtml = `
+
+      let passengerTableHtml = `
+        <h3 style="text-align: center; margin: 10px 0; font-size: 18px;">一车型~四车型</h3>
         <table class="el-table">
           <thead>
             <tr>
-              <th rowspan="2">统计方式</th>
-              <th colspan="6">通行费收入总额</th>
-              <th rowspan="2">移动支付</th>
-              <th rowspan="2">电子支付</th>
-              <th rowspan="2">公务IC卡</th>
-              <th rowspan="2">军车IC卡</th>
-              <th rowspan="2">免费IC卡</th>
-              <th rowspan="2">应缴IC卡</th>
+              <th rowspan="2" style="min-width: 100px;">统计方式</th>
+              <th colspan="3">一车型</th>
+              <th colspan="3">二车型</th>
+              <th colspan="3">三车型</th>
+              <th colspan="3">四车型</th>
             </tr>
             <tr>
-              <th>统计金额</th>
-              <th>应缴金额</th>
-              <th>实缴金额</th>
-              <th>金额差异</th>
-              <th>欠款</th>
-              <th>加收款</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>小计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>小计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>小计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>小计</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let truckTableHtml = `
+        <h3 style="text-align: center; margin: 10px 0; font-size: 18px;">五车型、六车型、专项车、总计</h3>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="min-width: 100px;">统计方式</th>
+              <th colspan="3">五车型</th>
+              <th colspan="3">六车型</th>
+              <th colspan="3">专项车</th>
+              <th colspan="3">总计</th>
+            </tr>
+            <tr>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>小计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>小计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>小计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>小计</th>
             </tr>
           </thead>
           <tbody>
@@ -251,42 +284,68 @@ export default {
       this.dataList.forEach(row => {
         // 处理可能为0的数值，确保0也能正确显示
         const statType = row.statType !== undefined && row.statType !== null ? row.statType : '';
-        const statAmount = row.statAmount !== undefined && row.statAmount !== null ? row.statAmount : '';
-        const dueAmount = row.dueAmount !== undefined && row.dueAmount !== null ? row.dueAmount : '';
-        const paidAmount = row.paidAmount !== undefined && row.paidAmount !== null ? row.paidAmount : '';
-        const amountDiff = row.amountDiff !== undefined && row.amountDiff !== null ? row.amountDiff : '';
-        const arrearsAmount = row.arrearsAmount !== undefined && row.arrearsAmount !== null ? row.arrearsAmount : '';
-        const extraTotal = row.extraTotal !== undefined && row.extraTotal !== null ? row.extraTotal : '';
-        const mobilePaymentAmount = row.mobilePaymentAmount !== undefined && row.mobilePaymentAmount !== null ? row.mobilePaymentAmount : '';
-        const epaymentAmount = row.epaymentAmount !== undefined && row.epaymentAmount !== null ? row.epaymentAmount : '';
-        const officialIcCardCount = row.officialIcCardCount !== undefined && row.officialIcCardCount !== null ? row.officialIcCardCount : '';
-        const militaryIcCardCount = row.militaryIcCardCount !== undefined && row.militaryIcCardCount !== null ? row.militaryIcCardCount : '';
-        const freeIcCardCount = row.freeIcCardCount !== undefined && row.freeIcCardCount !== null ? row.freeIcCardCount : '';
-        const dueIcCardCount = row.dueIcCardCount !== undefined && row.dueIcCardCount !== null ? row.dueIcCardCount : '';
-
-        tableHtml += `
+        const vc1 = row.vc1 !== undefined && row.vc1 !== null ? row.vc1 : '';
+        const vd1 = row.vd1 !== undefined && row.vd1 !== null ? row.vd1 : '';
+        const v1 = row.v1 !== undefined && row.v1 !== null ? row.v1 : '';
+        const vc2 = row.vc2 !== undefined && row.vc2 !== null ? row.vc2 : '';
+        const vd2 = row.vd2 !== undefined && row.vd2 !== null ? row.vd2 : '';
+        const v2 = row.v2 !== undefined && row.v2 !== null ? row.v2 : '';
+        const vc3 = row.vc3 !== undefined && row.vc3 !== null ? row.vc3 : '';
+        const vd3 = row.vd3 !== undefined && row.vd3 !== null ? row.vd3 : '';
+        const v3 = row.v3 !== undefined && row.v3 !== null ? row.v3 : '';
+        const vc4 = row.vc4 !== undefined && row.vc4 !== null ? row.vc4 : '';
+        const vd4 = row.vd4 !== undefined && row.vd4 !== null ? row.vd4 : '';
+        const v4 = row.v4 !== undefined && row.v4 !== null ? row.v4 : '';
+        const vc5 = row.vc5 !== undefined && row.vc5 !== null ? row.vc5 : '';
+        const vd5 = row.vd5 !== undefined && row.vd5 !== null ? row.vd5 : '';
+        const v5 = row.v5 !== undefined && row.v5 !== null ? row.v5 : '';
+        const vc6 = row.vc6 !== undefined && row.vc6 !== null ? row.vc6 : '';
+        const vd6 = row.vd6 !== undefined && row.vd6 !== null ? row.vd6 : '';
+        const v6 = row.v6 !== undefined && row.v6 !== null ? row.v6 : '';
+        const vcz = row.vcz !== undefined && row.vcz !== null ? row.vcz : '';
+        const vdz = row.vdz !== undefined && row.vdz !== null ? row.vdz : '';
+        const vz = row.vz !== undefined && row.vz !== null ? row.vz : '';
+        const sumc = row.sumc !== undefined && row.sumc !== null ? row.sumc : '';
+        const sumd = row.sumd !== undefined && row.sumd !== null ? row.sumd : '';
+        const sum = row.sum !== undefined && row.sum !== null ? row.sum : '';
+        passengerTableHtml += `
           <tr>
             <td>${statType}</td>
-            <td>${statAmount}</td>
-            <td>${dueAmount}</td>
-            <td>${paidAmount}</td>
-            <td>${amountDiff}</td>
-            <td>${arrearsAmount}</td>
-            <td>${extraTotal}</td>
-            <td>${mobilePaymentAmount}</td>
-            <td>${epaymentAmount}</td>
-            <td>${officialIcCardCount}</td>
-            <td>${militaryIcCardCount}</td>
-            <td>${freeIcCardCount}</td>
-            <td>${dueIcCardCount}</td>
+            <td>${vc1}</td>
+            <td>${vd1}</td>
+            <td>${v1}</td>
+            <td>${vc2}</td>
+            <td>${vd2}</td>
+            <td>${v2}</td>
+            <td>${vc3}</td>
+            <td>${vd3}</td>
+            <td>${v3}</td>
+            <td>${vc4}</td>
+            <td>${vd4}</td>
+            <td>${v4}</td>
           </tr>
         `;
+        truckTableHtml +=`
+        <tr>
+            <td>${statType}</td>
+            <td>${vc5}</td>
+            <td>${vd5}</td>
+            <td>${v5}</td>
+            <td>${vc6}</td>
+            <td>${vd6}</td>
+            <td>${v6}</td>
+            <td>${vcz}</td>
+            <td>${vdz}</td>
+            <td>${vz}</td>
+            <td>${sumc}</td>
+            <td>${sumd}</td>
+            <td>${sum}</td>
+        </tr>
+        `
       });
 
-      tableHtml += `
-          </tbody>
-        </table>
-      `;
+      passengerTableHtml += `</tbody></table>`;
+      truckTableHtml += `</tbody></table>`;
 
       let htmlContent = `
       <!DOCTYPE html>
@@ -294,8 +353,12 @@ export default {
         <head>
         <title>Print</title>
         <style>
+        @page {
+          margin: 0.2in;
+          size: A4 landscape;
+        }
         body {
-          margin: 0;
+          margin: 0.2in;
           padding: 15px;
           font-family: "Microsoft YaHei", SimHei, Arial, sans-serif;
           box-sizing: border-box;
@@ -321,6 +384,7 @@ export default {
         .table-container {
           margin-top: 10px;
           width: 100%;
+          overflow-x: auto;
         }
         .el-table {
           width: 100%;
@@ -338,15 +402,17 @@ export default {
           text-align: center;
           word-wrap: break-word;
           white-space: normal; /* 允许内容换行 */
-          font-size: 13px;
-          min-width: 60px;
+          font-size: 18px;
+          min-width: 50px;
           word-break: break-word; /* 允许单词内换行 */
-          break-inside: avoid; /* 防止单元格内容跨页 */
+          break-inside: avoid; /* 防止单元格跨页 */
         }
         .el-table th {
           font-weight: bold;
-          font-size: 14px;
+          font-size: 20px;
           background-color: #f5f7fa;
+          height: auto;
+          line-height: 1.2;
           break-inside: avoid; /* 防止表头单元格跨页 */
         }
         /* 防止表格跨页截断 */
@@ -362,6 +428,7 @@ export default {
         tr {
           page-break-inside: avoid;
           page-break-after: auto;
+          break-inside: avoid; /* 防止行跨页 */
         }
         td, th {
           page-break-inside: avoid;
@@ -369,8 +436,8 @@ export default {
         .footer-info {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-            font-size: 13px;
+            margin-top: 15px;
+            font-size: 12px;
         }
         .operator {
             text-align: left;
@@ -378,78 +445,66 @@ export default {
         .print-time {
             text-align: right;
         }
-        @media print {
-          @page {
-            size: A4 landscape; /* 横向打印 */
-            margin: 8mm;
-          }
-          body {
+        body {
             -webkit-print-color-adjust: exact;
             color-adjust: exact;
             padding: 0;
             margin: 0;
             width: 100%;
-            font-size: 11px; /* 调小字体 */
+            font-size: 11px; /* 调小字体以适应更多内容 */
           }
           .el-table {
             width: 100% !important;
             table-layout: auto !important; /* 自动调整列宽 */
-            font-size: 11px;
+            font-size: 11px; /* 调小字体以适应更多内容 */
+          }
+          .el-table thead tr {
+            background-color: #ebeef5;
+            break-inside: avoid; /* 防止表头跨页 */
           }
           .el-table th, .el-table td {
-            padding: 4px 3px; /* 减小内边距 */
-            font-size: 11px;
-            min-width: 40px;
+            padding: 4px 3px; /* 减小内边距以节省空间 */
+            font-size: 16px;
+            min-width: 40px; /* 调整最小宽度 */
             white-space: normal;
             word-wrap: break-word;
             word-break: break-word;
-            break-inside: avoid;
+            break-inside: avoid; /* 防止单元格跨页 */
           }
           .el-table th {
-            font-size: 12px; /* 表头字体稍大 */
+            font-size: 18px; /* 表头字体稍大 */
             font-weight: bold;
-            break-inside: avoid;
+            break-inside: avoid; /* 防止表头单元格跨页 */
           }
           .container span {
-            font-size: 12px;
+            font-size: 18px;
           }
           .print-title {
-            font-size: 16px;
+            font-size: 20px;
           }
           .footer-info {
-            margin-top: 10px;
-            font-size: 11px;
+            margin-top: 15px;
+            font-size: 18px;
           }
-          /* 防止表格跨页截断 */
-          thead {
-            display: table-header-group;
-          }
-          tfoot {
-            display: table-footer-group;
-          }
-          tbody {
-            display: table-row-group;
-          }
-          tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-            break-inside: avoid;
-          }
-          td, th {
-            page-break-inside: avoid;
-          }
-        }
         </style>
         </head>
         <body>
             <div class="print-title">${corpName}</div>
             <div class="print-title">EU电子支付通行费(MTC+ETC)统计按车型</div>
             <div class="container">${conditionListHtml}</div>
-            <div class="table-container">${tableHtml}</div>
+            <div class="table-container">
+              <div class="table-section">
+                ${passengerTableHtml}
+              </div>
+              <div class="table-section">
+                ${truckTableHtml}
+              </div>
+            </div>
             ${footerHtml}
         </body>
         </html>
-      `
+      `;
+
       printDocument.write(htmlContent);
       printDocument.close();
       // Trigger print
