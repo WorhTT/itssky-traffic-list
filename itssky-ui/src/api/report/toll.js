@@ -159,3 +159,35 @@ export function exportYh(data) {
     data: data
   })
 }
+
+export function eu(data) {
+  return request({
+    url: '/toll/eu',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportEu(data) {
+  return request({
+    url: '/toll/export/eu',
+    method: 'post',
+    data: data
+  })
+}
+
+export function mobVc(data) {
+  return request({
+    url: '/toll/mobvc',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportMobVc(data) {
+  return request({
+    url: '/toll/export/mobvc',
+    method: 'post',
+    data: data
+  })
+}

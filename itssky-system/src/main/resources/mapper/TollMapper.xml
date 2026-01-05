@@ -5,7 +5,7 @@
 <mapper namespace="com.itssky.system.mapper.TollMapper">
     <!--F1收费站通行费收入班统计表-->
     <select id="f1StationShift" resultType="com.itssky.system.domain.vo.StationShiftVo"
-            parameterType="com.itssky.system.domain.dto.StationShiftDto">
+            parameterType="com.itssky.system.domain.dto.StationTimeDto">
         SELECT
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
@@ -43,7 +43,7 @@
 
     <!-- F2收费站通行费收入日统计表 -->
     <select id="f2StationShift" resultType="com.itssky.system.domain.vo.StationShiftVo"
-            parameterType="com.itssky.system.domain.dto.StationShiftDto">
+            parameterType="com.itssky.system.domain.dto.StationTimeDto">
         SELECT
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
@@ -415,7 +415,7 @@
     </select>
 
     <!-- 获取交款记录表数据-->
-    <select id="getTbShData" resultType="com.itssky.system.domain.vo.TbShVo" parameterType="com.itssky.system.domain.dto.StationShiftDto">
+    <select id="getTbShData" resultType="com.itssky.system.domain.vo.TbShVo" parameterType="com.itssky.system.domain.dto.StationTimeDto">
         SELECT
         a.OperatorID AS operatorId,
         a.ShiftID AS shiftId,
@@ -536,7 +536,7 @@
     </select>
 
     <!-- 加收表查询 (支持多表联查)-->
-    <select id="getExtraPay" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.ExtraPayVo">
+    <select id="getExtraPay" parameterType="com.itssky.system.domain.dto.StationTimeDto" resultType="com.itssky.system.domain.vo.ExtraPayVo">
         SELECT
         a.StaDate AS staDate,
         LEFT(a.StaDate, 6) AS monthDate,
@@ -589,7 +589,7 @@
         </choose>
     </select>
 
-    <select id="getExtraPayForOtherDatabase" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.ExtraPayVo">
+    <select id="getExtraPayForOtherDatabase" parameterType="com.itssky.system.domain.dto.StationTimeDto" resultType="com.itssky.system.domain.vo.ExtraPayVo">
         SELECT
         a.StaDate AS staDate,
         LEFT(a.StaDate, 6) AS monthDate,
@@ -642,7 +642,7 @@
         </choose>
     </select>
 
-    <select id="getF6TollEntry" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.F6TollVo">
+    <select id="getF6TollEntry" parameterType="com.itssky.system.domain.dto.StationTimeDto" resultType="com.itssky.system.domain.vo.F6TollVo">
         SELECT
         a.TeamID AS teamId,
         a.OperatorID AS operatorId,
@@ -668,7 +668,7 @@
         GROUP BY a.OperatorID
     </select>
 
-    <select id="getF6TollExit" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.F6TollVo">
+    <select id="getF6TollExit" parameterType="com.itssky.system.domain.dto.StationTimeDto" resultType="com.itssky.system.domain.vo.F6TollVo">
         SELECT
         a.TeamID AS teamId,
         a.OperatorID AS operatorId,
@@ -696,7 +696,7 @@
         GROUP BY a.OperatorID
     </select>
 
-    <select id="getF6TollExtra" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.F6TollVo">
+    <select id="getF6TollExtra" parameterType="com.itssky.system.domain.dto.StationTimeDto" resultType="com.itssky.system.domain.vo.F6TollVo">
         SELECT
         a.OperatorID AS operatorId,
         (SELECT OperatorName FROM dbtoms.tboperatorinfo WHERE a.OperatorID = OperatorID LIMIT 1 ) AS operatorName,
@@ -719,7 +719,7 @@
         GROUP BY a.operatorid
     </select>
 
-    <select id="getTbShGroupByStation" parameterType="com.itssky.system.domain.dto.StationShiftDto" resultType="com.itssky.system.domain.vo.TbShVo">
+    <select id="getTbShGroupByStation" parameterType="com.itssky.system.domain.dto.StationTimeDto" resultType="com.itssky.system.domain.vo.TbShVo">
         SELECT
         StationID AS stationId,
         IFNULL(CAST(sum(AddedToll)/100 as DECIMAL(10,2)), 0) AS addedToll,
@@ -742,7 +742,7 @@
         ORDER BY StationID ASC
     </select>
 
-    <select id="getCf1Vo" resultType="com.itssky.system.domain.vo.Cf1Vo" parameterType="com.itssky.system.domain.dto.StationShiftDto">
+    <select id="getCf1Vo" resultType="com.itssky.system.domain.vo.Cf1Vo" parameterType="com.itssky.system.domain.dto.StationTimeDto">
         SELECT
         a.StationID AS stationId,
         (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
@@ -889,6 +889,72 @@
         IFNULL(CAST(SUM(CASE WHEN a.VehicleStatus=212 AND a.DealStatus &amp;14=10 THEN (a.TotalFee-a.TotalToll) ELSE 0 END)/100 as DECIMAL(10,2)),0) djysd
         FROM
         <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")">
+            SELECT
+            *
+            FROM ${tableName}
+            <where>
+                AND CancelFlag = 0
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statType != null and statType != '' and statType == 1">
+                GROUP BY OperatorID ORDER BY OperatorID
+            </when>
+            <when test="statType != null and statType != '' and statType == 2">
+                GROUP BY StaDate ORDER BY StaDate
+            </when>
+            <when test="statType != null and statType != '' and statType == 3">
+                GROUP BY monthDate ORDER BY monthDate
+            </when>
+            <when test="statType != null and statType != '' and statType == 4">
+                GROUP BY StationID  ORDER BY StationID
+            </when>
+        </choose>
+    </select>
+
+    <select id="eu" parameterType="com.itssky.system.domain.dto.CommonReportDto" resultType="com.itssky.system.domain.vo.EuVo">
+        SELECT
+        a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        a.StaDate AS staDate,
+        LEFT(a.StaDate, 6) AS monthDate,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (1,11) AND (a.CardType=22) THEN a.Totaltoll ELSE 0 END )/100,0) AS vc1,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (1,11) AND (a.CardType=23) THEN a.Totaltoll ELSE 0 END )/100,0) AS vd1,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (1,11) AND a.CardType=23 IN(22,23) THEN a.Totaltoll ELSE 0 END )/100,0) AS v1,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (2,12) AND (a.CardType=22) THEN a.Totaltoll ELSE 0 END )/100,0) AS vc2,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (2,12) AND (a.CardType=23) THEN a.Totaltoll ELSE 0 END )/100,0) AS vd2,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (2,12) AND a.CardType=23 IN(22,23) THEN a.Totaltoll ELSE 0 END )/100,0) AS v2,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (3,13) AND (a.CardType=22) THEN a.Totaltoll ELSE 0 END )/100,0) AS vc3,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (3,13) AND (a.CardType=23) THEN a.Totaltoll ELSE 0 END )/100,0) AS vd3,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (3,13) AND a.CardType=23 IN(22,23) THEN a.Totaltoll ELSE 0 END )/100,0) AS v3,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (4,14) AND (a.CardType=22) THEN a.Totaltoll ELSE 0 END )/100,0) AS vc4,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (4,14) AND (a.CardType=23) THEN a.Totaltoll ELSE 0 END )/100,0) AS vd4,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (4,14) AND a.CardType=23 IN(22,23) THEN a.Totaltoll ELSE 0 END )/100,0) AS v4,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (15) AND (a.CardType=22) THEN a.Totaltoll ELSE 0 END )/100,0) AS vc5,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (15) AND (a.CardType=23) THEN a.Totaltoll ELSE 0 END )/100,0) AS vd5,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (15) AND a.CardType=23 IN(22,23) THEN a.Totaltoll ELSE 0 END )/100,0) AS v5,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (16) AND (a.CardType=22) THEN a.Totaltoll ELSE 0 END )/100,0) AS vc6,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (16) AND (a.CardType=23) THEN a.Totaltoll ELSE 0 END )/100,0) AS vd6,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (16) AND a.CardType=23 IN(22,23) THEN a.Totaltoll ELSE 0 END )/100,0) AS v6,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (21,22,23,24,25,26) AND (a.CardType=22) THEN a.Totaltoll ELSE 0 END )/100,0) AS vcz,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (21,22,23,24,25,26) AND (a.CardType=23) THEN a.Totaltoll ELSE 0 END )/100,0) AS vdz,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (21,22,23,24,25,26) AND a.CardType=23 IN(22,23) THEN a.Totaltoll ELSE 0 END )/100,0) AS vz,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (1,2,3,4,11,12,13,14,15,16,21,22,23,24,25,26) AND (a.CardType=22) THEN a.Totaltoll ELSE 0 END )/100,0) AS sumc,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (1,2,3,4,11,12,13,14,15,16,21,22,23,24,25,26) AND (a.CardType=23) THEN a.Totaltoll ELSE 0 END )/100,0) AS sumd,
+        IFNULL(SUM(CASE WHEN a.vehicleclass IN (1,2,3,4,11,12,13,14,15,16,21,22,23,24,25,26) AND a.CardType=23 IN(22,23) THEN a.Totaltoll ELSE 0 END )/100,0) AS `sum`
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")">
         SELECT
         *
         FROM ${tableName}
@@ -905,6 +971,85 @@
                 AND StaDate <![CDATA[<=]]> #{intEndTime}
             </if>
         </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statType != null and statType != '' and statType == 1">
+                GROUP BY StaDate ORDER BY StaDate
+            </when>
+            <when test="statType != null and statType != '' and statType == 2">
+                GROUP BY monthDate ORDER BY monthDate
+            </when>
+            <when test="statType != null and statType != '' and statType == 3">
+                GROUP BY StationID  ORDER BY StationID
+            </when>
+        </choose>
+    </select>
+
+    <select id="mobVc" parameterType="com.itssky.system.domain.dto.CommonReportDto" resultType="com.itssky.system.domain.vo.MobVcVo">
+        SELECT
+        a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        a.StaDate AS staDate,
+        LEFT(a.StaDate, 6) AS monthDate,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=1 THEN a.CarNum ELSE 0 END),0) k1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=1 THEN a.TotalToll ELSE 0 END),0)/100 k1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=2 THEN a.CarNum ELSE 0 END),0) k1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=2 THEN a.TotalToll ELSE 0 END),0)/100 k1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=3 THEN a.CarNum ELSE 0 END),0) k1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=3 THEN a.TotalToll ELSE 0 END),0)/100 k1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=4 THEN a.CarNum ELSE 0 END),0) k1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=4 THEN a.TotalToll ELSE 0 END),0)/100 k1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (1,2,3,4) THEN a.CarNum ELSE 0 END),0) ksumf,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (1,2,3,4) THEN a.TotalToll ELSE 0 END),0)/100 ksumt,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=11 THEN a.CarNum ELSE 0 END),0) h1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=11 THEN a.TotalToll ELSE 0 END),0)/100 h1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=12 THEN a.CarNum ELSE 0 END),0) h1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=12 THEN a.TotalToll ELSE 0 END),0)/100 h1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=13 THEN a.CarNum ELSE 0 END),0) h1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=13 THEN a.TotalToll ELSE 0 END),0)/100 h1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=14 THEN a.CarNum ELSE 0 END),0) h1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=14 THEN a.TotalToll ELSE 0 END),0)/100 h1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=15 THEN a.CarNum ELSE 0 END),0) h1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=15 THEN a.TotalToll ELSE 0 END),0)/100 h1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=16 THEN a.CarNum ELSE 0 END),0) h1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=16 THEN a.TotalToll ELSE 0 END),0)/100 h1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (11,12,13,14,15,16) THEN a.CarNum ELSE 0 END),0) hsumf,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (11,12,13,14,15,16) THEN a.TotalToll ELSE 0 END),0)/100 hsumt,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=21 THEN a.CarNum ELSE 0 END),0) z1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=21 THEN a.TotalToll ELSE 0 END),0)/100 z1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=22 THEN a.CarNum ELSE 0 END),0) z1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=22 THEN a.TotalToll ELSE 0 END),0)/100 z1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=23 THEN a.CarNum ELSE 0 END),0) z1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=23 THEN a.TotalToll ELSE 0 END),0)/100 z1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=24 THEN a.CarNum ELSE 0 END),0) z1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=24 THEN a.TotalToll ELSE 0 END),0)/100 z1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=25 THEN a.CarNum ELSE 0 END),0) z1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=25 THEN a.TotalToll ELSE 0 END),0)/100 z1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=26 THEN a.CarNum ELSE 0 END),0) z1f,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=26 THEN a.TotalToll ELSE 0 END),0)/100 z1t,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (21,22,23,24,25,26) THEN a.CarNum ELSE 0 END),0) zsumf,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (21,22,23,24,25,26) THEN a.TotalToll ELSE 0 END),0)/100 zsumt,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (1,2,3,4,11,12,13,14,15,16,21,22,23,24,25,26) THEN a.CarNum ELSE 0 END),0) sumf,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (1,2,3,4,11,12,13,14,15,16,21,22,23,24,25,26) THEN a.TotalToll ELSE 0 END),0)/100 sumt
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" open="(" close=")">
+            SELECT
+            *
+            FROM ${tableName}
+            <where>
+                AND CancelFlag = 0
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
         </foreach>
         a
         <choose>

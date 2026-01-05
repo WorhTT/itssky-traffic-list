@@ -409,7 +409,7 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 4px 3px; /* 减小内边距 */
-            font-size: 19px; /* 再增加内容字体大小 */
+            font-size: 21px; /* 再增加内容字体大小 */
             min-width: 40px;
             white-space: normal;
             word-wrap: break-word;
@@ -417,18 +417,18 @@ export default {
             break-inside: avoid;
           }
           .el-table th {
-            font-size: 22px; /* 再增加表头字体大小 */
+            font-size: 23px; /* 再增加表头字体大小 */
             break-inside: avoid;
           }
           .container span {
-            font-size: 16px;
+            font-size: 23px;
           }
           .print-title {
-            font-size: 20px;
+            font-size: 25px;
           }
           .footer-info {
             margin-top: 10px;
-            font-size: 15px;
+            font-size: 23px;
           }
           /* 防止表格跨页截断 */
           thead {

@@ -84,7 +84,7 @@ public class CardServiceImpl implements CardService {
         } else if ("1".equals(dto.getTableFlag())) {
             cardStatisticsVos = cardMapper.c1StationShift(dto);
         }
-        StationShiftDto tbShDto = new StationShiftDto();
+        StationTimeDto tbShDto = new StationTimeDto();
         tbShDto.setTimeFormat(dto.getIntTime());
         tbShDto.setStationIdList(dto.getStationIdList());
         tbShDto.setShiftId(dto.getShiftId());
@@ -296,7 +296,7 @@ public class CardServiceImpl implements CardService {
             wrapper.eq(TbStationInfo::getStationid, stationId);
             TbStationInfo tbStationInfo = tbStationInfoMapper.selectOne(wrapper);
             if (Objects.nonNull(tbStationInfo)) {
-                return Objects.requireNonNull(tbStationInfo.getStationname());
+                return "收费站:" + Objects.requireNonNull(tbStationInfo.getStationname());
             }
         }
         return "收费站：";
@@ -398,7 +398,7 @@ public class CardServiceImpl implements CardService {
             dto.setIntTime(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
         }
         List<CardStatisticsVo> cardStatisticsVos = cardMapper.s1StationShift(dto);
-        StationShiftDto tbShDto = new StationShiftDto();
+        StationTimeDto tbShDto = new StationTimeDto();
         tbShDto.setTimeFormat(dto.getIntTime());
         tbShDto.setStationIdList(dto.getStationIdList());
         tbShDto.setShiftId(dto.getShiftId());

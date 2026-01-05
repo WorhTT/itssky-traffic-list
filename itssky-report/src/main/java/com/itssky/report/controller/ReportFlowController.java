@@ -8,6 +8,7 @@ import com.itssky.system.domain.ReportChargeInfo;
 import com.itssky.system.domain.ReportFlowInfo;
 import com.itssky.system.domain.TbUserInfo;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
+import com.itssky.system.domain.dto.StationTimeDto;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.service.CardService;
 import com.itssky.system.service.ITollService;
@@ -344,6 +345,8 @@ public class ReportFlowController extends BaseController {
         return util.exportDynamic(list, "ECS电子支付(MTC、ETC)出口流量统计表", conditionList, 42, reportTitleName, loginUserInfo.getUsername());
     }
 
+
+
 //    @PostMapping(value = "/od")
 //    public TableDataVo od(@RequestBody @Valid FlowStatisticsDto dto) {
 //        TableDataVo data = new TableDataVo();
@@ -370,4 +373,28 @@ public class ReportFlowController extends BaseController {
 //        }
 //    }
 
+    /**
+     * ECS2收费站电子支付综合出口流量日统计表
+     * 2026年1月4日 16:59:34
+     */
+    @PostMapping(value = "/flow/ecs2")
+    public TableDataVo ecs2(@RequestBody @Valid StationTimeDto dto) {
+        TableDataVo data = new TableDataVo();
+        List<Ecs2Vo> list = reportFlowService.ecs2(dto);
+        data.setRows(list);
+        data.setTitle(reportTitleName);
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime()));
+        return data;
+    }
+
+
+    @PostMapping(value = "/flow/export/ecs2")
+    public AjaxResult exportEcs2(@RequestBody @Valid StationTimeDto dto) throws IOException {
+        List<Ecs2Vo> list = reportFlowService.ecs2(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime());
+        ExcelUtil<Ecs2Vo> util = new ExcelUtil<Ecs2Vo>(Ecs2Vo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "ECS2收费站电子支付综合出口流量日统计表", conditionList, 27, reportTitleName, loginUserInfo.getUsername());
+    }
 }

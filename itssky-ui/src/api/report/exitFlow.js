@@ -167,3 +167,19 @@ export function exportEcsFlow(data) {
     data: data
   })
 }
+
+export function ecs2(data) {
+  return request({
+    url: '/report/flow/ecs2',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportEcs2(data) {
+  return request({
+    url: '/report/flow/export/ecs2',
+    method: 'post',
+    data: data
+  })
+}

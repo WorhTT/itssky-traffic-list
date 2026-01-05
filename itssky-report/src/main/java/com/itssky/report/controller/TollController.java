@@ -6,10 +6,7 @@ import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.SecurityUtils;
 import com.itssky.common.utils.poi.ExcelUtil;
 import com.itssky.system.domain.TbUserInfo;
-import com.itssky.system.domain.dto.TollYhDto;
-import com.itssky.system.domain.dto.VehicleClassStatDto;
-import com.itssky.system.domain.dto.FtStationDto;
-import com.itssky.system.domain.dto.StationShiftDto;
+import com.itssky.system.domain.dto.*;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.service.CardService;
 import com.itssky.system.service.ITollService;
@@ -52,7 +49,7 @@ public class TollController extends BaseController {
      * F1收费站通行费收入班统计表
      */
     @PostMapping(value = "/f1station")
-    public TableDataVo f1StationShift(@RequestBody @Valid StationShiftDto dto) {
+    public TableDataVo f1StationShift(@RequestBody @Valid StationTimeDto dto) {
         List<StationShiftVo> result = tollService.f1StationShift(dto);
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(result);
@@ -68,7 +65,7 @@ public class TollController extends BaseController {
      * 导出F1收费站通行费收入班统计表
      */
     @PostMapping(value = "/export/f1station")
-    public AjaxResult exportF1Station(@RequestBody @Valid StationShiftDto dto) throws IOException {
+    public AjaxResult exportF1Station(@RequestBody @Valid StationTimeDto dto) throws IOException {
         List<F1StationShiftTollVo> f1StationShiftToll = tollService.getF1StationShiftToll(dto);
         ExcelUtil<F1StationShiftTollVo> util = new ExcelUtil<F1StationShiftTollVo>(F1StationShiftTollVo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
@@ -80,7 +77,7 @@ public class TollController extends BaseController {
      * F2收费站通行费收入日统计表
      */
     @PostMapping(value = "/f2station")
-    public TableDataVo f2StationShift(@RequestBody @Valid StationShiftDto dto) {
+    public TableDataVo f2StationShift(@RequestBody @Valid StationTimeDto dto) {
         List<StationShiftVo> result = tollService.f2StationShift(dto);
         TableDataVo tableDataVo = new TableDataVo();
         tableDataVo.setRows(result);
@@ -94,7 +91,7 @@ public class TollController extends BaseController {
      * 导出F2收费站通行费收入日统计表
      */
     @PostMapping(value = "/export/f2station")
-    public AjaxResult exportF2Station(@RequestBody @Valid StationShiftDto dto) throws IOException {
+    public AjaxResult exportF2Station(@RequestBody @Valid StationTimeDto dto) throws IOException {
         List<F2StationShiftTollVo> f2StationShiftToll = tollService.getF2StationShiftToll(dto);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime());
         ExcelUtil<F2StationShiftTollVo> util = new ExcelUtil<F2StationShiftTollVo>(F2StationShiftTollVo.class);
@@ -202,7 +199,7 @@ public class TollController extends BaseController {
     }
 
     @PostMapping(value = "/f6toll")
-    public TableDataVo getF6Toll(@RequestBody @Valid StationShiftDto dto) {
+    public TableDataVo getF6Toll(@RequestBody @Valid StationTimeDto dto) {
         TableDataVo data = new TableDataVo();
         data.setRows(tollService.f6Toll(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
@@ -212,7 +209,7 @@ public class TollController extends BaseController {
     }
 
     @PostMapping(value = "/export/f6toll")
-    public AjaxResult exportF6Toll(@RequestBody @Valid StationShiftDto dto) throws IOException {
+    public AjaxResult exportF6Toll(@RequestBody @Valid StationTimeDto dto) throws IOException {
         List<F6TollVo> list = tollService.f6Toll(dto);
         ExcelUtil<F6TollVo> util = new ExcelUtil<F6TollVo>(F6TollVo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
@@ -221,7 +218,7 @@ public class TollController extends BaseController {
     }
 
     @PostMapping(value = "/cf1toll")
-    public TableDataVo getCf1Toll(@RequestBody @Valid StationShiftDto dto) {
+    public TableDataVo getCf1Toll(@RequestBody @Valid StationTimeDto dto) {
         TableDataVo data = new TableDataVo();
         data.setRows(tollService.cf1Toll(dto));
         data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId()));
@@ -231,7 +228,7 @@ public class TollController extends BaseController {
     }
 
     @PostMapping(value = "/export/cf1toll")
-    public AjaxResult exportCf1Toll(@RequestBody @Valid StationShiftDto dto) throws IOException {
+    public AjaxResult exportCf1Toll(@RequestBody @Valid StationTimeDto dto) throws IOException {
         List<Cf1Vo> list = tollService.cf1Toll(dto);
         ExcelUtil<Cf1Vo> util = new ExcelUtil<Cf1Vo>(Cf1Vo.class);
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getTime(), dto.getShiftId());
@@ -298,5 +295,56 @@ public class TollController extends BaseController {
         List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         return util.exportDynamic(list, "YH优惠金额综合报表", conditionList, 31, reportTitleName, loginUserInfo.getUsername());
+    }
+
+
+    /**
+     * EU电子支付通行费(MTC+ETC)按车型统计 2026年1月4日 14:17:49
+     * 统计方式 日、月、站
+     */
+    @PostMapping(value = "/eu")
+    public TableDataVo eu(@RequestBody @Valid CommonReportDto dto) {
+        TableDataVo data = new TableDataVo();
+        List<EuVo> list = tollService.eu(dto);
+        data.setRows(list);
+        data.setTitle(reportTitleName);
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        //构建查询条件
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return data;
+    }
+
+    @PostMapping(value = "/export/eu")
+    public AjaxResult exportEu(@RequestBody @Valid CommonReportDto dto) throws IOException {
+        List<EuVo> list = tollService.eu(dto);
+        ExcelUtil<EuVo> util = new ExcelUtil<>(EuVo.class);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "EU电子支付通行费(MTC+ETC)按车型统计", conditionList, 25, reportTitleName, loginUserInfo.getUsername());
+    }
+
+    /**
+     * MOB移动支付统计按车型统计 2026年1月4日 16:23:54
+     * 统计方式 日、月、站
+     */
+    @PostMapping(value = "/mobvc")
+    public TableDataVo mobVc(@RequestBody @Valid CommonReportDto dto) {
+        TableDataVo data = new TableDataVo();
+        List<MobVcVo> list = tollService.mobVc(dto);
+        data.setRows(list);
+        data.setTitle(reportTitleName);
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        //构建查询条件
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return data;
+    }
+
+    @PostMapping(value = "/export/mobvc")
+    public AjaxResult exportMobVc(@RequestBody @Valid CommonReportDto dto) throws IOException {
+        List<MobVcVo> list = tollService.mobVc(dto);
+        ExcelUtil<MobVcVo> util = new ExcelUtil<>(MobVcVo.class);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "MOB移动支付统计按车型统计", conditionList, 41, reportTitleName, loginUserInfo.getUsername());
     }
 }

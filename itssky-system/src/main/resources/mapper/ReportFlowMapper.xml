@@ -379,7 +379,7 @@
 
     <!--F1收费站通行费收入班统计表-->
     <select id="f1StationShift" resultType="com.itssky.system.domain.vo.StationShiftVo"
-            parameterType="com.itssky.system.domain.dto.StationShiftDto">
+            parameterType="com.itssky.system.domain.dto.StationTimeDto">
         SELECT
         SUM(a.TotalFee) AS dueAmount,
         SUM(a.TotalArrearage) AS arrearsAmount,
@@ -404,7 +404,7 @@
 
     <!-- F2收费站通行费收入班统计表 -->
     <select id="f2StationShift" resultType="com.itssky.system.domain.vo.StationShiftVo"
-            parameterType="com.itssky.system.domain.dto.StationShiftDto">
+            parameterType="com.itssky.system.domain.dto.StationTimeDto">
         SELECT
         SUM(a.TotalFee) AS dueAmount,
         SUM(a.TotalArrearage) AS arrearsAmount,
@@ -429,7 +429,7 @@
     </select>
 
     <!-- 获取交款记录表数据-->
-    <select id="getTbShData" resultType="map" parameterType="com.itssky.system.domain.dto.StationShiftDto">
+    <select id="getTbShData" resultType="map" parameterType="com.itssky.system.domain.dto.StationTimeDto">
         SELECT
         SUM(HandToll) AS handToll,
         SUM(AddedToll) AS addedToll
@@ -1064,5 +1064,50 @@
         a
         GROUP BY a.StationID
         ORDER BY a.StationID
+    </select>
+
+    <select id="ecs2" parameterType="com.itssky.system.domain.dto.StationTimeDto"
+            resultType="com.itssky.system.domain.vo.Ecs2Vo">
+        SELECT a.DifferHour AS time,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=1 AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) k1c,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=1 AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) k1d,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=2 AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) k2c,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=2 AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) k2d,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=3 AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) k3c,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=3 AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) k3d,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=4 AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) k4c,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=4 AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) k4d,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (1,2,3,4) AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) ksumc,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (1,2,3,4) AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) ksumd,
+
+        IFNULL(SUM(CASE WHEN a.VehicleClass=11 AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) h1c,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=11 AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) h1d,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=12 AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) h2c,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=12 AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) h2d,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=13 AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) h3c,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=13 AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) h3d,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=14 AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) h4c,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=14 AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) h4d,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=15 AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) h5c,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=15 AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) h5d,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=16 AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) h6c,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=16 AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) h6d,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (11,12,13,14,15,16) AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) hsumc,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (11,12,13,14,15,16) AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) hsumd,
+
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (1,2,3,4,11,12,13,14,15,16) AND (a.CardType=22 OR (a.CardType=26 AND a.PayChannel=22)) THEN a.CarNum ELSE 0 END),0) sumc,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (1,2,3,4,11,12,13,14,15,16) AND (a.CardType=23 OR (a.CardType=26 AND a.PayChannel=23)) THEN a.CarNum ELSE 0 END),0) sumd
+        FROM ${tableName} a
+        <where>
+            AND CancelFlag = 0
+            <if test="stationId != null and stationId !=''">
+                AND a.StationID = #{stationId}
+            </if>
+            <if test="timeFormat != null and timeFormat != ''">
+                AND a.StaDate = #{timeFormat}
+            </if>
+            AND substring(LaneID,-3,1)=1 AND PayMode=2
+        </where>
+        GROUP BY a.DifferHour ORDER BY a.DifferHour
     </select>
 </mapper>

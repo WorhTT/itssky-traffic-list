@@ -383,7 +383,7 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 4px 3px; /* 减小内边距 */
-            font-size: 11px;
+            font-size: 14px;
             min-width: 40px;
             white-space: normal;
             word-wrap: break-word;
@@ -391,19 +391,19 @@ export default {
             break-inside: avoid;
           }
           .el-table th {
-            font-size: 12px; /* 表头字体稍大 */
+            font-size: 15px; /* 表头字体稍大 */
             font-weight: bold;
             break-inside: avoid;
           }
           .container span {
-            font-size: 12px;
+            font-size: 15px;
           }
           .print-title {
-            font-size: 16px;
+            font-size: 20px;
           }
           .footer-info {
             margin-top: 10px;
-            font-size: 11px;
+            font-size: 15px;
           }
           /* 防止表格跨页截断 */
           thead {

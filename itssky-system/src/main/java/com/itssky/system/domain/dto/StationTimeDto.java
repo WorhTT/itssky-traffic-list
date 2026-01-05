@@ -3,7 +3,6 @@ package com.itssky.system.domain.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Builder
-public class StationShiftDto {
+public class StationTimeDto {
 
     private List<List<Integer>> stationIdArray;
 

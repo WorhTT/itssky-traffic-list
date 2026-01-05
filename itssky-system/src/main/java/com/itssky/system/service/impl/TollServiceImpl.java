@@ -2,18 +2,11 @@ package com.itssky.system.service.impl;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itssky.common.annotation.DynamicTableName;
 import com.itssky.common.core.domain.model.LoginUser;
-import com.itssky.system.domain.TbStationInfo;
-import com.itssky.system.domain.dto.TollYhDto;
+import com.itssky.system.domain.dto.*;
 import com.itssky.system.domain.vo.*;
-import com.itssky.system.domain.dto.FtStationDto;
-import com.itssky.system.domain.dto.StationShiftDto;
-import com.itssky.system.domain.dto.VehicleClassStatDto;
-import com.itssky.system.mapper.TbStationInfoMapper;
 import com.itssky.system.mapper.TollMapper;
-import com.itssky.system.service.GroupAggDefinition;
 import com.itssky.system.service.ITollService;
 import com.itssky.system.service.TbStationInfoService;
 import com.itssky.util.TableUtil;
@@ -52,7 +45,7 @@ public class TollServiceImpl implements ITollService {
      */
     @Override
     @DynamicTableName(dateParam = "#dto.time")
-    public List<StationShiftVo> f1StationShift(StationShiftDto dto) {
+    public List<StationShiftVo> f1StationShift(StationTimeDto dto) {
         int statDate = Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN));
         dto.setTimeFormat(statDate);
         dto.setStationIdList(Collections.singletonList(dto.getStationId()));
@@ -114,7 +107,7 @@ public class TollServiceImpl implements ITollService {
 
     @Override
     @DynamicTableName(dateParam = "#dto.time")
-    public List<F1StationShiftTollVo> getF1StationShiftToll(StationShiftDto dto) {
+    public List<F1StationShiftTollVo> getF1StationShiftToll(StationTimeDto dto) {
         List<StationShiftVo> stationShiftVos = f1StationShift(dto);
         List<F1StationShiftTollVo> result = new ArrayList<>();
         stationShiftVos.forEach(i -> {
@@ -142,7 +135,7 @@ public class TollServiceImpl implements ITollService {
 
     @Override
     @DynamicTableName(dateParam = "#dto.time")
-    public List<F2StationShiftTollVo> getF2StationShiftToll(StationShiftDto dto) {
+    public List<F2StationShiftTollVo> getF2StationShiftToll(StationTimeDto dto) {
         List<StationShiftVo> stationShiftVos = f2StationShift(dto);
         List<F2StationShiftTollVo> result = new ArrayList<>();
         stationShiftVos.forEach(i -> {
@@ -183,7 +176,7 @@ public class TollServiceImpl implements ITollService {
      */
     @Override
     @DynamicTableName(dateParam = "#dto.time")
-    public List<StationShiftVo> f2StationShift(StationShiftDto dto) {
+    public List<StationShiftVo> f2StationShift(StationTimeDto dto) {
         //判断用户的corpno
         dto.setStationIdList(Collections.singletonList(dto.getStationId()));
         int dateFormat = Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN));
@@ -333,7 +326,7 @@ public class TollServiceImpl implements ITollService {
                 TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "extrapay",
                         DatePattern.NORM_YEAR_PATTERN)
         );
-        StationShiftDto  paramDto = new StationShiftDto();
+        StationTimeDto paramDto = new StationTimeDto();
         BeanUtils.copyProperties(dto,  paramDto);
         List<ExtraPayVo> extraPayList = tollMapper.getExtraPay(paramDto);
         //日
@@ -797,7 +790,7 @@ public class TollServiceImpl implements ITollService {
 
     @Override
     @DynamicTableName(dateParam = "#dto.time")
-    public List<F6TollVo> f6Toll(StationShiftDto dto) {
+    public List<F6TollVo> f6Toll(StationTimeDto dto) {
         dto.setTimeFormat(Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN)));
         List<F6TollVo> result = new ArrayList<>();
         List<F6TollVo> entryList = tollMapper.getF6TollEntry(dto);
@@ -882,7 +875,7 @@ public class TollServiceImpl implements ITollService {
     }
 
     @Override
-    public List<Cf1Vo> cf1Toll(StationShiftDto dto) {
+    public List<Cf1Vo> cf1Toll(StationTimeDto dto) {
         //构建收费站列表参数
         //获取收费站ID列表
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -1130,7 +1123,7 @@ public class TollServiceImpl implements ITollService {
                 TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(), "extrapay",
                         DatePattern.NORM_YEAR_PATTERN)
         );
-        StationShiftDto  paramDto = new StationShiftDto();
+        StationTimeDto paramDto = new StationTimeDto();
         BeanUtils.copyProperties(dto,  paramDto);
         List<ExtraPayVo> extraPayList = tollMapper.getExtraPayForOtherDatabase(paramDto);
         //日
@@ -1305,5 +1298,140 @@ public class TollServiceImpl implements ITollService {
         sumRow.setSumd(yhList.stream().map(TollYhVo::getSumd).reduce(BigDecimal.ZERO, BigDecimal::add));
         yhList.add(sumRow);
         return yhList;
+    }
+
+
+    @Override
+    public List<EuVo> eu(CommonReportDto dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
+        int intBeginDate = Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN));
+        int intEndDate = Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN));
+        List<String> tableNameList = TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(),
+                "tbstatexit", DatePattern.SIMPLE_MONTH_PATTERN);
+        if (CollectionUtils.isEmpty(tableNameList)) {
+            return new ArrayList<>();
+        }
+        dto.setTableNameList(tableNameList);
+        dto.setIntBeginTime(intBeginDate);
+        dto.setIntEndTime(intEndDate);
+        List<EuVo> eu = tollMapper.eu(dto);
+        if (CollectionUtils.isEmpty(eu)) {
+            return new ArrayList<>();
+        }
+        eu.forEach(item -> {
+            if ("1".equals(dto.getStatType())) {
+                item.setStatType(item.getStaDate());
+            } else if ("2".equals(dto.getStatType())) {
+                item.setStatType(item.getMonthDate());
+            } else if ("3".equals(dto.getStatType())) {
+                item.setStatType(item.getStationName());
+            }
+        });
+        //添加合计行
+        EuVo totalRow = new EuVo();
+        totalRow.setTotalRow(true);
+        totalRow.setStatType("合计");
+        totalRow.setVc1(eu.stream().map(EuVo::getVc1).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVd1(eu.stream().map(EuVo::getVd1).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setV1(eu.stream().map(EuVo::getV1).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVc2(eu.stream().map(EuVo::getVc2).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVd2(eu.stream().map(EuVo::getVd2).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setV2(eu.stream().map(EuVo::getV2).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVc3(eu.stream().map(EuVo::getVc3).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVd3(eu.stream().map(EuVo::getVd3).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setV3(eu.stream().map(EuVo::getV3).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVc4(eu.stream().map(EuVo::getVc4).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVd4(eu.stream().map(EuVo::getVd4).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setV4(eu.stream().map(EuVo::getV4).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVc5(eu.stream().map(EuVo::getVc5).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVd5(eu.stream().map(EuVo::getVd5).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setV5(eu.stream().map(EuVo::getV5).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVc6(eu.stream().map(EuVo::getVc6).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVd6(eu.stream().map(EuVo::getVd6).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setV6(eu.stream().map(EuVo::getV6).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVcz(eu.stream().map(EuVo::getVcz).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVdz(eu.stream().map(EuVo::getVdz).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setVz(eu.stream().map(EuVo::getVz).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setSumc(eu.stream().map(EuVo::getSumc).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setSumd(eu.stream().map(EuVo::getSumd).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setSum(eu.stream().map(EuVo::getSum).reduce(BigDecimal.ZERO, BigDecimal::add));
+        eu.add(totalRow);
+        return eu;
+    }
+
+    @Override
+    public List<MobVcVo> mobVc(CommonReportDto dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
+        int intBeginDate = Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN));
+        int intEndDate = Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN));
+        List<String> tableNameList = TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(),
+                "tbstatexit", DatePattern.SIMPLE_MONTH_PATTERN);
+        if (CollectionUtils.isEmpty(tableNameList)) {
+            return new ArrayList<>();
+        }
+        dto.setTableNameList(tableNameList);
+        dto.setIntBeginTime(intBeginDate);
+        dto.setIntEndTime(intEndDate);
+        List<MobVcVo> mobVcVos = tollMapper.mobVc(dto);
+        if (CollectionUtils.isEmpty(mobVcVos)) {
+            return new ArrayList<>();
+        }
+        mobVcVos.forEach(item -> {
+            if ("1".equals(dto.getStatType())) {
+                item.setStatType(item.getStaDate());
+            } else if ("2".equals(dto.getStatType())) {
+                item.setStatType(item.getMonthDate());
+            } else if ("3".equals(dto.getStatType())) {
+                item.setStatType(item.getStationName());
+            }
+        });
+        //添加合计行
+        MobVcVo totalRow = new MobVcVo();
+        totalRow.setTotalRow(true);
+        totalRow.setStatType("合计");
+        totalRow.setK1f(mobVcVos.stream().map(i -> new BigDecimal(i.getK1f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK1t(mobVcVos.stream().map(MobVcVo::getK1t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setK2f(mobVcVos.stream().map(i -> new BigDecimal(i.getK2f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK2t(mobVcVos.stream().map(MobVcVo::getK2t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setK3f(mobVcVos.stream().map(i -> new BigDecimal(i.getK3f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK3t(mobVcVos.stream().map(MobVcVo::getK3t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setK4f(mobVcVos.stream().map(i -> new BigDecimal(i.getK4f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK4t(mobVcVos.stream().map(MobVcVo::getK4t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setKsumf(mobVcVos.stream().map(i -> new BigDecimal(i.getKsumf())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setKsumt(mobVcVos.stream().map(MobVcVo::getKsumt).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setH1f(mobVcVos.stream().map(i -> new BigDecimal(i.getH1f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH1t(mobVcVos.stream().map(MobVcVo::getH1t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setH2f(mobVcVos.stream().map(i -> new BigDecimal(i.getH2f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH2t(mobVcVos.stream().map(MobVcVo::getH2t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setH3f(mobVcVos.stream().map(i -> new BigDecimal(i.getH3f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH3t(mobVcVos.stream().map(MobVcVo::getH3t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setH4f(mobVcVos.stream().map(i -> new BigDecimal(i.getH4f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH4t(mobVcVos.stream().map(MobVcVo::getH4t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setHsumf(mobVcVos.stream().map(i -> new BigDecimal(i.getHsumf())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setHsumt(mobVcVos.stream().map(MobVcVo::getHsumt).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setZ1f(mobVcVos.stream().map(i -> new BigDecimal(i.getZ1f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ1t(mobVcVos.stream().map(MobVcVo::getZ1t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setZ2f(mobVcVos.stream().map(i -> new BigDecimal(i.getZ2f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ2t(mobVcVos.stream().map(MobVcVo::getZ2t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setZ3f(mobVcVos.stream().map(i -> new BigDecimal(i.getZ3f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ3t(mobVcVos.stream().map(MobVcVo::getZ3t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setZ4f(mobVcVos.stream().map(i -> new BigDecimal(i.getZ4f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ4t(mobVcVos.stream().map(MobVcVo::getZ4t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setZ5f(mobVcVos.stream().map(i -> new BigDecimal(i.getZ5f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ5t(mobVcVos.stream().map(MobVcVo::getZ5t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setZ6f(mobVcVos.stream().map(i -> new BigDecimal(i.getZ6f())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZ6t(mobVcVos.stream().map(MobVcVo::getZ6t).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setZsumf(mobVcVos.stream().map(i -> new BigDecimal(i.getZsumf())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setZsumt(mobVcVos.stream().map(MobVcVo::getZsumt).reduce(BigDecimal.ZERO, BigDecimal::add));
+        totalRow.setSumf(mobVcVos.stream().map(i -> new BigDecimal(i.getSumf())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setSumt(mobVcVos.stream().map(MobVcVo::getSumt).reduce(BigDecimal.ZERO, BigDecimal::add));
+        mobVcVos.add(totalRow);
+        return mobVcVos;
     }
 }

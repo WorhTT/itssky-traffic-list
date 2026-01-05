@@ -4,6 +4,7 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.itssky.common.annotation.DynamicTableName;
 import com.itssky.common.core.domain.model.LoginUser;
 import com.itssky.common.utils.DateUtils;
 import com.itssky.common.utils.MybatisPlusTableNameHelper;
@@ -12,6 +13,7 @@ import com.itssky.db.Dbedge;
 import com.itssky.db.Dbstats;
 import com.itssky.system.domain.*;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
+import com.itssky.system.domain.dto.StationTimeDto;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.mapper.*;
 import com.itssky.system.service.CardService;
@@ -813,6 +815,53 @@ public class ReportFlowService {
         totalRow.setCzx(list.stream().map(i -> new BigDecimal(i.getCzx())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setCsum(list.stream().map(i -> new BigDecimal(i.getCsum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setAllSum(list.stream().map(i -> new BigDecimal(i.getAllSum())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        list.add(totalRow);
+        return list;
+    }
+
+    public List<Ecs2Vo> ecs2(StationTimeDto dto) {
+        dto.setStationId(dto.getStationId());
+        if (Objects.isNull(dto.getTime())) {
+            return new ArrayList<>();
+        }
+        int staDate = Integer.parseInt(DateUtil.format(dto.getTime(), DatePattern.PURE_DATE_PATTERN));
+        String tableName = "mtraffic" + String.valueOf(staDate).substring(0, 6);
+        dto.setTableName(tableName);
+        dto.setTimeFormat(staDate);
+        List<Ecs2Vo> list = reportFlowMapper.ecs2(dto);
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+        //增加合计行
+        Ecs2Vo totalRow = new Ecs2Vo();
+        totalRow.setTotalRow(true);
+        totalRow.setTime("合计");
+        totalRow.setK1c(list.stream().map(i -> new BigDecimal(i.getK1c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK1d(list.stream().map(i -> new BigDecimal(i.getK1d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK2c(list.stream().map(i -> new BigDecimal(i.getK2c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK2d(list.stream().map(i -> new BigDecimal(i.getK2d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK3c(list.stream().map(i -> new BigDecimal(i.getK3c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK3d(list.stream().map(i -> new BigDecimal(i.getK3d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK4c(list.stream().map(i -> new BigDecimal(i.getK4c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setK4d(list.stream().map(i -> new BigDecimal(i.getK4d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setKsumc(list.stream().map(i -> new BigDecimal(i.getKsumc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setKsumd(list.stream().map(i -> new BigDecimal(i.getKsumd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH1c(list.stream().map(i -> new BigDecimal(i.getH1c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH1d(list.stream().map(i -> new BigDecimal(i.getH1d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH2c(list.stream().map(i -> new BigDecimal(i.getH2c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH2d(list.stream().map(i -> new BigDecimal(i.getH2d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH3c(list.stream().map(i -> new BigDecimal(i.getH3c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH3d(list.stream().map(i -> new BigDecimal(i.getH3d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH4c(list.stream().map(i -> new BigDecimal(i.getH4c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH4d(list.stream().map(i -> new BigDecimal(i.getH4d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH5c(list.stream().map(i -> new BigDecimal(i.getH5c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH5d(list.stream().map(i -> new BigDecimal(i.getH5d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH6c(list.stream().map(i -> new BigDecimal(i.getH6c())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setH6d(list.stream().map(i -> new BigDecimal(i.getH6d())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setHsumc(list.stream().map(i -> new BigDecimal(i.getHsumc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setHsumd(list.stream().map(i -> new BigDecimal(i.getHsumd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setSumc(list.stream().map(i -> new BigDecimal(i.getSumc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        totalRow.setSumd(list.stream().map(i -> new BigDecimal(i.getSumd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         list.add(totalRow);
         return list;
     }

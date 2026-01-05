@@ -2,8 +2,10 @@ package com.itssky.system.mapper;
 
 import com.itssky.db.Dbstats;
 import com.itssky.db.Dbstats2;
+import com.itssky.db.ItsData;
 import com.itssky.system.domain.*;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
+import com.itssky.system.domain.dto.StationTimeDto;
 import com.itssky.system.domain.vo.*;
 
 import java.util.List;
@@ -48,7 +50,8 @@ public interface ReportFlowMapper {
     @Dbstats2
     public List<FlowVeClassVo> getFlowVeClassForOtherDatabase(FlowStatisticsDto dto);
 
-
+    @ItsData
+    public List<Ecs2Vo> ecs2(StationTimeDto dto);
 
 //    public List<FlowGroupVo> getErjs(FlowStatisticsDto dto);
 }
