@@ -278,23 +278,47 @@ export default {
       <span class="print-time">打印时间：${printTime}</span>
     </div>
   `;
-      // 创建一个新的表格结构，避免样式冲突
-      let tableHtml = `
+      // 创建四个独立的表格结构，分别展示客车、货车、专车和总计
+      let passengerTableHtml = `
+        <h3 style="text-align: center; margin: 10px 0;">客车数据</h3>
         <table class="el-table">
           <thead>
             <tr>
-              <th rowspan="3">统计方式</th>
-              <th colspan="15">客车</th>
-              <th colspan="21">货车</th>
-              <th colspan="21">专车</th>
-              <th colspan="3">总计</th>
-            </tr>
-            <tr>
+              <th style="min-width: 80px;">统计方式</th>
               <th colspan="3">客一</th>
               <th colspan="3">客二</th>
               <th colspan="3">客三</th>
               <th colspan="3">客四</th>
               <th colspan="3">小计</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let truckTableHtml = `
+        <h3 style="text-align: center; margin: 10px 0;">货车数据</h3>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th style="min-width: 80px;">统计方式</th>
               <th colspan="3">货一</th>
               <th colspan="3">货二</th>
               <th colspan="3">货三</th>
@@ -302,6 +326,41 @@ export default {
               <th colspan="3">货五</th>
               <th colspan="3">货六</th>
               <th colspan="3">小计</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let specialTableHtml = `
+        <h3 style="text-align: center; margin: 10px 0;">专车数据</h3>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th style="min-width: 80px;">统计方式</th>
               <th colspan="3">专一</th>
               <th colspan="3">专二</th>
               <th colspan="3">专三</th>
@@ -309,11 +368,9 @@ export default {
               <th colspan="3">专五</th>
               <th colspan="3">专六</th>
               <th colspan="3">小计</th>
-              <th rowspan="2">C卡</th>
-              <th rowspan="2">D卡</th>
-              <th rowspan="2">合计</th>
             </tr>
             <tr>
+              <th></th>
               <th>C卡</th>
               <th>D卡</th>
               <th>合计</th>
@@ -335,39 +392,17 @@ export default {
               <th>C卡</th>
               <th>D卡</th>
               <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let totalTableHtml = `
+        <h3 style="text-align: center; margin: 10px 0;">总计数据</h3>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th style="min-width: 80px;">统计方式</th>
               <th>C卡</th>
               <th>D卡</th>
               <th>合计</th>
@@ -441,7 +476,8 @@ export default {
         const dtotal = row.dtotal !== undefined && row.dtotal !== null ? row.dtotal : '';
         const totalSum = row.totalSum !== undefined && row.totalSum !== null ? row.totalSum : '';
 
-        tableHtml += `
+        // 客车表格行
+        passengerTableHtml += `
           <tr>
             <td>${statType}</td>
             <td>${cust1C}</td>
@@ -459,6 +495,13 @@ export default {
             <td>${custCSubTotal}</td>
             <td>${custDSubTotal}</td>
             <td>${custSubSum}</td>
+          </tr>
+        `;
+
+        // 货车表格行
+        truckTableHtml += `
+          <tr>
+            <td>${statType}</td>
             <td>${trust1C}</td>
             <td>${trust1D}</td>
             <td>${trust1Sum}</td>
@@ -480,6 +523,13 @@ export default {
             <td>${trustCSubTotal}</td>
             <td>${trustDSubTotal}</td>
             <td>${trustSubSum}</td>
+          </tr>
+        `;
+
+        // 专车表格行
+        specialTableHtml += `
+          <tr>
+            <td>${statType}</td>
             <td>${spec1C}</td>
             <td>${spec1D}</td>
             <td>${spec1Sum}</td>
@@ -501,6 +551,13 @@ export default {
             <td>${specCSubTotal}</td>
             <td>${specDSubTotal}</td>
             <td>${specSubSum}</td>
+          </tr>
+        `;
+
+        // 总计表格行
+        totalTableHtml += `
+          <tr>
+            <td>${statType}</td>
             <td>${ctotal}</td>
             <td>${dtotal}</td>
             <td>${totalSum}</td>
@@ -508,10 +565,10 @@ export default {
         `;
       });
 
-      tableHtml += `
-          </tbody>
-        </table>
-      `;
+      passengerTableHtml += `</tbody></table>`;
+      truckTableHtml += `</tbody></table>`;
+      specialTableHtml += `</tbody></table>`;
+      totalTableHtml += `</tbody></table>`;
 
       let htmlContent = `
       <!DOCTYPE html>
@@ -546,7 +603,6 @@ export default {
         .table-container {
           margin-top: 10px;
           width: 100%;
-          zoom: 0.44; /* 调整缩放以适应横向打印 */
         }
         .el-table {
           width: 100%;
@@ -560,13 +616,12 @@ export default {
         }
         .el-table th, .el-table td {
           border: 1px solid #000;
-          padding: 8px 5px;
+          padding: 8px 4px; /* 适当增加内边距以提高可读性 */
           text-align: center;
           word-wrap: break-word;
-          white-space: normal; /* 允许内容换行 */
-          font-size: 13px;
-          min-width: 60px;
-          word-break: break-word; /* 允许单词内换行 */
+          white-space: nowrap; /* 防止内容换行 */
+          font-size: 14px; /* 增大字体以提高可读性 */
+          word-break: keep-all; /* 避免在单词内换行 */
           break-inside: avoid; /* 防止单元格内容跨页 */
         }
         .el-table th {
@@ -606,8 +661,8 @@ export default {
         }
         @media print {
           @page {
-            size: A4 landscape; /* 横向打印 */
-            margin: 8mm;
+            size: A4 landspace; /* 纵向打印，因为表格已拆分 */
+            margin: 10mm;
           }
           body {
             -webkit-print-color-adjust: exact;
@@ -615,36 +670,35 @@ export default {
             padding: 0;
             margin: 0;
             width: 100%;
-            font-size: 11px; /* 调小字体 */
+            font-size: 12px; /* 适当增大字体以提高可读性 */
           }
           .el-table {
             width: 100% !important;
             table-layout: auto !important; /* 自动调整列宽 */
-            font-size: 11px;
+            font-size: 12px;
           }
           .el-table th, .el-table td {
-            padding: 4px 3px; /* 减小内边距 */
-            font-size: 17px;
-            min-width: 40px;
-            white-space: normal;
+            padding: 6px 3px; /* 适中内边距 */
+            font-size: 12px; /* 优化字体大小 */
+            white-space: nowrap; /* 防止内容换行 */
             word-wrap: break-word;
-            word-break: break-word;
+            word-break: keep-all; /* 避免在单词内换行 */
             break-inside: avoid;
           }
           .el-table th {
-            font-size: 18px; /* 表头字体稍大 */
+            font-size: 12px; /* 表头字体大小 */
             font-weight: bold;
             break-inside: avoid;
           }
           .container span {
-            font-size: 12px;
+            font-size: 14px;
           }
           .print-title {
             font-size: 16px;
           }
           .footer-info {
             margin-top: 10px;
-            font-size: 11px;
+            font-size: 12px;
           }
           /* 防止表格跨页截断 */
           thead {
@@ -671,7 +725,15 @@ export default {
             <div class="print-title">${corpName}</div>
             <div class="print-title">EEF电子支付通行费(MTC+ETC)统计表</div>
             <div class="container">${conditionListHtml}</div>
-            <div class="table-container">${tableHtml}</div>
+            <div class="table-container">
+              ${passengerTableHtml}
+              <div style="page-break-after: always;"></div> <!-- 在客车表后分页 -->
+              ${truckTableHtml}
+              <div style="page-break-after: always;"></div> <!-- 在货车表后分页 -->
+              ${specialTableHtml}
+              <div style="page-break-after: always;"></div> <!-- 在专车表后分页 -->
+              ${totalTableHtml}
+            </div>
             ${footerHtml}
         </body>
         </html>
