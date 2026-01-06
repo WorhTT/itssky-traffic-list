@@ -104,3 +104,19 @@ export function exportCcq3(data) {
     data: data
   })
 }
+
+export function fd08(data) {
+  return request({
+    url: '/card/fd08',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportFd08(data) {
+  return request({
+    url: '/card/export/fd08',
+    method: 'post',
+    data: data
+  })
+}

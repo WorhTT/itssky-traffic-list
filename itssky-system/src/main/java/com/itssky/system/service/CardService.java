@@ -1,8 +1,10 @@
 package com.itssky.system.service;
 
+import com.itssky.db.ItsData;
 import com.itssky.system.domain.dto.CardCcqDto;
 import com.itssky.system.domain.dto.CardStatisticsDto;
 import com.itssky.system.domain.dto.CardStatisticsDtoV2;
+import com.itssky.system.domain.dto.CommonReportDto;
 import com.itssky.system.domain.vo.*;
 
 import java.util.Date;
@@ -44,5 +46,7 @@ public interface CardService {
     public List<String> buildConditionList(String corpNo, Date beginTime, Date endTime);
 
     public List<String> buildConditionList(Integer corpNo, Date time, String flag);
+
+    public List<Fd08Vo> fd08(CommonReportDto dto);
 
 }

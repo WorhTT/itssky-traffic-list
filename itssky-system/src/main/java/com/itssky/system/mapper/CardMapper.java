@@ -37,4 +37,8 @@ public interface CardMapper {
 
     @Dbstats
     public List<TbStcVo> getTbStcListV2(TbStcDtoV2 dto);
+
+
+    @Dbstats
+    public List<Fd08Vo> fd08(CommonReportDto dto);
 }

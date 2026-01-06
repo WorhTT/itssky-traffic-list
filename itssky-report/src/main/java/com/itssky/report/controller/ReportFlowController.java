@@ -7,6 +7,7 @@ import com.itssky.common.utils.poi.ExcelUtil;
 import com.itssky.system.domain.ReportChargeInfo;
 import com.itssky.system.domain.ReportFlowInfo;
 import com.itssky.system.domain.TbUserInfo;
+import com.itssky.system.domain.dto.CommonReportDto;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
 import com.itssky.system.domain.dto.StationTimeDto;
 import com.itssky.system.domain.vo.*;
@@ -396,5 +397,30 @@ public class ReportFlowController extends BaseController {
         ExcelUtil<Ecs2Vo> util = new ExcelUtil<Ecs2Vo>(Ecs2Vo.class);
         TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
         return util.exportDynamic(list, "ECS2收费站电子支付综合出口流量日统计表", conditionList, 27, reportTitleName, loginUserInfo.getUsername());
+    }
+
+    /**
+     * CT出口(MTC)现金交通流量统计表
+     * 2026年1月6日 11:04:00
+     */
+    @PostMapping(value = "/flow/ct")
+    public TableDataVo ct(@RequestBody @Valid CommonReportDto dto) {
+        TableDataVo data = new TableDataVo();
+        List<CtVo> list = reportFlowService.ct(dto);
+        data.setRows(list);
+        data.setTitle(reportTitleName);
+        data.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        data.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        return data;
+    }
+
+
+    @PostMapping(value = "/flow/export/ct")
+    public AjaxResult exportCt(@RequestBody @Valid CommonReportDto dto) throws IOException {
+        List<CtVo> list = reportFlowService.ct(dto);
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        ExcelUtil<CtVo> util = new ExcelUtil<CtVo>(CtVo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        return util.exportDynamic(list, "CT出口(MTC)现金交通流量统计表", conditionList, 24, reportTitleName, loginUserInfo.getUsername());
     }
 }

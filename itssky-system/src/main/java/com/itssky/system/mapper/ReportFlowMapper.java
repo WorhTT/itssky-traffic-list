@@ -4,6 +4,7 @@ import com.itssky.db.Dbstats;
 import com.itssky.db.Dbstats2;
 import com.itssky.db.ItsData;
 import com.itssky.system.domain.*;
+import com.itssky.system.domain.dto.CommonReportDto;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
 import com.itssky.system.domain.dto.StationTimeDto;
 import com.itssky.system.domain.vo.*;
@@ -52,6 +53,9 @@ public interface ReportFlowMapper {
 
     @ItsData
     public List<Ecs2Vo> ecs2(StationTimeDto dto);
+
+    @ItsData
+    public List<CtVo> ct(CommonReportDto dto);
 
 //    public List<FlowGroupVo> getErjs(FlowStatisticsDto dto);
 }

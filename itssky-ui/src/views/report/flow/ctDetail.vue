@@ -1,11 +1,9 @@
 <template>
   <div class="app-container">
-    <div
-      style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
+    <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
       <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
-      <h3 style="font-weight: bolder;margin: 1vh 0">CCQ2收费中心IC卡库存日统计表</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">CT出口(MTC)现金交通流量统计表</h3>
     </div>
-
     <div style="display: flex">
       <span v-for="item in conditionList" style="flex: 1;
         display: flex;
@@ -20,16 +18,14 @@
             icon="el-icon-download"
             size="mini"
             @click="handleExport"
-            class="export-button-container"
           >导出
           </el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button
             type="warning"
-            icon="el-icon-download"
+            icon="el-icon-document"
             size="mini"
-            class="print-button-container"
             @click="printTable"
           >打印
           </el-button>
@@ -37,23 +33,31 @@
       </el-row>
     </div>
 
-    <el-table v-loading="loading" :data="dataList" border ref="myTable">
-      <el-table-column label="收费站" align="center" prop="stationName"/>
-      <el-table-column label="库存增加" align="center">
-        <el-table-column label="通行卡调入" align="center" prop="txkdr"/>
-        <el-table-column label="出口回收" align="center" prop="ckhs"/>
-        <el-table-column label="坏卡回收" align="center" prop="hkhs"/>
-        <el-table-column label="通行卡恢复" align="center" prop="txkhf"/>
-      </el-table-column>
-      <el-table-column label="库存减少" align="center">
-        <el-table-column label="通行卡调出" align="center" prop="txkdc"/>
-        <el-table-column label="入口发卡" align="center" prop="rkfk"/>
-        <el-table-column label="坏卡上缴" align="center" prop="hksj"/>
-      </el-table-column>
-      <el-table-column label="库存维护数" align="center" prop="kcwhs"/>
-      <el-table-column label="库存变动" align="center" prop="kcbd"/>
-      <el-table-column label="库存坏卡" align="center" prop="kchk"/>
-      <el-table-column label="库存正常卡" align="center" prop="kczck"/>
+    <el-table v-loading="loading" :data="dataList" border ref="myTable" >
+      <el-table-column label="统计方式" align="center" prop="statType" min-width="120"/>
+      <el-table-column label="客一" align="center" prop="k1"/>
+      <el-table-column label="客二" align="center" prop="k2"/>
+      <el-table-column label="客三" align="center" prop="k3"/>
+      <el-table-column label="客四" align="center" prop="k4"/>
+      <el-table-column label="客车小计" align="center" prop="ksum"/>
+      <el-table-column label="货一" align="center" prop="h1"/>
+      <el-table-column label="货二" align="center" prop="h2"/>
+      <el-table-column label="货三" align="center" prop="h3"/>
+      <el-table-column label="货四" align="center" prop="h4"/>
+      <el-table-column label="货五" align="center" prop="h5"/>
+      <el-table-column label="货六" align="center" prop="h6"/>
+      <el-table-column label="货车小计" align="center" prop="hsum"/>
+      <el-table-column label="专一" align="center" prop="z1"/>
+      <el-table-column label="专二" align="center" prop="z2"/>
+      <el-table-column label="专三" align="center" prop="z3"/>
+      <el-table-column label="专四" align="center" prop="z4"/>
+      <el-table-column label="专五" align="center" prop="z5"/>
+      <el-table-column label="专六" align="center" prop="z6"/>
+      <el-table-column label="专车小计" align="center" prop="zsum"/>
+      <el-table-column label="客车比例(%)" align="center" prop="kbl"/>
+      <el-table-column label="货车比例(%)" align="center" prop="hbl"/>
+      <el-table-column label="专车比例(%)" align="center" prop="zbl"/>
+      <el-table-column label="总计" align="center" prop="total"/>
     </el-table>
     <!-- 添加底部信息区域 -->
     <div style="display: flex; justify-content: space-between; margin-top: 20px;">
@@ -66,10 +70,10 @@
 
 <script>
 
-import {ccq2,exportCcq2} from "@/api/report/card";
+import {ct, exportCt} from "@/api/report/exitFlow"
 
 export default {
-  name: "Ccq2Detail",
+  name: "CtDetail",
   data() {
     return {
       props: {multiple: true},
@@ -92,32 +96,24 @@ export default {
       // 是否显示弹出层
       open: false,
       // 查询参数
-      queryParams: {},
+      queryParams: {
+      },
       // 表单参数
       form: {},
       // 表单校验
       rules: {},
       stationOptions: [],
-      conditionList: [],
-      shiftOptions: [
-        {label: '早班', value: 1},
-        {label: '中班', value: 2},
-        {label: '晚班', value: 3},
-      ],
+      shiftOptions: [],
       pickerType: 'date',
       pickOptions: {
         disabledDate(time) {
           return time.getTime() > Date.now();
         },
       },
+      conditionList:[],
       operatorName: '',
       corpName: '',
     };
-  },
-  computed: {
-    currentDateTime() {
-      return this.getCurrentDateTime();
-    },
   },
   created() {
     this.queryParams = this.$route.query;
@@ -125,7 +121,14 @@ export default {
       this.getList();
     }
   },
-  watch: {},
+  computed: {
+    // corpName() {
+    //   return process.env.VUE_APP_CORP_NAME ? process.env.VUE_APP_CORP_NAME : '宁杭高速'
+    // },
+    currentDateTime() {
+      return this.getCurrentDateTime();
+    },
+  },
   methods: {
     getCurrentDateTime() {
       const now = new Date();
@@ -139,13 +142,11 @@ export default {
     },
     getList() {
       this.loading = true;
-      ccq2(this.queryParams).then(response => {
-          this.dataList = response.rows;
-          this.conditionList = response.conditionList;
-          this.corpName = response.title;
-          this.operatorName = response.operatorName;
-      }).catch(err=>{
-        console.error("异常：{}",err)
+      ct(this.queryParams).then(response => {
+        this.dataList = response.rows;
+        this.conditionList = response.conditionList;
+        this.corpName = response.title;
+        this.operatorName = response.operatorName;
       }).finally(() => {
         this.loading = false;
       });
@@ -154,12 +155,12 @@ export default {
     handleExport() {
       this.loading = true;
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出CCQ2收费中心IC卡库存日统计表?', "警告", {
+      this.$confirm('是否确认导出CT出口(MTC)现金交通流量统计表?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "警告"
+        type: "warning"
       }).then(function () {
-        return exportCcq2(queryParams);
+        return exportCt(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       }).finally(() => {
@@ -172,7 +173,7 @@ export default {
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
       let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
-      // 获取操作人信息
+      // 获取操作人信息（这里假设您有存储操作人的方式）
       const operator = this.operatorName;
       const printTime = this.getCurrentDateTime();
       // 添加底部信息行
@@ -187,22 +188,30 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th rowspan="2" style="min-width: 100px;">收费站</th>
-              <th colspan="4" style="min-width: 200px;">库存增加</th>
-              <th colspan="3" style="min-width: 150px;">库存减少</th>
-              <th rowspan="2" style="min-width: 80px;">库存维护数</th>
-              <th rowspan="2" style="min-width: 80px;">库存变动</th>
-              <th rowspan="2" style="min-width: 80px;">库存坏卡</th>
-              <th rowspan="2" style="min-width: 100px;">库存正常卡</th>
-            </tr>
-            <tr>
-              <th style="min-width: 50px;">通行卡调入</th>
-              <th style="min-width: 50px;">出口回收</th>
-              <th style="min-width: 50px;">坏卡回收</th>
-              <th style="min-width: 50px;">通行卡恢复</th>
-              <th style="min-width: 50px;">通行卡调出</th>
-              <th style="min-width: 50px;">入口发卡</th>
-              <th style="min-width: 50px;">坏卡上缴</th>
+              <th style="min-width: 120px;">统计方式</th>
+              <th style="min-width: 70px;">客一</th>
+              <th style="min-width: 50px;">客二</th>
+              <th style="min-width: 50px;">客三</th>
+              <th style="min-width: 50px;">客四</th>
+              <th style="min-width: 80px;">客车小计</th>
+              <th style="min-width: 50px;">货一</th>
+              <th style="min-width: 50px;">货二</th>
+              <th style="min-width: 50px;">货三</th>
+              <th style="min-width: 50px;">货四</th>
+              <th style="min-width: 50px;">货五</th>
+              <th style="min-width: 50px;">货六</th>
+              <th style="min-width: 80px;">货车小计</th>
+              <th style="min-width: 50px;">专一</th>
+              <th style="min-width: 50px;">专二</th>
+              <th style="min-width: 50px;">专三</th>
+              <th style="min-width: 50px;">专四</th>
+              <th style="min-width: 50px;">专五</th>
+              <th style="min-width: 50px;">专六</th>
+              <th style="min-width: 80px;">专车小计</th>
+              <th style="min-width: 120px;">客车比例(%)</th>
+              <th style="min-width: 120px;">货车比例(%)</th>
+              <th style="min-width: 120px;">专车比例(%)</th>
+              <th style="min-width: 60px;">总计</th>
             </tr>
           </thead>
           <tbody>
@@ -210,34 +219,31 @@ export default {
 
       // 填充表格数据
       this.dataList.forEach(row => {
-        // 处理可能为空的数值，确保空值也能正确显示
-        const stationName = row.stationName !== undefined && row.stationName !== null ? row.stationName : '';
-        const txkdr = row.txkdr !== undefined && row.txkdr !== null ? row.txkdr : '';
-        const ckhs = row.ckhs !== undefined && row.ckhs !== null ? row.ckhs : '';
-        const hkhs = row.hkhs !== undefined && row.hkhs !== null ? row.hkhs : '';
-        const txkhf = row.txkhf !== undefined && row.txkhf !== null ? row.txkhf : '';
-        const txkdc = row.txkdc !== undefined && row.txkdc !== null ? row.txkdc : '';
-        const rkfk = row.rkfk !== undefined && row.rkfk !== null ? row.rkfk : '';
-        const hksj = row.hksj !== undefined && row.hksj !== null ? row.hksj : '';
-        const kcwhs = row.kcwhs !== undefined && row.kcwhs !== null ? row.kcwhs : '';
-        const kcbd = row.kcbd !== undefined && row.kcbd !== null ? row.kcbd : '';
-        const kchk = row.kchk !== undefined && row.kchk !== null ? row.kchk : '';
-        const kczck = row.kczck !== undefined && row.kczck !== null ? row.kczck : '';
-
         tableHtml += `
-          <tr>
-            <td>${stationName}</td>
-            <td>${txkdr}</td>
-            <td>${ckhs}</td>
-            <td>${hkhs}</td>
-            <td>${txkhf}</td>
-            <td>${txkdc}</td>
-            <td>${rkfk}</td>
-            <td>${hksj}</td>
-            <td>${kcwhs}</td>
-            <td>${kcbd}</td>
-            <td>${kchk}</td>
-            <td>${kczck}</td>
+            <td>${row.statType !== undefined && row.statType !== null ? row.statType : ''}</td>
+            <td>${row.k1 !== undefined && row.k1 !== null ? row.k1 : ''}</td>
+            <td>${row.k2 !== undefined && row.k2 !== null ? row.k2 : ''}</td>
+            <td>${row.k3 !== undefined && row.k3 !== null ? row.k3 : ''}</td>
+            <td>${row.k4 !== undefined && row.k4 !== null ? row.k4 : ''}</td>
+            <td>${row.ksum !== undefined && row.ksum !== null ? row.ksum : ''}</td>
+            <td>${row.h1 !== undefined && row.h1 !== null ? row.h1 : ''}</td>
+            <td>${row.h2 !== undefined && row.h2 !== null ? row.h2 : ''}</td>
+            <td>${row.h3 !== undefined && row.h3 !== null ? row.h3 : ''}</td>
+            <td>${row.h4 !== undefined && row.h4 !== null ? row.h4 : ''}</td>
+            <td>${row.h5 !== undefined && row.h5 !== null ? row.h5 : ''}</td>
+            <td>${row.h6 !== undefined && row.h6 !== null ? row.h6 : ''}</td>
+            <td>${row.hsum !== undefined && row.hsum !== null ? row.hsum : ''}</td>
+            <td>${row.z1 !== undefined && row.z1 !== null ? row.z1 : ''}</td>
+            <td>${row.z2 !== undefined && row.z2 !== null ? row.z2 : ''}</td>
+            <td>${row.z3 !== undefined && row.z3 !== null ? row.z3 : ''}</td>
+            <td>${row.z4 !== undefined && row.z4 !== null ? row.z4 : ''}</td>
+            <td>${row.z5 !== undefined && row.z5 !== null ? row.z5 : ''}</td>
+            <td>${row.z6 !== undefined && row.z6 !== null ? row.z6 : ''}</td>
+            <td>${row.zsum !== undefined && row.zsum !== null ? row.zsum : ''}</td>
+            <td>${row.kbl !== undefined && row.kbl !== null ? row.kbl : ''}</td>
+            <td>${row.hbl !== undefined && row.hbl !== null ? row.hbl : ''}</td>
+            <td>${row.zbl !== undefined && row.zbl !== null ? row.zbl : ''}</td>
+            <td>${row.total !== undefined && row.total !== null ? row.total : ''}</td>
           </tr>
         `;
       });
@@ -280,7 +286,7 @@ export default {
         .table-container {
           margin-top: 10px;
           width: 100%;
-          zoom: 0.6
+          zoom: 0.85;
         }
         .el-table {
           width: 100%;
@@ -307,6 +313,8 @@ export default {
           font-weight: bold;
           font-size: 14px;
           background-color: #f5f7fa;
+          height: auto;
+          line-height: 1.2;
           break-inside: avoid; /* 防止表头单元格跨页 */
         }
         /* 防止表格跨页截断 */
@@ -341,7 +349,7 @@ export default {
         }
         @media print {
           @page {
-            size: A4 landscape; /* 改为横向打印 */
+            size: A4; /* 改为横向打印 */
             margin: 8mm; /* 减小边距以获得更多内容空间 */
           }
           body {
@@ -363,7 +371,7 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 4px 3px; /* 减小内边距以节省空间 */
-            font-size: 15px;
+            font-size: 18px;
             min-width: 40px; /* 调整最小宽度 */
             white-space: normal;
             word-wrap: break-word;
@@ -371,19 +379,19 @@ export default {
             break-inside: avoid; /* 防止单元格跨页 */
           }
           .el-table th {
-            font-size: 17px; /* 表头字体稍大 */
+            font-size: 20px; /* 表头字体稍大 */
             font-weight: bold;
             break-inside: avoid; /* 防止表头单元格跨页 */
           }
           .container span {
-            font-size: 13px;
+            font-size: 20px;
           }
           .print-title {
-            font-size: 18px;
+            font-size: 20px;
           }
           .footer-info {
             margin-top: 15px;
-            font-size: 12px;
+            font-size: 20px;
           }
           /* 防止表格跨页截断 */
           thead {
@@ -408,7 +416,7 @@ export default {
         </head>
         <body>
             <div class="print-title">${corpName}</div>
-            <div class="print-title">CCQ2收费中心IC卡库存日统计表</div>
+            <div class="print-title">CT出口(MTC)现金交通流量统计表</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${tableHtml}</div>
             ${footerHtml}
@@ -430,7 +438,6 @@ export default {
 ::v-deep .el-table .el-table__header-wrapper th {
   height: 20px;
 }
-
 ::v-deep .el-table__header-wrapper {
   & thead {
     tr {
@@ -441,6 +448,9 @@ export default {
 
 ::v-deep .el-table th {
   background-color: #f5f7fa !important; // 确保表头单元格背景色
+}
+::v-deep .el-table--medium .el-table__cell {
+  padding: 4px 0;
 }
 // 自定义滚动条样式
 ::v-deep .el-table {

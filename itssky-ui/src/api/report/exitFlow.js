@@ -183,3 +183,19 @@ export function exportEcs2(data) {
     data: data
   })
 }
+
+export function ct(data) {
+  return request({
+    url: '/report/flow/ct',
+    method: 'post',
+    data: data
+  })
+}
+
+export function exportCt(data) {
+  return request({
+    url: '/report/flow/export/ct',
+    method: 'post',
+    data: data
+  })
+}

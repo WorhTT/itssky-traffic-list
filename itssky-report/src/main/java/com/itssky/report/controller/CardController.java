@@ -12,6 +12,7 @@ import com.itssky.system.domain.TbUserInfo;
 import com.itssky.system.domain.dto.CardCcqDto;
 import com.itssky.system.domain.dto.CardStatisticsDto;
 import com.itssky.system.domain.dto.CardStatisticsDtoV2;
+import com.itssky.system.domain.dto.CommonReportDto;
 import com.itssky.system.domain.vo.*;
 import com.itssky.system.mapper.CardMapper;
 import com.itssky.system.mapper.TbCorpInfoMapper;
@@ -256,15 +257,27 @@ public class CardController extends BaseController {
     }
 
     /**
-     * FD08收费站IC卡库存汇总表
+     * FD08收费站IC卡库存汇总表(CPC)
+     * 2026年1月6日 10:37:15
      */
-//    public TableDataVo fd08StationInventory() {
-//        List<Fd08StationInventoryVo> result = cardService.fd08StationInventory();
-//        TableDataVo tableDataVo = new TableDataVo();
-//        tableDataVo.setRows(result);
-//        tableDataVo.setTitle(reportTitleName);
-//        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
-//        return tableDataVo;
-//    }
+    @PostMapping(value = "/fd08")
+    public TableDataVo fd08(@RequestBody CommonReportDto dto) {
+        List<Fd08Vo> result = cardService.fd08(dto);
+        TableDataVo tableDataVo = new TableDataVo();
+        tableDataVo.setRows(result);
+        tableDataVo.setTitle(reportTitleName);
+        tableDataVo.setConditionList(cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime()));
+        tableDataVo.setOperatorName(userInfoService.getLoginUserInfo().getUsername());
+        return tableDataVo;
+    }
 
+    @PostMapping(value = "/export/fd08")
+    public AjaxResult exportFd08(@RequestBody @Valid CommonReportDto dto) throws IOException {
+        List<Fd08Vo> result = cardService.fd08(dto);
+        ExcelUtil<Fd08Vo> util = new ExcelUtil<Fd08Vo>(Fd08Vo.class);
+        TbUserInfo loginUserInfo = userInfoService.getLoginUserInfo();
+        List<String> conditionList = cardService.buildConditionList(dto.getStationId(), dto.getBeginTime(), dto.getEndTime());
+        return util.exportDynamic(result, "FD08收费站IC卡库存汇总表(CPC)",
+                conditionList, 12, reportTitleName, loginUserInfo.getUsername());
+    }
 }

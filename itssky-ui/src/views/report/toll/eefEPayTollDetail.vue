@@ -280,7 +280,7 @@ export default {
   `;
       // 创建四个独立的表格结构，分别展示客车、货车、专车和总计
       let passengerTableHtml = `
-        <h3 style="text-align: center; margin: 10px 0;">客车数据</h3>
+        <h3 style="text-align: center; margin: 10px 0; font-size: 22px">客车数据</h3>
         <table class="el-table">
           <thead>
             <tr>
@@ -313,7 +313,7 @@ export default {
       `;
 
       let truckTableHtml = `
-        <h3 style="text-align: center; margin: 10px 0;">货车数据</h3>
+        <h3 style="text-align: center; margin: 10px 0; font-size: 22px">货车数据(货一~货四)</h3>
         <table class="el-table">
           <thead>
             <tr>
@@ -322,9 +322,6 @@ export default {
               <th colspan="3">货二</th>
               <th colspan="3">货三</th>
               <th colspan="3">货四</th>
-              <th colspan="3">货五</th>
-              <th colspan="3">货六</th>
-              <th colspan="3">小计</th>
             </tr>
             <tr>
               <th>C卡</th>
@@ -339,6 +336,21 @@ export default {
               <th>C卡</th>
               <th>D卡</th>
               <th>合计</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      let truckTableHtml2 = `
+        <h3 style="text-align: center; margin: 10px 0; font-size: 22px">货车数据(货五~小计)</h3>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="min-width: 80px;">统计方式</th>
+              <th colspan="3">货五</th>
+              <th colspan="3">货六</th>
+              <th colspan="3">小计</th>
+            </tr>
+            <tr>
               <th>C卡</th>
               <th>D卡</th>
               <th>合计</th>
@@ -354,7 +366,7 @@ export default {
       `;
 
       let specialTableHtml = `
-        <h3 style="text-align: center; margin: 10px 0;">专车数据</h3>
+        <h3 style="text-align: center; margin: 10px 0; font-size: 22px">专车数据(专一~专四)</h3>
         <table class="el-table">
           <thead>
             <tr>
@@ -363,20 +375,8 @@ export default {
               <th colspan="3">专二</th>
               <th colspan="3">专三</th>
               <th colspan="3">专四</th>
-              <th colspan="3">专五</th>
-              <th colspan="3">专六</th>
-              <th colspan="3">小计</th>
             </tr>
             <tr>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
-              <th>C卡</th>
-              <th>D卡</th>
-              <th>合计</th>
               <th>C卡</th>
               <th>D卡</th>
               <th>合计</th>
@@ -394,8 +394,33 @@ export default {
           <tbody>
       `;
 
+      let specialTableHtml2 = `
+        <h3 style="text-align: center; margin: 10px 0; font-size: 22px">专车数据(专五~小计)</h3>
+        <table class="el-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="min-width: 80px;">统计方式</th>
+              <th colspan="3">专五</th>
+              <th colspan="3">专六</th>
+              <th colspan="3">小计</th>
+            </tr>
+            <tr>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+              <th>C卡</th>
+              <th>D卡</th>
+              <th>合计</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
       let totalTableHtml = `
-        <h3 style="text-align: center; margin: 10px 0;">总计数据</h3>
+        <h3 style="text-align: center; margin: 10px 0; font-size: 22px">总计数据</h3>
         <table class="el-table">
           <thead>
             <tr>
@@ -511,6 +536,12 @@ export default {
             <td>${trust4C}</td>
             <td>${trust4D}</td>
             <td>${trust4Sum}</td>
+          </tr>
+        `;
+
+        truckTableHtml2 += `
+          <tr>
+            <td>${statType}</td>
             <td>${trust5C}</td>
             <td>${trust5D}</td>
             <td>${trust5Sum}</td>
@@ -539,6 +570,11 @@ export default {
             <td>${spec4C}</td>
             <td>${spec4D}</td>
             <td>${spec4Sum}</td>
+          </tr>
+        `;
+        specialTableHtml2 += `
+          <tr>
+            <td>${statType}</td>
             <td>${spec5C}</td>
             <td>${spec5D}</td>
             <td>${spec5Sum}</td>
@@ -564,7 +600,9 @@ export default {
 
       passengerTableHtml += `</tbody></table>`;
       truckTableHtml += `</tbody></table>`;
+      truckTableHtml2 += `</tbody></table>`;
       specialTableHtml += `</tbody></table>`;
+      specialTableHtml2 += `</tbody></table>`;
       totalTableHtml += `</tbody></table>`;
 
       let htmlContent = `
@@ -573,8 +611,12 @@ export default {
         <head>
         <title>Print</title>
         <style>
+        @page {
+          margin: 0.2in;
+          size: A4 landscape;
+        }
         body {
-          margin: 0;
+          margin: 0.2in;
           padding: 15px;
           font-family: "Microsoft YaHei", SimHei, Arial, sans-serif;
           box-sizing: border-box;
@@ -600,10 +642,7 @@ export default {
         .table-container {
           margin-top: 10px;
           width: 100%;
-        }
-        .table-section {
-          page-break-inside: avoid;
-          margin-bottom: 20px;
+          overflow-x: auto;
         }
         .el-table {
           width: 100%;
@@ -617,18 +656,21 @@ export default {
         }
         .el-table th, .el-table td {
           border: 1px solid #000;
-          padding: 6px 3px; /* 适中内边距以节省空间 */
+          padding: 8px 5px;
           text-align: center;
           word-wrap: break-word;
-          white-space: nowrap; /* 防止内容换行 */
-          font-size: 12px; /* 适中字体大小 */
-          word-break: keep-all; /* 避免在单词内换行 */
-          break-inside: avoid; /* 防止单元格内容跨页 */
+          white-space: normal; /* 允许内容换行 */
+          font-size: 18px;
+          min-width: 50px;
+          word-break: break-word; /* 允许单词内换行 */
+          break-inside: avoid; /* 防止单元格跨页 */
         }
         .el-table th {
           font-weight: bold;
-          font-size: 14px;
+          font-size: 20px;
           background-color: #f5f7fa;
+          height: auto;
+          line-height: 1.2;
           break-inside: avoid; /* 防止表头单元格跨页 */
         }
         /* 防止表格跨页截断 */
@@ -644,6 +686,7 @@ export default {
         tr {
           page-break-inside: avoid;
           page-break-after: auto;
+          break-inside: avoid; /* 防止行跨页 */
         }
         td, th {
           page-break-inside: avoid;
@@ -651,8 +694,8 @@ export default {
         .footer-info {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-            font-size: 13px;
+            margin-top: 15px;
+            font-size: 12px;
         }
         .operator {
             text-align: left;
@@ -660,66 +703,47 @@ export default {
         .print-time {
             text-align: right;
         }
-        @media print {
-          @page {
-            size: A4 landscape; /* 横向打印，适应表格宽度 */
-            margin: 8mm;
-          }
-          body {
+        body {
             -webkit-print-color-adjust: exact;
             color-adjust: exact;
             padding: 0;
             margin: 0;
             width: 100%;
-            font-size: 20px; /* 适当增大字体以提高可读性 */
+            font-size: 11px; /* 调小字体以适应更多内容 */
           }
           .el-table {
             width: 100% !important;
             table-layout: auto !important; /* 自动调整列宽 */
-            font-size: 12px;
+            font-size: 11px; /* 调小字体以适应更多内容 */
+          }
+          .el-table thead tr {
+            background-color: #ebeef5;
+            break-inside: avoid; /* 防止表头跨页 */
           }
           .el-table th, .el-table td {
-            padding: 4px 2px; /* 减小内边距以节省空间 */
-            font-size: 16px; /* 优化字体大小 */
-            white-space: nowrap; /* 防止内容换行 */
+            padding: 4px 3px; /* 减小内边距以节省空间 */
+            font-size: 14px;
+            min-width: 40px; /* 调整最小宽度 */
+            white-space: normal;
             word-wrap: break-word;
-            word-break: keep-all; /* 避免在单词内换行 */
-            break-inside: avoid;
+            word-break: break-word;
+            break-inside: avoid; /* 防止单元格跨页 */
           }
           .el-table th {
-            font-size: 18px; /* 表头字体大小 */
+            font-size: 16px; /* 表头字体稍大 */
             font-weight: bold;
-            break-inside: avoid;
+            break-inside: avoid; /* 防止表头单元格跨页 */
           }
           .container span {
-            font-size: 20px;
+            font-size: 18px;
           }
           .print-title {
-            font-size: 24px;
-          }
-          .footer-info {
-            margin-top: 10px;
             font-size: 20px;
           }
-          /* 防止表格跨页截断 */
-          thead {
-            display: table-header-group;
+          .footer-info {
+            margin-top: 15px;
+            font-size: 18px;
           }
-          tfoot {
-            display: table-footer-group;
-          }
-          tbody {
-            display: table-row-group;
-          }
-          tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-            break-inside: avoid;
-          }
-          td, th {
-            page-break-inside: avoid;
-          }
-        }
         </style>
         </head>
         <body>
@@ -733,8 +757,14 @@ export default {
               <div class="table-section">
                 ${truckTableHtml}
               </div>
+               <div class="table-section">
+                ${truckTableHtml2}
+              </div>
               <div class="table-section">
                 ${specialTableHtml}
+              </div>
+              <div class="table-section">
+                ${specialTableHtml2}
               </div>
               <div class="table-section">
                 ${totalTableHtml}
@@ -743,7 +773,8 @@ export default {
             ${footerHtml}
         </body>
         </html>
-      `
+      `;
+
       printDocument.write(htmlContent);
       printDocument.close();
 

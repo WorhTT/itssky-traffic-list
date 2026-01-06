@@ -3,9 +3,8 @@
     <div
       style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
       <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
-      <h3 style="font-weight: bolder;margin: 1vh 0">CCQ2收费中心IC卡库存日统计表</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">FD08收费站IC卡库存汇总表(CPC)</h3>
     </div>
-
     <div style="display: flex">
       <span v-for="item in conditionList" style="flex: 1;
         display: flex;
@@ -37,8 +36,9 @@
       </el-row>
     </div>
 
-    <el-table v-loading="loading" :data="dataList" border ref="myTable">
-      <el-table-column label="收费站" align="center" prop="stationName"/>
+    <el-table v-loading="loading" :data="dataList" border ref="myTable"
+              :cell-style="cellStyle">
+      <el-table-column label="统计方式" align="center" prop="statType" min-width="100"/>
       <el-table-column label="库存增加" align="center">
         <el-table-column label="通行卡调入" align="center" prop="txkdr"/>
         <el-table-column label="出口回收" align="center" prop="ckhs"/>
@@ -66,10 +66,10 @@
 
 <script>
 
-import {ccq2,exportCcq2} from "@/api/report/card";
+import {fd08, exportFd08} from "@/api/report/card";
 
 export default {
-  name: "Ccq2Detail",
+  name: "Fd08Detail",
   data() {
     return {
       props: {multiple: true},
@@ -92,18 +92,20 @@ export default {
       // 是否显示弹出层
       open: false,
       // 查询参数
-      queryParams: {},
+      queryParams: {
+        beginTime: null,
+        endTime: null,
+        statisticsType: '0',
+        stationIdArray:[]
+      },
       // 表单参数
       form: {},
       // 表单校验
-      rules: {},
+      rules: {
+      },
       stationOptions: [],
+      shiftOptions: [],
       conditionList: [],
-      shiftOptions: [
-        {label: '早班', value: 1},
-        {label: '中班', value: 2},
-        {label: '晚班', value: 3},
-      ],
       pickerType: 'date',
       pickOptions: {
         disabledDate(time) {
@@ -127,6 +129,11 @@ export default {
   },
   watch: {},
   methods: {
+    cellStyle({row, column, rowIndex, columnIndex}) {
+      // if (row.totalRow === true) {
+      //   return 'background:	#FFD040';
+      // }
+    },
     getCurrentDateTime() {
       const now = new Date();
       const year = now.getFullYear();
@@ -137,29 +144,28 @@ export default {
       const seconds = now.getSeconds().toString().padStart(2, '0');
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     },
+    /** 查询公告列表 */
     getList() {
       this.loading = true;
-      ccq2(this.queryParams).then(response => {
-          this.dataList = response.rows;
-          this.conditionList = response.conditionList;
-          this.corpName = response.title;
-          this.operatorName = response.operatorName;
-      }).catch(err=>{
-        console.error("异常：{}",err)
+      fd08(this.queryParams).then(response => {
+        this.dataList = response.rows;
+        this.conditionList = response.conditionList;
+        this.corpName = response.title;
+        this.operatorName = response.operatorName;
       }).finally(() => {
         this.loading = false;
-      });
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
       this.loading = true;
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出CCQ2收费中心IC卡库存日统计表?', "警告", {
+      this.$confirm('是否确认导出FD08收费站IC卡库存汇总表(CPC)?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "警告"
+        type: "warning"
       }).then(function () {
-        return exportCcq2(queryParams);
+        return exportFd08(queryParams);
       }).then(response => {
         this.downloadFile(response.msg);
       }).finally(() => {
@@ -172,7 +178,7 @@ export default {
       const printFrame = document.getElementById('printFrame');
       const printDocument = printFrame.contentDocument || printFrame.contentWindow.document;
       let conditionListHtml = this.conditionList.map(item => `<span>${item}</span>`).join('');
-      // 获取操作人信息
+      // 获取操作人信息（这里假设您有存储操作人的方式）
       const operator = this.operatorName;
       const printTime = this.getCurrentDateTime();
       // 添加底部信息行
@@ -187,22 +193,22 @@ export default {
         <table class="el-table">
           <thead>
             <tr>
-              <th rowspan="2" style="min-width: 100px;">收费站</th>
-              <th colspan="4" style="min-width: 200px;">库存增加</th>
-              <th colspan="3" style="min-width: 150px;">库存减少</th>
-              <th rowspan="2" style="min-width: 80px;">库存维护数</th>
-              <th rowspan="2" style="min-width: 80px;">库存变动</th>
-              <th rowspan="2" style="min-width: 80px;">库存坏卡</th>
-              <th rowspan="2" style="min-width: 100px;">库存正常卡</th>
+              <th rowspan="2" style="min-width: 100px;">统计方式</th>
+              <th colspan="4">库存增加</th>
+              <th colspan="3">库存减少</th>
+              <th rowspan="2">库存维护数</th>
+              <th rowspan="2">库存变动</th>
+              <th rowspan="2">库存坏卡</th>
+              <th rowspan="2">库存正常卡</th>
             </tr>
             <tr>
-              <th style="min-width: 50px;">通行卡调入</th>
-              <th style="min-width: 50px;">出口回收</th>
-              <th style="min-width: 50px;">坏卡回收</th>
-              <th style="min-width: 50px;">通行卡恢复</th>
-              <th style="min-width: 50px;">通行卡调出</th>
-              <th style="min-width: 50px;">入口发卡</th>
-              <th style="min-width: 50px;">坏卡上缴</th>
+              <th>通行卡调入</th>
+              <th>出口回收</th>
+              <th>坏卡回收</th>
+              <th>通行卡恢复</th>
+              <th>通行卡调出</th>
+              <th>入口发卡</th>
+              <th>坏卡上缴</th>
             </tr>
           </thead>
           <tbody>
@@ -211,7 +217,7 @@ export default {
       // 填充表格数据
       this.dataList.forEach(row => {
         // 处理可能为空的数值，确保空值也能正确显示
-        const stationName = row.stationName !== undefined && row.stationName !== null ? row.stationName : '';
+        const statType = row.statType !== undefined && row.statType !== null ? row.statType : '';
         const txkdr = row.txkdr !== undefined && row.txkdr !== null ? row.txkdr : '';
         const ckhs = row.ckhs !== undefined && row.ckhs !== null ? row.ckhs : '';
         const hkhs = row.hkhs !== undefined && row.hkhs !== null ? row.hkhs : '';
@@ -226,7 +232,7 @@ export default {
 
         tableHtml += `
           <tr>
-            <td>${stationName}</td>
+            <td>${statType}</td>
             <td>${txkdr}</td>
             <td>${ckhs}</td>
             <td>${hkhs}</td>
@@ -280,7 +286,7 @@ export default {
         .table-container {
           margin-top: 10px;
           width: 100%;
-          zoom: 0.6
+          zoom: 0.7;
         }
         .el-table {
           width: 100%;
@@ -290,24 +296,21 @@ export default {
         }
         .el-table thead tr {
           background-color: #ebeef5;
-          break-inside: avoid; /* 防止表头跨页 */
         }
         .el-table th, .el-table td {
           border: 1px solid #000;
           padding: 8px 5px;
           text-align: center;
           word-wrap: break-word;
-          white-space: normal; /* 允许内容换行 */
+          white-space: nowrap; /* 防止内容换行 */
           font-size: 13px;
-          min-width: 50px;
+          min-width: 60px;
           word-break: break-word; /* 允许单词内换行 */
-          break-inside: avoid; /* 防止单元格跨页 */
         }
         .el-table th {
           font-weight: bold;
           font-size: 14px;
           background-color: #f5f7fa;
-          break-inside: avoid; /* 防止表头单元格跨页 */
         }
         /* 防止表格跨页截断 */
         thead {
@@ -322,7 +325,6 @@ export default {
         tr {
           page-break-inside: avoid;
           page-break-after: auto;
-          break-inside: avoid; /* 防止行跨页 */
         }
         td, th {
           page-break-inside: avoid;
@@ -341,8 +343,8 @@ export default {
         }
         @media print {
           @page {
-            size: A4 landscape; /* 改为横向打印 */
-            margin: 8mm; /* 减小边距以获得更多内容空间 */
+            size: A4 landscape;
+            margin: 10mm;
           }
           body {
             -webkit-print-color-adjust: exact;
@@ -350,36 +352,30 @@ export default {
             padding: 0;
             margin: 0;
             width: 100%;
-            font-size: 11px; /* 调小字体以适应更多内容 */
+            font-size: 12px;
           }
           .el-table {
             width: 100% !important;
             table-layout: auto !important; /* 自动调整列宽 */
-            font-size: 11px; /* 调小字体以适应更多内容 */
-          }
-          .el-table thead tr {
-            background-color: #ebeef5;
-            break-inside: avoid; /* 防止表头跨页 */
+            font-size: 12px;
           }
           .el-table th, .el-table td {
-            padding: 4px 3px; /* 减小内边距以节省空间 */
-            font-size: 15px;
-            min-width: 40px; /* 调整最小宽度 */
-            white-space: normal;
+            padding: 6px 4px;
+            font-size: 20px;
+            min-width: 50px;
+            white-space: nowrap; /* 防止内容换行 */
             word-wrap: break-word;
-            word-break: break-word;
-            break-inside: avoid; /* 防止单元格跨页 */
+            word-break: break-word; /* 允许单词内换行 */
           }
           .el-table th {
-            font-size: 17px; /* 表头字体稍大 */
+            font-size: 18px;
             font-weight: bold;
-            break-inside: avoid; /* 防止表头单元格跨页 */
           }
           .container span {
-            font-size: 13px;
+            font-size: 22px;
           }
           .print-title {
-            font-size: 18px;
+            font-size: 24px;
           }
           .footer-info {
             margin-top: 15px;
@@ -398,7 +394,6 @@ export default {
           tr {
             page-break-inside: avoid;
             page-break-after: auto;
-            break-inside: avoid; /* 防止行跨页 */
           }
           td, th {
             page-break-inside: avoid;
@@ -408,7 +403,7 @@ export default {
         </head>
         <body>
             <div class="print-title">${corpName}</div>
-            <div class="print-title">CCQ2收费中心IC卡库存日统计表</div>
+            <div class="print-title">FD08收费站IC卡库存汇总表(CPC)</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">${tableHtml}</div>
             ${footerHtml}

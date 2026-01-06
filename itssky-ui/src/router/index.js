@@ -292,6 +292,16 @@ export const constantRoutes = [
     component: () => import("@/views/report/toll/euDetail.vue"),
     hidden: true
   },
+  {
+    path: '/mobVcDetail',
+    component: () => import("@/views/report/toll/mobVcDetail.vue"),
+    hidden: true
+  },
+  {
+    path: '/fd08Detail',
+    component: () => import("@/views/report/card/fd08Detail.vue"),
+    hidden: true
+  },
   // {
   //   path: '/mobVcDetail',
   //   component: () => import("@/views/report/toll/mobVc.vue.vue"),
@@ -305,12 +315,12 @@ export const constantRoutes = [
     path: '/itssky',
     redirect: '/f1StationShift'
   },
-  {
-    path: '/toll',
-    component: Layout,
-    name: '通行费类',
-    meta: {title: '通行费类', icon: 'list'},
-    children: [
+  // {
+  //   path: '/toll',
+  //   component: Layout,
+  //   name: '通行费类',
+  //   meta: {title: '通行费类', icon: 'list'},
+  //   children: [
   //         {
   //           path: '/yhToll',
   //           name: 'YH优惠金额综合报表',
@@ -384,14 +394,20 @@ export const constantRoutes = [
   // //       meta: {title: 'MOB移动支付收费统计报表', icon: 'chart'},
   // //       component: () => import('@/views/report/toll/mobToll.vue'),
   // //     }
-          {
-            path: '/eu',
-            name: 'EU电子支付通行费(MTC+ETC)统计按车型',
-            meta: {title: 'EU电子支付通行费(MTC+ETC)统计按车型', icon: 'chart'},
-            component: () => import('@/views/report/toll/eu.vue'),
-          }
-    ],
-  },
+  //         {
+  //           path: '/eu',
+  //           name: 'EU电子支付通行费(MTC+ETC)统计按车型',
+  //           meta: {title: 'EU电子支付通行费(MTC+ETC)统计按车型', icon: 'chart'},
+  //           component: () => import('@/views/report/toll/eu.vue'),
+  //         },
+  //     {
+  //       path: '/mobvc',
+  //       name: 'MOB移动支付统计按车型统计',
+  //       meta: {title: 'MOB移动支付统计按车型统计', icon: 'chart'},
+  //       component: () => import('@/views/report/toll/mobVc.vue'),
+  //     }
+  //   ],
+  // },
   // {
   //   path: '/card',
   //   component: Layout,
@@ -446,12 +462,12 @@ export const constantRoutes = [
   // //       meta: {title: 'CDT通行卡回收统计表', icon: 'chart'},
   // //       component: () => import('@/views/report/card/cdtHandIn.vue'),
   // //     },
-  // //     // {
-  // //     //   path: '/fd08StationStock',
-  // //     //   name: 'FD08收费站IC卡库存汇总表(CPC)',
-  // //     //   meta: {title: 'FD08收费站IC卡库存汇总表(CPC)', icon: 'chart'},
-  // //     //   component: () => import('@/views/report/card/fd08StationStock.vue'),
-  // //     // },
+  //     {
+  //       path: '/fd08',
+  //       name: 'FD08收费站IC卡库存汇总表(CPC)',
+  //       meta: {title: 'FD08收费站IC卡库存汇总表(CPC)', icon: 'chart'},
+  //       component: () => import('@/views/report/card/fd08.vue'),
+  //     },
   //   ]
   // },
   //
@@ -481,12 +497,12 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  {
-    path: '/flow',
-    component: Layout,
-    name: '交通流量类',
-    meta: {title: '交通流量类', icon: 'list'},
-    children: [
+  // {
+  //   path: '/flow',
+  //   component: Layout,
+  //   name: '交通流量类',
+  //   meta: {title: '交通流量类', icon: 'list'},
+  //   children: [
   //     {
   //       path: '/erjFlow',
   //       name: 'ERJ电子支付(ETC)入口流量统计表',
@@ -565,14 +581,20 @@ export const constantRoutes = [
   // //           meta: {title: 'TK入出口(MTC+ETC)交通流量按车种统计表', icon: 'chart'},
   // //           component: () => import('@/views/report/flow/tkFlowAll.vue')
   // //         },
-              {
-                path: '/ecs2',
-                name: 'ECS2收费站电子支付综合出口流量日统计表',
-                meta: {title: 'ECS2收费站电子支付综合出口流量日统计表', icon: 'chart'},
-                component: () => import('@/views/report/flow/ecs2.vue')
-              },
-    ]
-  },
+  //             {
+  //               path: '/ecs2',
+  //               name: 'ECS2收费站电子支付综合出口流量日统计表',
+  //               meta: {title: 'ECS2收费站电子支付综合出口流量日统计表', icon: 'chart'},
+  //               component: () => import('@/views/report/flow/ecs2.vue')
+  //             },
+  //     {
+  //       path: '/ct',
+  //       name: 'CT出口(MTC)现金交通流量统计表',
+  //       meta: {title: 'CT出口(MTC)现金交通流量统计表', icon: 'chart'},
+  //       component: () => import('@/views/report/flow/ct.vue')
+  //     },
+  //   ]
+  // },
   // {
   //   path: '/examine',
   //   component: Layout,

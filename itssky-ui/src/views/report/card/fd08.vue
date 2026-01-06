@@ -2,36 +2,61 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="收费站:" prop="stationId">
-        <el-select v-model="queryParams.stationId" placeholder="请选择收费站" clearable class="custom-input">
+        <el-select v-model="queryParams.stationId" placeholder="请选择收费站" clearable class="custom-input" style="width: 160px;">
           <el-option v-for="item in stationOptions" :key="item.label" :label="item.label"
                      :value="item.value"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="统计日期:" prop="time">
+      <el-form-item label="统计日期:" prop="beginTime">
         <el-date-picker
-          v-model="queryParams.time"
+          v-model="queryParams.beginTime"
           placeholder="请选择日期"
-          type="month"
-          value-format="yyyy-MM"
+          type="date"
+          value-format="yyyy-MM-dd"
           :picker-options="pickOptions"
+          style="width: 160px;"
         >
         </el-date-picker>
+      </el-form-item>
+      <el-form-item label="结束日期:" prop="endTime">
+        <el-date-picker
+          v-model="queryParams.endTime"
+          placeholder="请选择日期"
+          type="date"
+          value-format="yyyy-MM-dd"
+          :picker-options="pickOptions"
+          style="width: 160px;"
+        >
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="统计类型:" prop="statType">
+        <el-select
+          v-model="queryParams.statType"
+          class="custom-input"
+          placeholder="请选择"
+          clearable
+          style="width: 120px"
+          filterable
+        >
+          <el-option value="1" label="日" key="1"/>
+          <el-option value="2" label="月" key="2"/>
+          <el-option value="3" label="站" key="3"/>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="openChildPage">查看详细报表</el-button>
       </el-form-item>
     </el-form>
-
   </div>
 </template>
 
 <script>
 
-import {getCurrentTime} from "@/utils/dateUtils";
-
+import {listStationSelectV2} from "@/api/system/station";
+import {getCurrentTime, getMidnightTime} from "@/utils/dateUtils";
 
 export default {
-  name: "Ccq2",
+  name: "Fd08",
   data() {
     return {
       props: {multiple: true},
@@ -55,9 +80,10 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
+        beginTime: null,
+        endTime: null,
+        statType: '1',
         stationId: null,
-        time: null,
-        tableFlag: '1',
       },
       // 表单参数
       form: {},
@@ -65,6 +91,7 @@ export default {
       rules: {
       },
       stationOptions: [],
+      shiftOptions: [],
       pickerType: 'date',
       pickOptions: {
         disabledDate(time) {
@@ -75,17 +102,20 @@ export default {
   },
   computed: {},
   created() {
-    this.queryParams.time = getCurrentTime();
+    this.queryParams.beginTime = getMidnightTime();
+    this.queryParams.endTime = getCurrentTime();
     //获取收费站下拉框
-    this.stationOptions = [{label: '收费中心', value: -1}]
-    this.currentStationId = -1
-    this.$set(this.queryParams, 'stationId', this.currentStationId);
+    listStationSelectV2({needCenter: true}).then((res) => {
+      this.stationOptions = res.data.array
+      this.currentStationId = res.data.defaultValue
+      this.$set(this.queryParams, 'stationId', this.currentStationId);
+    })
   },
   watch: {},
   methods: {
     openChildPage() {
       const route = {
-        path: '/ccq3Detail',
+        path: '/fd08Detail',
         query: this.queryParams
       }
       const resolve = this.$router.resolve(route);

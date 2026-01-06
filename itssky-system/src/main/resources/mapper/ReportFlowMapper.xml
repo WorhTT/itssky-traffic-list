@@ -1110,4 +1110,70 @@
         </where>
         GROUP BY a.DifferHour ORDER BY a.DifferHour
     </select>
+
+    <select id="ct" parameterType="com.itssky.system.domain.dto.CommonReportDto"
+            resultType="com.itssky.system.domain.vo.CtVo">
+        SELECT
+        a.StationID AS stationId,
+        (SELECT stationname FROM dbtoms.tbstationinfo WHERE a.StationID = stationid LIMIT 1 ) AS stationName,
+        a.StaDate AS staDate,
+        LEFT(a.StaDate, 6) AS monthDate,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=1 THEN a.CarNum ELSE 0 END),0) k1,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=2 THEN a.CarNum ELSE 0 END),0) k2,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=3 THEN a.CarNum ELSE 0 END),0) k3,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=4 THEN a.CarNum ELSE 0 END),0) k4,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (1,2,3,4) THEN a.CarNum ELSE 0 END),0) ksum,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=11 THEN a.CarNum ELSE 0 END),0) h1,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=12 THEN a.CarNum ELSE 0 END),0) h2,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=13 THEN a.CarNum ELSE 0 END),0) h3,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=14 THEN a.CarNum ELSE 0 END),0) h4,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=15 THEN a.CarNum ELSE 0 END),0) h5,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=16 THEN a.CarNum ELSE 0 END),0) h6,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (11,12,13,14,15,16) THEN a.CarNum ELSE 0 END),0) hsum,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=21 THEN a.CarNum ELSE 0 END),0) z1,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=22 THEN a.CarNum ELSE 0 END),0) z2,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=23 THEN a.CarNum ELSE 0 END),0) z3,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=24 THEN a.CarNum ELSE 0 END),0) z4,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=25 THEN a.CarNum ELSE 0 END),0) z5,
+        IFNULL(SUM(CASE WHEN a.VehicleClass=26 THEN a.CarNum ELSE 0 END),0) z6,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (21,22,23,24,25,26) THEN a.CarNum ELSE 0 END),0) zsum,
+        IFNULL(SUM(CASE WHEN a.VehicleClass IN (1,2,3,4,11,12,13,14,15,16,21,22,23,24,25,26) THEN a.CarNum ELSE 0 END),0) total
+        FROM
+        <foreach collection="tableNameList" separator="UNION ALL" item="tableName" index="index" open="(" close=")">
+            SELECT
+            *
+            FROM ${tableName} AS alias${index + 1}
+            <where>
+                AND CancelFlag = 0
+                AND PayMode=0
+                AND SUBSTRING(LaneID,-4,1)=0
+                AND SUBSTRING(LaneID,-3,1)=1
+                AND StationID in
+                <foreach item="stationId" collection="stationIdList" open="(" separator="," close=")">
+                    #{stationId}
+                </foreach>
+                <if test="intBeginTime != null and intBeginTime != ''">
+                    AND StaDate >= #{intBeginTime}
+                </if>
+                <if test="intEndTime != null and intEndTime != ''">
+                    AND StaDate <![CDATA[<=]]> #{intEndTime}
+                </if>
+            </where>
+        </foreach>
+        a
+        <choose>
+            <when test="statType != null and statType != '' and statType == 1">
+                ORDER BY StaDate ASC
+                GROUP BY StaDate
+            </when>
+            <when test="statType != null and statType != '' and statType == 2">
+                GROUP BY monthDate
+                ORDER BY monthDate ASC
+            </when>
+            <when test="statType != null and statType != '' and statType == 3">
+                GROUP BY StationID
+                ORDER BY StationID ASC
+            </when>
+        </choose>
+    </select>
 </mapper>

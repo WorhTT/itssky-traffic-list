@@ -437,25 +437,25 @@ export default {
           }
           .el-table th, .el-table td {
             padding: 6px 4px;
-            font-size: 20px;
+            font-size: 22px;
             min-width: 50px;
             white-space: nowrap; /* 防止内容换行 */
             word-wrap: break-word;
             word-break: break-word; /* 允许单词内换行 */
           }
           .el-table th {
-            font-size: 18px;
+            font-size: 24px;
             font-weight: bold;
           }
           .container span {
-            font-size: 22px;
+            font-size: 24px;
           }
           .print-title {
             font-size: 24px;
           }
           .footer-info {
             margin-top: 15px;
-            font-size: 12px;
+            font-size: 24px;
           }
           /* 防止表格跨页截断 */
           thead {

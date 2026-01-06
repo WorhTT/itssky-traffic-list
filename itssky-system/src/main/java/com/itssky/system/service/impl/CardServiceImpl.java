@@ -684,11 +684,11 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<Ccq2CardVo> ccq2(CardCcqDto dto) {
-        LoginUser loginUser = SecurityUtils.getLoginUser();
-        if (loginUser.getCorpNo().length() > 2) {
-            log.warn("当前用户权限过低，无法访问中心级报表");
-            return new ArrayList<>();
-        }
+//        LoginUser loginUser = SecurityUtils.getLoginUser();
+//        if (loginUser.getCorpNo().length() > 2) {
+//            log.warn("当前用户权限过低，无法访问中心级报表");
+//            return new ArrayList<>();
+//        }
         List<Integer> stationIds = tbStationInfoService.getStationIdsByCorpNo(dto.getStationId());
         if (CollectionUtils.isEmpty(stationIds)) {
             return new ArrayList<>();
@@ -723,11 +723,11 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<Ccq3CardVo> ccq3(CardCcqDto dto) {
-        LoginUser loginUser = SecurityUtils.getLoginUser();
-        if (loginUser.getCorpNo().length() > 2) {
-            log.warn("当前用户权限过低，无法访问中心级报表");
-            return new ArrayList<>();
-        }
+//        LoginUser loginUser = SecurityUtils.getLoginUser();
+//        if (loginUser.getCorpNo().length() > 2) {
+//            log.warn("当前用户权限过低，无法访问中心级报表");
+//            return new ArrayList<>();
+//        }
         List<Integer> stationIds = tbStationInfoService.getStationIdsByCorpNo(dto.getStationId());
         if (CollectionUtils.isEmpty(stationIds)) {
             return new ArrayList<>();
@@ -757,5 +757,56 @@ public class CardServiceImpl implements CardService {
             return ccq3CardVos;
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public List<Fd08Vo> fd08(CommonReportDto dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
+        int intBeginDate = Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN));
+        int intEndDate = Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN));
+        List<String> tableNameList = TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(),
+                "tbstc", DatePattern.NORM_YEAR_PATTERN);
+        if (CollectionUtils.isEmpty(tableNameList)) {
+            return new ArrayList<>();
+        }
+        dto.setTableNameList(tableNameList);
+        dto.setIntBeginTime(intBeginDate);
+        dto.setIntEndTime(intEndDate);
+        List<Fd08Vo> fd08Vos = cardMapper.fd08(dto);
+        if (CollectionUtils.isEmpty(fd08Vos)) {
+            return new ArrayList<>();
+        }
+        fd08Vos.forEach(r -> {
+            //通行卡调入+出口回收-坏卡回收+通行卡恢复-通行卡调出-入口发卡-坏卡上缴+库存维护数
+            //@r1+@r2-@r3+@r4-@c1-@c2-@c3+@k1;
+            r.setKcbd(r.getTxkdr() + r.getCkhs() - r.getHkhs() + r.getTxkhf() - r.getTxkdc() - r.getRkfk() - r.getHksj() + r.getKcwhs());
+            if ("1".equals(dto.getStatType())) {
+                r.setStatType(r.getStaDate());
+            } else if ("2".equals(dto.getStatType())) {
+                r.setStatType(r.getMonthDate());
+            } else if ("3".equals(dto.getStatType())) {
+                r.setStatType(r.getStationName());
+            }
+        });
+        //增加合计行
+        Fd08Vo totalRow = new Fd08Vo();
+        totalRow.setTotalRow(true);
+        totalRow.setStatType("合计");
+        totalRow.setTxkdr(fd08Vos.stream().map(Fd08Vo::getTxkdr).reduce(0, Integer::sum));
+        totalRow.setCkhs(fd08Vos.stream().map(Fd08Vo::getCkhs).reduce(0, Integer::sum));
+        totalRow.setHkhs(fd08Vos.stream().map(Fd08Vo::getHkhs).reduce(0, Integer::sum));
+        totalRow.setTxkhf(fd08Vos.stream().map(Fd08Vo::getTxkhf).reduce(0, Integer::sum));
+        totalRow.setTxkdc(fd08Vos.stream().map(Fd08Vo::getTxkdc).reduce(0, Integer::sum));
+        totalRow.setRkfk(fd08Vos.stream().map(Fd08Vo::getRkfk).reduce(0, Integer::sum));
+        totalRow.setHksj(fd08Vos.stream().map(Fd08Vo::getHksj).reduce(0, Integer::sum));
+        totalRow.setKcwhs(fd08Vos.stream().map(Fd08Vo::getKcwhs).reduce(0, Integer::sum));
+        totalRow.setKcbd(fd08Vos.stream().map(Fd08Vo::getKcbd).reduce(0, Integer::sum));
+        totalRow.setKchk(fd08Vos.stream().map(Fd08Vo::getKchk).reduce(0, Integer::sum));
+        totalRow.setKczck(fd08Vos.stream().map(Fd08Vo::getKczck).reduce(0, Integer::sum));
+        fd08Vos.add(totalRow);
+        return fd08Vos;
     }
 }

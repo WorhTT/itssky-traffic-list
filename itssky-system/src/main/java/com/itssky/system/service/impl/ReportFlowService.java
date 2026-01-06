@@ -12,6 +12,7 @@ import com.itssky.common.utils.SecurityUtils;
 import com.itssky.db.Dbedge;
 import com.itssky.db.Dbstats;
 import com.itssky.system.domain.*;
+import com.itssky.system.domain.dto.CommonReportDto;
 import com.itssky.system.domain.dto.FlowStatisticsDto;
 import com.itssky.system.domain.dto.StationTimeDto;
 import com.itssky.system.domain.vo.*;
@@ -862,6 +863,72 @@ public class ReportFlowService {
         totalRow.setHsumd(list.stream().map(i -> new BigDecimal(i.getHsumd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setSumc(list.stream().map(i -> new BigDecimal(i.getSumc())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
         totalRow.setSumd(list.stream().map(i -> new BigDecimal(i.getSumd())).reduce(BigDecimal.ZERO, BigDecimal::add).intValue());
+        list.add(totalRow);
+        return list;
+    }
+
+
+    public List<CtVo> ct(CommonReportDto dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        List<Integer> authRangeStationIdList = tbStationInfoService.getAuthRangeStationIdList(dto.getStationId(), loginUser);
+        dto.setStationIdList(authRangeStationIdList);
+        int intBeginDate = Integer.parseInt(DateUtil.format(dto.getBeginTime(), DatePattern.PURE_DATE_PATTERN));
+        int intEndDate = Integer.parseInt(DateUtil.format(dto.getEndTime(), DatePattern.PURE_DATE_PATTERN));
+        List<String> tableNameList = TableUtil.generateTableNamesList(dto.getBeginTime(), dto.getEndTime(),
+                "mtraffic", DatePattern.SIMPLE_MONTH_PATTERN);
+        if (CollectionUtils.isEmpty(tableNameList)) {
+            return new ArrayList<>();
+        }
+        dto.setTableNameList(tableNameList);
+        dto.setIntBeginTime(intBeginDate);
+        dto.setIntEndTime(intEndDate);
+        List<CtVo> list = reportFlowMapper.ct(dto);
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+        list.forEach(r -> {
+            if ("1".equals(dto.getStatType())) {
+                r.setStatType(r.getStaDate());
+            } else if ("2".equals(dto.getStatType())) {
+                r.setStatType(r.getMonthDate());
+            } else if ("3".equals(dto.getStatType())) {
+                r.setStatType(r.getStationName());
+            }
+            //客车比例
+            r.setKbl(divideWithRounding(new BigDecimal(r.getKsum()), new BigDecimal(r.getTotal()), 2));
+            //货车比例
+            r.setHbl(divideWithRounding(new BigDecimal(r.getHsum()), new BigDecimal(r.getTotal()), 2));
+            //专车比例
+            r.setZbl(divideWithRounding(new BigDecimal(r.getZsum()), new BigDecimal(r.getTotal()), 2));
+        });
+        //添加合计行
+        CtVo totalRow = new CtVo();
+        totalRow.setStatType("合计");
+        totalRow.setTotalRow(true);
+        totalRow.setK1(list.stream().map(i -> i.getK1()).reduce(0, Integer::sum));
+        totalRow.setK2(list.stream().map(i -> i.getK2()).reduce(0, Integer::sum));
+        totalRow.setK3(list.stream().map(i -> i.getK3()).reduce(0, Integer::sum));
+        totalRow.setK4(list.stream().map(i -> i.getK4()).reduce(0, Integer::sum));
+        totalRow.setKsum(list.stream().map(i -> i.getKsum()).reduce(0, Integer::sum));
+        totalRow.setH1(list.stream().map(i -> i.getH1()).reduce(0, Integer::sum));
+        totalRow.setH2(list.stream().map(i -> i.getH2()).reduce(0, Integer::sum));
+        totalRow.setH3(list.stream().map(i -> i.getH3()).reduce(0, Integer::sum));
+        totalRow.setH4(list.stream().map(i -> i.getH4()).reduce(0, Integer::sum));
+        totalRow.setH5(list.stream().map(i -> i.getH5()).reduce(0, Integer::sum));
+        totalRow.setH6(list.stream().map(i -> i.getH6()).reduce(0, Integer::sum));
+        totalRow.setHsum(list.stream().map(i -> i.getHsum()).reduce(0, Integer::sum));
+        totalRow.setZ1(list.stream().map(i -> i.getZ1()).reduce(0, Integer::sum));
+        totalRow.setZ2(list.stream().map(i -> i.getZ2()).reduce(0, Integer::sum));
+        totalRow.setZ3(list.stream().map(i -> i.getZ3()).reduce(0, Integer::sum));
+        totalRow.setZ4(list.stream().map(i -> i.getZ4()).reduce(0, Integer::sum));
+        totalRow.setZ5(list.stream().map(i -> i.getZ5()).reduce(0, Integer::sum));
+        totalRow.setZ6(list.stream().map(i -> i.getZ6()).reduce(0, Integer::sum));
+        totalRow.setZsum(list.stream().map(i -> i.getZsum()).reduce(0, Integer::sum));
+        totalRow.setTotal(list.stream().map(i -> i.getTotal()).reduce(0, Integer::sum));
+        totalRow.setKbl(divideWithRounding(new BigDecimal(totalRow.getKsum()), new BigDecimal(totalRow.getTotal()), 2));
+        totalRow.setHbl(divideWithRounding(new BigDecimal(totalRow.getHsum()), new BigDecimal(totalRow.getTotal()), 2));
+        totalRow.setZbl(divideWithRounding(new BigDecimal(totalRow.getZsum()), new BigDecimal(totalRow.getTotal()), 2));
         list.add(totalRow);
         return list;
     }

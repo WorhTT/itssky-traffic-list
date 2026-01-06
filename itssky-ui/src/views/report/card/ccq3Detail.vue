@@ -70,7 +70,7 @@ import {ccq3, exportCcq3} from "@/api/report/card";
 import {getLoginUser} from "@/api/login";
 
 export default {
-  name: "C1StationShiftDetail",
+  name: "Ccq3Detail",
   data() {
     return {
       props: {multiple: true},
