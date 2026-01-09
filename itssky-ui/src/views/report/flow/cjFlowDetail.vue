@@ -59,9 +59,9 @@
       <el-table-column label="优惠" align="center" prop="yh"/>
       <el-table-column label="免费" align="center" prop="mf"/>
       <el-table-column label="车队" align="center" prop="cd"/>
-      <el-table-column label="客车比例(%)" align="center" prop="kcbl"/>
-      <el-table-column label="货车比例(%)" align="center" prop="hcbl"/>
-      <el-table-column label="专车比例(%)" align="center" prop="zcbl"/>
+      <el-table-column label="客车比例(%)" align="center" prop="kcbl" min-width="100"/>
+      <el-table-column label="货车比例(%)" align="center" prop="hcbl" min-width="100"/>
+      <el-table-column label="专车比例(%)" align="center" prop="zcbl" min-width="100"/>
       <el-table-column label="总计" align="center" prop="sumCount"/>
     </el-table>
     <!-- 添加底部信息区域 -->
@@ -76,7 +76,6 @@
 <script>
 
 import {crjFlow, exportCrjFlow} from "@/api/report/exitFlow"
-import {getLoginUser} from "@/api/login";
 
 export default {
   name: "CJFlowDetail",
@@ -126,11 +125,6 @@ export default {
     if (this.queryParams) {
       this.getList();
     }
-    getLoginUser().then(res => {
-      if (res.data) {
-        this.operatorName = res.data.username;
-      }
-    })
   },
   computed: {
     // corpName() {
@@ -158,6 +152,7 @@ export default {
         this.total = response.total;
         this.conditionList = response.conditionList;
         this.corpName = response.title;
+        this.operatorName = response.operatorName;
       }).finally(() => {
         this.loading = false;
       });

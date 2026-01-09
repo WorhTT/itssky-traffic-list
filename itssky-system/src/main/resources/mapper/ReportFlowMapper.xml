@@ -1163,8 +1163,8 @@
         a
         <choose>
             <when test="statType != null and statType != '' and statType == 1">
-                ORDER BY StaDate ASC
                 GROUP BY StaDate
+                ORDER BY StaDate ASC
             </when>
             <when test="statType != null and statType != '' and statType == 2">
                 GROUP BY monthDate

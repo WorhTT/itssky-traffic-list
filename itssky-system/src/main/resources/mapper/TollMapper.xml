@@ -1054,15 +1054,12 @@
         a
         <choose>
             <when test="statType != null and statType != '' and statType == 1">
-                GROUP BY OperatorID ORDER BY OperatorID
-            </when>
-            <when test="statType != null and statType != '' and statType == 2">
                 GROUP BY StaDate ORDER BY StaDate
             </when>
-            <when test="statType != null and statType != '' and statType == 3">
+            <when test="statType != null and statType != '' and statType == 2">
                 GROUP BY monthDate ORDER BY monthDate
             </when>
-            <when test="statType != null and statType != '' and statType == 4">
+            <when test="statType != null and statType != '' and statType == 3">
                 GROUP BY StationID  ORDER BY StationID
             </when>
         </choose>

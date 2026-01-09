@@ -54,9 +54,9 @@
       <el-table-column label="专五" align="center" prop="z5"/>
       <el-table-column label="专六" align="center" prop="z6"/>
       <el-table-column label="专车小计" align="center" prop="zsum"/>
-      <el-table-column label="客车比例(%)" align="center" prop="kbl"/>
-      <el-table-column label="货车比例(%)" align="center" prop="hbl"/>
-      <el-table-column label="专车比例(%)" align="center" prop="zbl"/>
+      <el-table-column label="客车比例(%)" align="center" prop="kbl" min-width="100"/>
+      <el-table-column label="货车比例(%)" align="center" prop="hbl" min-width="100"/>
+      <el-table-column label="专车比例(%)" align="center" prop="zbl" min-width="100"/>
       <el-table-column label="总计" align="center" prop="total"/>
     </el-table>
     <!-- 添加底部信息区域 -->
@@ -286,7 +286,7 @@ export default {
         .table-container {
           margin-top: 10px;
           width: 100%;
-          zoom: 0.85;
+          zoom: 0.65
         }
         .el-table {
           width: 100%;
@@ -349,7 +349,7 @@ export default {
         }
         @media print {
           @page {
-            size: A4; /* 改为横向打印 */
+            size: A4 landscape; /* 改为横向打印 */
             margin: 8mm; /* 减小边距以获得更多内容空间 */
           }
           body {
@@ -423,6 +423,7 @@ export default {
         </body>
         </html>
       `
+
       printDocument.write(htmlContent);
       printDocument.close();
 

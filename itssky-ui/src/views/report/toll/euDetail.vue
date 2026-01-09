@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="display: flex;justify-content: center;flex-flow: column;flex-direction: column;flex-wrap: nowrap;align-content: center;align-items: center;padding-bottom: .5vh">
       <h3 style="font-weight: bolder;margin: 1vh 0">{{corpName}}</h3>
-      <h3 style="font-weight: bolder;margin: 1vh 0">EU电子支付通行费(MTC+ETC)统计按车型</h3>
+      <h3 style="font-weight: bolder;margin: 1vh 0">EU电子支付通行费(MTC+ETC)按车型统计</h3>
     </div>
     <div style="display: flex">
       <span v-for="item in conditionList" style="flex: 1;
@@ -193,7 +193,7 @@ export default {
     handleExport() {
       this.loading = true;
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出EU电子支付通行费(MTC+ETC)统计按车型?', "警告", {
+      this.$confirm('是否确认导出EU电子支付通行费(MTC+ETC)按车型统计?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -490,7 +490,7 @@ export default {
         </head>
         <body>
             <div class="print-title">${corpName}</div>
-            <div class="print-title">EU电子支付通行费(MTC+ETC)统计按车型</div>
+            <div class="print-title">EU电子支付通行费(MTC+ETC)按车型统计</div>
             <div class="container">${conditionListHtml}</div>
             <div class="table-container">
               <div class="table-section">

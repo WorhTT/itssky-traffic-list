@@ -896,11 +896,11 @@ public class ReportFlowService {
                 r.setStatType(r.getStationName());
             }
             //客车比例
-            r.setKbl(divideWithRounding(new BigDecimal(r.getKsum()), new BigDecimal(r.getTotal()), 2));
+            r.setKbl(divideWithRounding(new BigDecimal(r.getKsum()), new BigDecimal(r.getTotal()), 4));
             //货车比例
-            r.setHbl(divideWithRounding(new BigDecimal(r.getHsum()), new BigDecimal(r.getTotal()), 2));
+            r.setHbl(divideWithRounding(new BigDecimal(r.getHsum()), new BigDecimal(r.getTotal()), 4));
             //专车比例
-            r.setZbl(divideWithRounding(new BigDecimal(r.getZsum()), new BigDecimal(r.getTotal()), 2));
+            r.setZbl(divideWithRounding(new BigDecimal(r.getZsum()), new BigDecimal(r.getTotal()), 4));
         });
         //添加合计行
         CtVo totalRow = new CtVo();
@@ -926,9 +926,9 @@ public class ReportFlowService {
         totalRow.setZ6(list.stream().map(i -> i.getZ6()).reduce(0, Integer::sum));
         totalRow.setZsum(list.stream().map(i -> i.getZsum()).reduce(0, Integer::sum));
         totalRow.setTotal(list.stream().map(i -> i.getTotal()).reduce(0, Integer::sum));
-        totalRow.setKbl(divideWithRounding(new BigDecimal(totalRow.getKsum()), new BigDecimal(totalRow.getTotal()), 2));
-        totalRow.setHbl(divideWithRounding(new BigDecimal(totalRow.getHsum()), new BigDecimal(totalRow.getTotal()), 2));
-        totalRow.setZbl(divideWithRounding(new BigDecimal(totalRow.getZsum()), new BigDecimal(totalRow.getTotal()), 2));
+        totalRow.setKbl(divideWithRounding(new BigDecimal(totalRow.getKsum()), new BigDecimal(totalRow.getTotal()), 4));
+        totalRow.setHbl(divideWithRounding(new BigDecimal(totalRow.getHsum()), new BigDecimal(totalRow.getTotal()), 4));
+        totalRow.setZbl(divideWithRounding(new BigDecimal(totalRow.getZsum()), new BigDecimal(totalRow.getTotal()), 4));
         list.add(totalRow);
         return list;
     }

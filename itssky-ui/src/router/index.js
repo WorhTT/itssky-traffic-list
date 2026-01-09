@@ -302,6 +302,11 @@ export const constantRoutes = [
     component: () => import("@/views/report/card/fd08Detail.vue"),
     hidden: true
   },
+  {
+    path: '/ctDetail',
+    component: () => import("@/views/report/flow/ctDetail.vue"),
+    hidden: true
+  },
   // {
   //   path: '/mobVcDetail',
   //   component: () => import("@/views/report/toll/mobVc.vue.vue"),

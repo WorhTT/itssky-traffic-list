@@ -37,7 +37,7 @@
     </div>
 
     <el-table v-loading="loading" :data="dataList"  border
-              :span-method="arraySpanMethod" :cell-style="cellStyle" ref="myTable" >
+              ref="myTable" >
       <el-table-column label="时间" align="center" prop="time"/>
       <el-table-column label="客一" align="center">
         <el-table-column label="C卡" align="center" prop="k1c"/>
